@@ -2,10 +2,11 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image'; // <--- CAMBIO AQUÍ
 import type { TokenData } from '../Wizard';
 
 interface Step2Props {
-  tokenData: TokenData; // Recibimos los datos del paso anterior
+  tokenData: TokenData;
   onDataChange: (data: Partial<TokenData>) => void;
   onComplete: () => void;
 }
@@ -27,7 +28,8 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
       });
 
       if (!response.ok) {
-        throw new Error('Error al conectar con la API de generación de logos.');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Error al conectar con la API de generación de logos.');
       }
       
       const data = await response.json();
@@ -36,8 +38,12 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
       setLogoUrl(data.logoUrl);
       onDataChange({ logoUrl: data.logoUrl });
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) { // <--- CAMBIO AQUÍ
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ha ocurrido un error desconocido.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +63,15 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
       {logoUrl ? (
         <div className="text-center">
             <h3 className="text-lg font-semibold text-green-300 mb-4">¡Logo generado!</h3>
-            <img src={logoUrl} alt={`Logo de ${tokenData.name}`} className="w-48 h-48 mx-auto rounded-full border-4 border-purple-500" />
+            {/* CAMBIO AQUÍ */}
+            <Image 
+              src={logoUrl} 
+              alt={`Logo de ${tokenData.name}`} 
+              width={192} 
+              height={192} 
+              className="mx-auto rounded-full border-4 border-purple-500" 
+              priority
+            />
             <button 
                 onClick={onComplete}
                 className="w-full mt-6 px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors"

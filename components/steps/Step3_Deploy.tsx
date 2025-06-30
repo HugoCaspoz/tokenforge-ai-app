@@ -4,7 +4,6 @@
 import { useState } from 'react';
 import { ethers } from 'ethers';
 import type { TokenData } from '../Wizard';
-// Importamos el ABI y el Bytecode desde el archivo JSON que copiamos
 import contractArtifact from '@/lib/contracts/TokenForgeERC20.json';
 
 interface Step3Props {
@@ -12,7 +11,7 @@ interface Step3Props {
 }
 
 export default function Step3_Deploy({ tokenData }: Step3Props) {
-  const [supply, setSupply] = useState(1000000); // Supply inicial por defecto
+  const [supply, setSupply] = useState(1000000);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
   const [contractAddress, setContractAddress] = useState('');
@@ -22,7 +21,6 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     setError('');
     setContractAddress('');
 
-    // 1. Comprobar si MetaMask está instalado
     if (typeof window.ethereum === 'undefined') {
       setError('Por favor, instala MetaMask para continuar.');
       setStatus('');
@@ -30,12 +28,8 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     }
 
     try {
-      // 2. Conectar a MetaMask y pedir al usuario que conecte su cuenta
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
-
-      // 3. Crear una "factoría" para nuestro contrato
-      // Le pasamos el ABI, el Bytecode y el "signer" (la cuenta del usuario)
       const factory = new ethers.ContractFactory(
         contractArtifact.abi,
         contractArtifact.bytecode,
@@ -44,13 +38,11 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
 
       setStatus('Enviando transacción a MetaMask... Por favor, aprueba la transacción.');
 
-      // 4. Desplegar el contrato
-      // Pasamos los argumentos del constructor de nuestro contrato Solidity
       const contract = await factory.deploy(
-        await signer.getAddress(), // initialOwner
-        tokenData.name,           // tokenName
-        tokenData.ticker,         // tokenSymbol
-        supply                    // initialSupply
+        await signer.getAddress(),
+        tokenData.name,
+        tokenData.ticker,
+        supply
       );
 
       setStatus('Desplegando el contrato en la blockchain... Esto puede tardar unos segundos.');
@@ -60,9 +52,11 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       setContractAddress(address);
       setStatus('¡Contrato desplegado con éxito!');
 
-    } catch (err: any) {
+    } catch (err) { // <--- CAMBIO AQUÍ
       console.error(err);
-      setError(err.reason || err.message || 'Ha ocurrido un error desconocido.');
+      // Ethers often throws errors with a 'reason' property
+      const a = err as { reason?: string, message?: string};
+      setError(a.reason || a.message || 'Ha ocurrido un error desconocido.');
       setStatus('');
     }
   };

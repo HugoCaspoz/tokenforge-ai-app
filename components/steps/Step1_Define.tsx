@@ -39,11 +39,14 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
 
       const data = await response.json();
       setGeneratedData(data);
-      // Actualizamos el estado global del Wizard con los datos nuevos
       onDataChange({ purpose, ...data });
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) { // <--- CAMBIO AQUÍ
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ha ocurrido un error desconocido.');
+      }
     } finally {
       setIsLoading(false);
     }
