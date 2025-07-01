@@ -3,17 +3,19 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
-import Image from 'next/image';
 
 const navItems = [{ name: 'Características', href: '/#features' }];
 
 export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     // Obtenemos la sesión al cargar el componente
@@ -23,12 +25,13 @@ export const Header = () => {
     };
     getSession();
 
-    // Nos quedamos escuchando cambios en la autenticación
+    // Nos quedamos escuchando cambios en la autenticación (login, logout)
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
     });
 
     return () => {
+      // Limpiamos el listener cuando el componente se desmonta
       authListener.subscription.unsubscribe();
     };
   }, []);
@@ -36,17 +39,20 @@ export const Header = () => {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setUser(null);
+    // Redirigimos al inicio después de cerrar sesión
+    router.push('/');
   };
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <motion.nav 
-        className="flex items-center justify-between p-6 lg:px-8" 
+      <motion.nav
+        className="flex items-center justify-between p-6 lg:px-8"
         aria-label="Global"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Logo/Marca */}
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="text-xl font-bold text-white">
@@ -54,7 +60,20 @@ export const Header = () => {
             </span>
           </Link>
         </div>
-        {/* ... (código del menú de hamburguesa que no cambia) ... */}
+
+        {/* Botón de Menú Móvil */}
+        <div className="flex lg:hidden">
+          <button
+            type="button"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-400"
+            onClick={() => setMobileMenuOpen(true)}
+          >
+            <span className="sr-only">Abrir menú principal</span>
+            <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          </button>
+        </div>
+
+        {/* Navegación para Escritorio */}
         <div className="hidden lg:flex lg:gap-x-12">
           {navItems.map((item) => (
             <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
@@ -62,20 +81,26 @@ export const Header = () => {
             </a>
           ))}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-4">
+
+        {/* Botones de Acción para Escritorio */}
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
           {user ? (
             <>
-              <span className="text-sm text-gray-300">Hola, {user.user_metadata?.name || user.email}</span>
-              <Image 
-                src={user.user_metadata?.avatar_url ?? ''} 
-                alt="User avatar" 
-                width={32} 
-                height={32} 
-                className="rounded-full"
-              />
-              <button onClick={handleSignOut} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
-                Salir
-              </button>
+              <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
+                Dashboard
+              </Link>
+              <div className='flex items-center gap-x-2'>
+                <Image
+                  src={user.user_metadata?.avatar_url ?? ''}
+                  alt="User avatar"
+                  width={32}
+                  height={32}
+                  className="rounded-full"
+                />
+                <button onClick={handleSignOut} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
+                  Salir
+                </button>
+              </div>
             </>
           ) : (
             <Link href="/login" className="text-sm font-semibold leading-6 text-white bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
@@ -84,7 +109,62 @@ export const Header = () => {
           )}
         </div>
       </motion.nav>
-      {/* ... (el resto del JSX del menú móvil) ... */}
+
+      {/* Panel del Menú Móvil */}
+      {mobileMenuOpen && (
+        <div className="lg:hidden" role="dialog" aria-modal="true">
+          <div className="fixed inset-0 z-50" />
+          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
+            <div className="flex items-center justify-between">
+              <Link href="/" className="-m-1.5 p-1.5">
+                 <span className="text-xl font-bold text-white">
+                    Token<span className="text-purple-400">Crafter</span>
+                 </span>
+              </Link>
+              <button
+                type="button"
+                className="-m-2.5 rounded-md p-2.5 text-gray-400"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <span className="sr-only">Cerrar menú</span>
+                <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="mt-6 flow-root">
+              <div className="-my-6 divide-y divide-gray-500/25">
+                <div className="space-y-2 py-6">
+                  {navItems.map((item) => (
+                    <a
+                      key={item.name}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                    >
+                      {item.name}
+                    </a>
+                  ))}
+                </div>
+                <div className="py-6">
+                  {user ? (
+                     <>
+                      <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Dashboard</Link>
+                      <button onClick={handleSignOut} className="w-full text-left -mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Salir</button>
+                     </>
+                  ) : (
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                    >
+                      Iniciar Sesión
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };
