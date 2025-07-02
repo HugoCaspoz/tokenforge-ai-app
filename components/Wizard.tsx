@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase'; // Solo necesitamos supabase
+import { createClient } from '@/utils/supabase/client';
 import Step1_Define from './steps/Step1_Define';
 import Step2_Design from './steps/Step2_Design';
 import Step3_Deploy from './steps/Step3_Deploy';
@@ -17,6 +17,7 @@ export interface TokenData {
 }
 
 export default function Wizard() {
+  const supabase = createClient(); // <-- ESTA ES LA LÍNEA QUE FALTABA
   const [step, setStep] = useState(1);
   const [tokenData, setTokenData] = useState<TokenData>({
     purpose: '',

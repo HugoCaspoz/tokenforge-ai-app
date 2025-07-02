@@ -2,9 +2,10 @@
 'use client';
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase'; // Usamos el mismo cliente de Supabase
+import { createClient } from '@/utils/supabase/client';
 
 export default function TestSupabasePage() {
+  const supabase = createClient(); // <-- ESTA ES LA LÍNEA QUE FALTABA
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [result, setResult] = useState<any>(null);
@@ -54,7 +55,7 @@ export default function TestSupabasePage() {
           </button>
            <button onClick={handleGetUser} disabled={loading} className="w-full py-2 bg-green-600 rounded-md hover:bg-green-500 disabled:bg-gray-500">
             {loading ? 'Probando...' : '2. Ver Usuario Actual'}
-          </button>
+           </button>
         </div>
 
         <div className="bg-gray-800 p-4 rounded-lg">

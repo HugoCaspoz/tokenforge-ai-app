@@ -2,18 +2,29 @@
 'use client';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
+  const supabase = createClient(); // <-- ESTA ES LA LÍNEA QUE FALTABA
   const router = useRouter();
 
-  supabase.auth.onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN') {
-      // Redirige al usuario a la página de creación después de iniciar sesión.
-      router.push('/create');
-    }
-  });
+  // Usamos useEffect para registrar el listener cuando el componente se monta
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        // Redirige al usuario al dashboard después de iniciar sesión.
+        router.push('/dashboard');
+        router.refresh(); // Refresca la página para asegurar que el estado del servidor se actualiza
+      }
+    });
+
+    // Limpiamos el listener cuando el componente se desmonta
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [router, supabase]);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
@@ -27,6 +38,8 @@ export default function LoginPage() {
           theme="dark"
           providers={['github']}
           socialLayout="horizontal"
+          // Opcional: redirige al usuario si ya ha iniciado sesión
+          redirectTo={`${window.location.origin}/dashboard`}
         />
       </div>
     </div>

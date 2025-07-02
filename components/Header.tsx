@@ -7,12 +7,14 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
-import { supabase } from '@/lib/supabase';
 import { User } from '@supabase/supabase-js';
+import { createClient } from '@/utils/supabase/client';
 
+// ESTA ES LA LÍNEA QUE FALTABA
 const navItems = [{ name: 'Características', href: '/#features' }];
 
 export const Header = () => {
+  const supabase = createClient();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
@@ -26,7 +28,7 @@ export const Header = () => {
     getSession();
 
     // Nos quedamos escuchando cambios en la autenticación (login, logout)
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user ?? null);
     });
 
@@ -38,21 +40,18 @@ export const Header = () => {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
-    // Redirigimos al inicio después de cerrar sesión
     router.push('/');
   };
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <motion.nav
-        className="flex items-center justify-between p-6 lg:px-8"
+      <motion.nav 
+        className="flex items-center justify-between p-6 lg:px-8" 
         aria-label="Global"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Logo/Marca */}
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="text-xl font-bold text-white">
@@ -60,8 +59,6 @@ export const Header = () => {
             </span>
           </Link>
         </div>
-
-        {/* Botón de Menú Móvil */}
         <div className="flex lg:hidden">
           <button
             type="button"
@@ -72,8 +69,6 @@ export const Header = () => {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-
-        {/* Navegación para Escritorio */}
         <div className="hidden lg:flex lg:gap-x-12">
           {navItems.map((item) => (
             <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
@@ -81,8 +76,6 @@ export const Header = () => {
             </a>
           ))}
         </div>
-
-        {/* Botones de Acción para Escritorio */}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
           {user ? (
             <>
@@ -90,11 +83,11 @@ export const Header = () => {
                 Dashboard
               </Link>
               <div className='flex items-center gap-x-2'>
-                <Image
-                  src={user.user_metadata?.avatar_url ?? ''}
-                  alt="User avatar"
-                  width={32}
-                  height={32}
+                <Image 
+                  src={user.user_metadata?.avatar_url ?? ''} 
+                  alt="User avatar" 
+                  width={32} 
+                  height={32} 
                   className="rounded-full"
                 />
                 <button onClick={handleSignOut} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
@@ -148,7 +141,7 @@ export const Header = () => {
                   {user ? (
                      <>
                       <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Dashboard</Link>
-                      <button onClick={handleSignOut} className="w-full text-left -mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Salir</button>
+                      <button onClick={() => { handleSignOut(); setMobileMenuOpen(false); }} className="w-full text-left -mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Salir</button>
                      </>
                   ) : (
                     <Link
