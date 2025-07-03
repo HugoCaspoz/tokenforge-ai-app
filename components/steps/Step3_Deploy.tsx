@@ -7,8 +7,35 @@ import { loadStripe } from '@stripe/stripe-js';
 import type { TokenData } from '../Wizard';
 import contractArtifact from '@/lib/contracts/TokenForgeERC20.json';
 
-// Cargamos la clave publicable de Stripe desde las variables de entorno
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+/**
+ * PASO 1: Define tus planes con sus respectivos Price IDs de Stripe.
+ * Reemplaza 'price_...' con los IDs reales de tu dashboard de Stripe.
+ */
+const deploymentPlans = [
+  {
+    id: 'polygon',
+    name: 'Plan Eficiente',
+    network: 'Polygon',
+    description: 'Bajas comisiones y alta velocidad.',
+    priceId: 'prod_SbwX9XbZzNwlNo', 
+  },
+  {
+    id: 'bnb',
+    name: 'Plan Rendimiento',
+    network: 'BNB Chain',
+    description: 'Acceso a un ecosistema masivo.',
+    priceId: 'prod_SbwXV5gPf090Wk',
+  },
+  {
+    id: 'ethereum',
+    name: 'Plan Máxima Seguridad',
+    network: 'Ethereum',
+    description: 'La red más segura y prestigiosa.',
+    priceId: 'prod_SbwXzYOfTS44tn',
+  },
+];
 
 interface Step3Props {
   tokenData: TokenData;
@@ -21,44 +48,20 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
   const [contractAddress, setContractAddress] = useState('');
   const [loadingPayment, setLoadingPayment] = useState(false);
 
-  const handleTestnetDeploy = async () => {
-    setStatus('Iniciando despliegue en Testnet...');
-    setError('');
+  // PASO 2: Añade un estado para guardar el plan seleccionado. Por defecto, el primero.
+  const [selectedPlan, setSelectedPlan] = useState(deploymentPlans[0]);
 
-    if (typeof window.ethereum === 'undefined') {
-      setError('Por favor, instala MetaMask para continuar.');
-      setStatus('');
+  const handleTestnetDeploy = async () => {
+    // ... esta función no necesita cambios ...
+  };
+
+  // PASO 4: Actualiza la lógica del botón de pago
+  const handleMainnetCheckout = async () => {
+    if (!selectedPlan) {
+      setError('Por favor, selecciona un plan de despliegue.');
       return;
     }
 
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-      const factory = new ethers.ContractFactory(contractArtifact.abi, contractArtifact.bytecode, signer);
-      
-      setStatus('Enviando transacción a MetaMask...');
-      const contract = await factory.deploy(await signer.getAddress(), tokenData.name, tokenData.ticker, supply);
-      
-      setStatus('Desplegando en Testnet...');
-      await contract.waitForDeployment();
-      
-      const address = await contract.getAddress();
-      setContractAddress(address);
-      setStatus('¡Contrato desplegado con éxito en Testnet!');
-      
-    } catch (err) {
-      // ✅ CORRECCIÓN: Se elimina 'any' y se añade una comprobación segura del tipo de error.
-      if (err instanceof Error) {
-        // Los errores de Ethers.js a menudo incluyen un 'reason' dentro del 'message'.
-        setError(err.message);
-      } else {
-        setError('Ha ocurrido un error desconocido durante el despliegue.');
-      }
-      setStatus('');
-    }
-  };
-
-  const handleMainnetCheckout = async () => {
     setLoadingPayment(true);
     setError('');
     
@@ -68,31 +71,23 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           projectId: tokenData.id,
-          // NOTA: Si tienes diferentes precios, aquí deberías enviar el priceId correspondiente.
-          // priceId: 'price_...' 
+          // Usa el priceId del plan seleccionado en el estado
+          priceId: selectedPlan.priceId,
         }),
       });
 
       const { sessionId, error: responseError } = await response.json();
       
-      if (responseError) {
-        throw new Error(responseError);
-      }
+      if (responseError) { throw new Error(responseError); }
       
       const stripe = await stripePromise;
-      if (!stripe) {
-        throw new Error("Stripe.js no se ha cargado.");
-      }
+      if (!stripe) { throw new Error("Stripe.js no se ha cargado."); }
       
       await stripe.redirectToCheckout({ sessionId });
 
     } catch (err) {
-      // ✅ CORRECCIÓN: Se elimina 'any' y se añade una comprobación segura del tipo de error.
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Ha ocurrido un error desconocido al preparar el pago.');
-      }
+      if (err instanceof Error) { setError(err.message); } 
+      else { setError('Ha ocurrido un error desconocido al preparar el pago.'); }
     }
     setLoadingPayment(false);
   };
@@ -103,17 +98,11 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       <p className="text-gray-400 mb-6">Define la cantidad total de monedas y lanza tu token en una red de pruebas gratuita o en una red principal.</p>
       
       <div className="mb-6">
-        <label htmlFor="supply" className="block text-sm font-medium text-gray-300 mb-1">Cantidad Total (Total Supply)</label>
-        <input 
-          type="number" 
-          id="supply"
-          value={supply}
-          onChange={(e) => setSupply(Number(e.target.value))}
-          className="w-full p-2 bg-gray-700 text-white rounded-md border border-gray-600"
-        />
+        {/* ... Input para el Supply (sin cambios) ... */}
       </div>
 
       <div className="space-y-4">
+        {/* Botón de Testnet (sin cambios) */}
         <button
           onClick={handleTestnetDeploy}
           className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-500 transition-colors"
@@ -121,12 +110,36 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
           🧪 Lanzar en Testnet (Gratis)
         </button>
 
+        <div className="border-t border-gray-700 my-4"></div>
+
+        {/* PASO 3: Crea el Selector Visual de Planes (JSX) */}
+        <div className="mb-4">
+            <h3 className="text-lg font-semibold text-white mb-3">Elige tu Red Principal (Mainnet):</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {deploymentPlans.map((plan) => (
+                    <button
+                        key={plan.id}
+                        onClick={() => setSelectedPlan(plan)}
+                        className={`p-4 rounded-lg border-2 text-left transition-all ${
+                            selectedPlan.id === plan.id 
+                            ? 'border-purple-500 bg-purple-900/50 scale-105' 
+                            : 'border-gray-600 bg-gray-800 hover:border-gray-500'
+                        }`}
+                    >
+                        <p className="font-bold text-white">{plan.name}</p>
+                        <p className="text-sm text-purple-300">{plan.network}</p>
+                        <p className="text-xs text-gray-400 mt-2">{plan.description}</p>
+                    </button>
+                ))}
+            </div>
+        </div>
+
         <button
           onClick={handleMainnetCheckout}
-          disabled={loadingPayment}
+          disabled={loadingPayment || !selectedPlan}
           className="w-full px-6 py-4 bg-green-600 text-white font-bold text-lg rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-500"
         >
-          {loadingPayment ? 'Preparando pago...' : '🚀 Pagar para Lanzar en Mainnet'}
+          {loadingPayment ? 'Preparando pago...' : `🚀 Pagar para Lanzar en ${selectedPlan.network}`}
         </button>
       </div>
 
@@ -142,3 +155,5 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     </div>
   );
 }
+
+
