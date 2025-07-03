@@ -19,21 +19,21 @@ const deploymentPlans = [
     name: 'Plan Eficiente',
     network: 'Polygon (20€)',
     description: 'Bajas comisiones y alta velocidad.',
-    priceId: 'prod_SbwX9XbZzNwlNo', 
+    priceId: 'price_1Rgie3Is18b5tpWUjWBPkHG4', 
   },
   {
     id: 'bnb',
     name: 'Plan Rendimiento',
     network: 'BNB Chain (50€)',
     description: 'Acceso a un ecosistema masivo.',
-    priceId: 'prod_SbwXV5gPf090Wk',
+    priceId: 'price_1RgieUIs18b5tpWUeJ1KKoGT',
   },
   {
     id: 'ethereum',
     name: 'Plan Máxima Seguridad',
     network: 'Ethereum (300€)',
     description: 'La red más segura y prestigiosa.',
-    priceId: 'prod_SbwXzYOfTS44tn',
+    priceId: 'price_1RgieqIs18b5tpWUAdb8nzpO',
   },
 ];
 

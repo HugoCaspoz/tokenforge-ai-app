@@ -77,7 +77,7 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
                      * ✅ CORRECCIÓN: Reemplazamos el botón de pago por un enlace a la página de despliegue.
                      */
                     <Link
-                      href={`/deploy/mainnet/${project.id}`}
+                      href={`/deploy/${project.id}`}
                       className="w-full block text-center bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-md transition-colors"
                     >
                       Activar y Desplegar
