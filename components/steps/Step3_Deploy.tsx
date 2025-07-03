@@ -24,26 +24,36 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
   const handleTestnetDeploy = async () => {
     setStatus('Iniciando despliegue en Testnet...');
     setError('');
-    // ... (La lógica de despliegue que ya tenías)
-    // Este es un resumen, asegúrate de que es la misma que ya funcionaba
+
     if (typeof window.ethereum === 'undefined') {
       setError('Por favor, instala MetaMask para continuar.');
       setStatus('');
       return;
     }
+
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const factory = new ethers.ContractFactory(contractArtifact.abi, contractArtifact.bytecode, signer);
+      
       setStatus('Enviando transacción a MetaMask...');
       const contract = await factory.deploy(await signer.getAddress(), tokenData.name, tokenData.ticker, supply);
+      
       setStatus('Desplegando en Testnet...');
       await contract.waitForDeployment();
+      
       const address = await contract.getAddress();
       setContractAddress(address);
       setStatus('¡Contrato desplegado con éxito en Testnet!');
-    } catch (err: any) {
-      setError(err.reason || err.message || 'Error desconocido.');
+      
+    } catch (err) {
+      // ✅ CORRECCIÓN: Se elimina 'any' y se añade una comprobación segura del tipo de error.
+      if (err instanceof Error) {
+        // Los errores de Ethers.js a menudo incluyen un 'reason' dentro del 'message'.
+        setError(err.message);
+      } else {
+        setError('Ha ocurrido un error desconocido durante el despliegue.');
+      }
       setStatus('');
     }
   };
@@ -51,23 +61,38 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
   const handleMainnetCheckout = async () => {
     setLoadingPayment(true);
     setError('');
+    
     try {
-      // Ahora enviamos el ID del proyecto a nuestra API
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId: tokenData.id }), // <-- ENVIAMOS EL ID
+        body: JSON.stringify({ 
+          projectId: tokenData.id,
+          // NOTA: Si tienes diferentes precios, aquí deberías enviar el priceId correspondiente.
+          // priceId: 'price_...' 
+        }),
       });
 
-      // ... (el resto de la función no cambia)
-      const { sessionId, error } = await response.json();
-      if (error) throw new Error(error);
+      const { sessionId, error: responseError } = await response.json();
+      
+      if (responseError) {
+        throw new Error(responseError);
+      }
+      
       const stripe = await stripePromise;
-      if (!stripe) throw new Error("Stripe.js no se ha cargado.");
+      if (!stripe) {
+        throw new Error("Stripe.js no se ha cargado.");
+      }
+      
       await stripe.redirectToCheckout({ sessionId });
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      // ✅ CORRECCIÓN: Se elimina 'any' y se añade una comprobación segura del tipo de error.
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Ha ocurrido un error desconocido al preparar el pago.');
+      }
     }
     setLoadingPayment(false);
   };
@@ -89,7 +114,6 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       </div>
 
       <div className="space-y-4">
-        {/* Botón para Testnet */}
         <button
           onClick={handleTestnetDeploy}
           className="w-full px-6 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-500 transition-colors"
@@ -97,7 +121,6 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
           🧪 Lanzar en Testnet (Gratis)
         </button>
 
-        {/* Botón para Mainnet */}
         <button
           onClick={handleMainnetCheckout}
           disabled={loadingPayment}
@@ -112,8 +135,8 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       
       {contractAddress && (
         <div className="mt-6 text-center p-4 bg-purple-900/50 border border-purple-700 rounded-md">
-            {/* ... (el mismo JSX que ya tenías para mostrar la dirección) ... */}
-            <p>Contrato desplegado en: {contractAddress}</p>
+            <p className="font-semibold text-white">¡Contrato desplegado con éxito en Testnet!</p>
+            <p className="font-mono text-sm text-gray-300 break-all mt-2">{contractAddress}</p>
         </div>
       )}
     </div>

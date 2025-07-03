@@ -6,25 +6,27 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(request: Request) {
   try {
-    const { projectId } = await request.json(); // <-- Recibimos el projectId
-    if (!projectId) {
-      return NextResponse.json({ error: 'Falta el ID del proyecto' }, { status: 400 });
+    // 1. Recibimos tanto el projectId como el priceId desde el frontend
+    const { projectId, priceId } = await request.json();
+
+    if (!projectId || !priceId) {
+      return NextResponse.json({ error: 'Falta el ID del proyecto o el ID del precio' }, { status: 400 });
     }
-    
-    const PRICE_ID = 'price_1Rg0WSF59UuEseg4gE59BybL'; // ¡Usa tu ID real!
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: [{ price: PRICE_ID, quantity: 1 }],
+      // 2. Usamos el priceId dinámico que nos llega en la petición
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: 'payment',
-      success_url: `${process.env.NEXTAUTH_URL}/dashboard?payment=success`,
-      cancel_url: `${process.env.NEXTAUTH_URL}/create`,
-      // --- AÑADIMOS LOS METADATOS ---
+      // ¡Asegúrate de que esta variable de entorno sea correcta en Vercel!
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?payment=success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`,
       metadata: {
         projectId: projectId,
       },
     });
 
+    // 3. Devolvemos el ID de la sesión. ¡Esto es correcto!
     return NextResponse.json({ sessionId: session.id });
 
   } catch (err) {
