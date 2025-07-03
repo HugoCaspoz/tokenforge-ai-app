@@ -4,7 +4,16 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardClient } from '@/components/DashboardClient';
 
-export default async function DashboardPage({ searchParams }: { searchParams: { payment: string } }) {
+/**
+ * 1. Definimos un tipo explícito y robusto para las props de la página.
+ * Esta es la forma recomendada por Next.js para evitar errores de tipos.
+ */
+type Props = {
+  searchParams: { [key: string]: string | string[] | undefined };
+};
+
+// 2. Usamos el nuevo tipo 'Props' en la firma de la función.
+export default async function DashboardPage({ searchParams }: Props) {
   const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -21,10 +30,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
 
   if (error) {
     console.error('Error fetching projects:', error);
+    // Opcional: podrías mostrar un estado de error en la UI en lugar de una lista vacía.
   }
   
-  const paymentSuccess = searchParams?.payment === 'success';
+  const paymentSuccess = searchParams.payment === 'success';
 
-  // Pasamos los datos al componente de cliente para que los renderice.
   return <DashboardClient projects={projects || []} paymentSuccess={paymentSuccess} />;
 }
