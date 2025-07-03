@@ -1,15 +1,11 @@
 // En: frontend/components/DashboardClient.tsx
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { loadStripe } from '@stripe/stripe-js';
 
-// Cargamos la clave publicable de Stripe desde las variables de entorno
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// No necesitamos Stripe aquí, se elimina la lógica de pago.
 
-// Definimos los tipos de datos que este componente recibe
 interface Project {
   id: number;
   name: string;
@@ -24,40 +20,7 @@ interface DashboardClientProps {
 }
 
 export function DashboardClient({ projects, paymentSuccess }: DashboardClientProps) {
-  const [loadingProjectId, setLoadingProjectId] = useState<number | null>(null);
-  const [error, setError] = useState('');
-
-  // --- NUEVA FUNCIÓN PARA MANEJAR EL PAGO ---
-  const handlePayment = async (projectId: number) => {
-    setLoadingProjectId(projectId);
-    setError('');
-    try {
-      // Llamamos a nuestra API para crear la sesión de pago
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId }),
-      });
-
-      const { sessionId, error: apiError } = await response.json();
-      if (apiError) throw new Error(apiError);
-
-      // Redirigimos al usuario a la página de pago de Stripe
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error("Stripe.js no se ha cargado.");
-
-      await stripe.redirectToCheckout({ sessionId });
-
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Ha ocurrido un error desconocido al procesar el pago.');
-      }
-    }
-    setLoadingProjectId(null);
-  };
-  // -----------------------------------------
+  // Ya no necesitamos estados de 'loading' o 'error' para el pago en este componente.
 
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-32">
@@ -68,13 +31,6 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
             <strong className="font-bold">¡Pago completado! </strong>
             <span className="block sm:inline">Tu proyecto ha sido activado. Ahora puedes desplegarlo en Mainnet.</span>
           </div>
-        )}
-
-        {error && (
-            <div className="bg-red-500/20 border border-red-500 text-red-300 px-4 py-3 rounded-lg relative mb-8" role="alert">
-                <strong className="font-bold">Error: </strong>
-                <span className="block sm:inline">{error}</span>
-            </div>
         )}
 
         <div className="flex justify-between items-center mb-8">
@@ -117,14 +73,15 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
                       Desplegar en Mainnet
                     </Link>
                   ) : (
-                    // --- BOTÓN DE PAGO ACTUALIZADO ---
-                    <button
-                      onClick={() => handlePayment(project.id)}
-                      disabled={loadingProjectId === project.id}
-                      className="w-full text-center bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-md transition-colors disabled:bg-gray-500"
+                    /**
+                     * ✅ CORRECCIÓN: Reemplazamos el botón de pago por un enlace a la página de despliegue.
+                     */
+                    <Link
+                      href={`/deploy/${project.id}`}
+                      className="w-full block text-center bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-md transition-colors"
                     >
-                      {loadingProjectId === project.id ? 'Procesando...' : 'Activar con Pago'}
-                    </button>
+                      Activar y Desplegar
+                    </Link>
                   )}
                 </div>
               </div>
