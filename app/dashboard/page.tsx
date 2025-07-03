@@ -4,15 +4,6 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardClient } from '@/components/DashboardClient';
 
-// La interfaz del proyecto no cambia
-interface Project {
-  id: number;
-  name: string;
-  ticker: string;
-  logo_url: string | null;
-  is_paid: boolean;
-}
-
 export default async function DashboardPage({ searchParams }: { searchParams: { payment: string } }) {
   const supabase = createClient();
 

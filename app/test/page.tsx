@@ -3,12 +3,25 @@
 
 import { useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+// 1. Importa los tipos necesarios de Supabase
+import type { AuthError, AuthResponse } from '@supabase/supabase-js';
+
+/**
+ * 2. Define una interfaz para el estado del resultado.
+ * Esto describe la forma del objeto que devuelven las funciones de auth,
+ * que siempre tienen una propiedad `data` y una `error`.
+ */
+interface ResultState {
+  data: AuthResponse['data'] | null;
+  error: AuthError | null;
+}
 
 export default function TestSupabasePage() {
-  const supabase = createClient(); // <-- ESTA ES LA LÍNEA QUE FALTABA
+  const supabase = createClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [result, setResult] = useState<any>(null);
+  // 3. Usa la nueva interfaz en el estado en lugar de 'any'
+  const [result, setResult] = useState<ResultState | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
@@ -25,8 +38,9 @@ export default function TestSupabasePage() {
   const handleGetUser = async () => {
     setLoading(true);
     setResult(null);
-    const { data, error } = await supabase.auth.getUser();
-    setResult({ data, error });
+    const { data: { user }, error } = await supabase.auth.getUser();
+    // Adaptamos el resultado para que coincida con la estructura de `ResultState`
+    setResult({ data: { user } as AuthResponse['data'], error });
     setLoading(false);
   }
 

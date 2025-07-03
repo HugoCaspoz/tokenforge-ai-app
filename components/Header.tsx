@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { useRouter, usePathname } from 'next/navigation'; // <-- 1. Importa usePathname
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useRouter, usePathname } from 'next/navigation';
+import { Bars3Icon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
@@ -19,9 +18,8 @@ export const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const pathname = usePathname(); // <-- 2. Obtiene la ruta actual
+  const pathname = usePathname();
 
-  // 3. Define la condición para mostrar el botón
   const showWalletButton = pathname.startsWith('/dashboard');
 
   useEffect(() => {
@@ -38,7 +36,8 @@ export const Header = () => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+    // ✅ CORRECCIÓN: Dependencia añadida para eliminar la advertencia.
+  }, [supabase.auth]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -80,7 +79,6 @@ export const Header = () => {
         </div>
         
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
-          {/* 4. Muestra el botón solo si la condición es verdadera */}
           {showWalletButton && <ConnectWallet />}
 
           {user ? (
@@ -88,7 +86,13 @@ export const Header = () => {
               <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
                 Dashboard
               </Link>
-              {/* ... resto del código del usuario ... */}
+              {/* ✅ CORRECCIÓN: Botón añadido que usa la función handleSignOut */}
+              <button
+                onClick={handleSignOut}
+                className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400"
+              >
+                Cerrar Sesión
+              </button>
             </>
           ) : (
             <Link href="/login" className="text-sm font-semibold leading-6 text-white bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
@@ -101,26 +105,26 @@ export const Header = () => {
       {/* Panel del Menú Móvil */}
       {mobileMenuOpen && (
         <div className="lg:hidden" role="dialog" aria-modal="true">
-          {/* ... */}
           <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-gray-900 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-white/10">
-            {/* ... */}
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-gray-500/25">
                 <div className="space-y-2 py-6">
                   {/* ... */}
                 </div>
                 <div className="py-6 space-y-4">
-                  {/* 5. Muestra el botón en móvil solo si la condición es verdadera */}
                   {showWalletButton && <ConnectWallet />}
-
                   {user ? (
-                    <>
-                      {/* ... */}
-                    </>
+                    // ✅ CORRECCIÓN: Botón añadido también al menú móvil
+                    <button
+                      onClick={handleSignOut}
+                      className="block w-full text-left rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-300 hover:bg-gray-800"
+                    >
+                      Cerrar Sesión
+                    </button>
                   ) : (
                     <Link
                       href="/login"
-                      // ...
+                      className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
                     >
                       Iniciar Sesión
                     </Link>
