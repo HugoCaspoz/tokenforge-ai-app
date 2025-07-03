@@ -1,10 +1,8 @@
-// En: frontend/components/DashboardClient.tsx
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
 
-// 1. Añade los nuevos campos a la interfaz del Proyecto.
 interface Project {
   id: number;
   name: string;
@@ -20,11 +18,10 @@ interface DashboardClientProps {
   paymentSuccess: boolean;
 }
 
-// 2. Un objeto para ayudarnos a construir los enlaces al explorador de bloques.
 const explorers = {
-  '0x89': 'https://polygonscan.com', // Polygon
-  '0x38': 'https://bscscan.com',     // BNB Chain
-  '0x1':  'https://etherscan.io',    // Ethereum
+  '0x89': 'https://polygonscan.com',
+  '0x38': 'https://bscscan.com',
+  '0x1':  'https://etherscan.io',
 };
 
 export function DashboardClient({ projects, paymentSuccess }: DashboardClientProps) {
@@ -52,13 +49,26 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
               <div key={project.id} className={`bg-gray-800 rounded-lg p-4 flex flex-col ring-1 ${project.contract_address ? 'ring-blue-500' : project.is_paid ? 'ring-green-500' : 'ring-white/10'}`}>
                 
                 <div className="relative w-full text-center">
-                  {/* Etiqueta de estado visual */}
                   {project.contract_address ? (
                       <span className="absolute -top-6 -right-6 text-xs bg-blue-500 text-white font-bold px-2 py-1 rounded-full z-10">DESPLEGADO</span>
                   ) : project.is_paid && (
                       <span className="absolute -top-6 -right-6 text-xs bg-green-500 text-white font-bold px-2 py-1 rounded-full z-10">PAGADO</span>
                   )}
-                  {/* ... (código del logo) ... */}
+
+                  {/* ✅ CORRECCIÓN: El código para mostrar el logo se ha añadido de nuevo aquí. */}
+                  <div className="w-24 h-24 mb-4 rounded-full bg-gray-700 flex items-center justify-center mx-auto overflow-hidden">
+                    {project.logo_url ? (
+                      <Image
+                        src={project.logo_url}
+                        alt={`Logo de ${project.name}`}
+                        width={96}
+                        height={96}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <span className="text-4xl">🪙</span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="text-center flex-grow">
@@ -67,9 +77,7 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
                 </div>
                 
                 <div className="mt-4 w-full">
-                  {/* ✅ 3. Lógica de 3 ESTADOS para los botones */}
                   {project.contract_address && project.chain_id ? (
-                    // ESTADO: YA DESPLEGADO
                     <a 
                       href={`${explorers[project.chain_id as keyof typeof explorers]}/address/${project.contract_address}`}
                       target="_blank"
@@ -79,12 +87,10 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
                       Ver en Explorador
                     </a>
                   ) : project.is_paid ? (
-                    // ESTADO: PAGADO, LISTO PARA DESPLEGAR
                     <Link href={`/deploy/${project.id}`} className="block w-full text-center bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-md transition-colors">
                       Desplegar en Mainnet
                     </Link>
                   ) : (
-                    // ESTADO: NO PAGADO
                     <Link href={`/deploy/${project.id}`} className="w-full block text-center bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-md transition-colors">
                       Activar y Desplegar
                     </Link>
