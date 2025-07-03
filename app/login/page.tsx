@@ -2,7 +2,7 @@
 'use client';
 
 import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared'; // Cambio aquí, usa la versión de React
+import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -14,7 +14,6 @@ export default function LoginPage() {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
-        // Este listener es la forma más fiable de redirigir tras el login.
         router.push('/dashboard');
         router.refresh(); 
       }
@@ -37,9 +36,11 @@ export default function LoginPage() {
           theme="dark"
           providers={['github']}
           socialLayout="horizontal"
-          // Apuntamos a la ruta de callback para el flujo de OAuth (GitHub)
-          // El listener de arriba se encargará de la redirección final.
-          redirectTo={`${location.origin}/auth/callback`}
+          /**
+           * ✅ CORRECCIÓN: Reemplazamos `location.origin` por una variable de entorno.
+           * Esto funciona de forma segura tanto en el servidor como en el cliente.
+           */
+          redirectTo={`${process.env.NEXTAUTH_URL}/auth/callback`}
         />
       </div>
     </div>
