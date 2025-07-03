@@ -4,32 +4,38 @@
 import Link from 'next/link';
 import Image from 'next/image';
 
-// No necesitamos Stripe aquí, se elimina la lógica de pago.
-
+// 1. Añade los nuevos campos a la interfaz del Proyecto.
 interface Project {
   id: number;
   name: string;
   ticker: string;
   logo_url: string | null;
   is_paid: boolean;
+  contract_address: string | null;
+  chain_id: string | null;
 }
 
 interface DashboardClientProps {
-  projects: Project[] | null;
+  projects: Project[];
   paymentSuccess: boolean;
 }
 
-export function DashboardClient({ projects, paymentSuccess }: DashboardClientProps) {
-  // Ya no necesitamos estados de 'loading' o 'error' para el pago en este componente.
+// 2. Un objeto para ayudarnos a construir los enlaces al explorador de bloques.
+const explorers = {
+  '0x89': 'https://polygonscan.com', // Polygon
+  '0x38': 'https://bscscan.com',     // BNB Chain
+  '0x1':  'https://etherscan.io',    // Ethereum
+};
 
+export function DashboardClient({ projects, paymentSuccess }: DashboardClientProps) {
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-32">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {paymentSuccess && (
           <div className="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-lg relative mb-8" role="alert">
-            <strong className="font-bold">¡Pago completado! </strong>
-            <span className="block sm:inline">Tu proyecto ha sido activado. Ahora puedes desplegarlo en Mainnet.</span>
+            <strong className="font-bold">¡Pago completado!</strong>
+            <span className="block sm:inline"> Tu proyecto ha sido activado.</span>
           </div>
         )}
 
@@ -43,43 +49,43 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {projects && projects.length > 0 ? (
             projects.map((project) => (
-              <div key={project.id} className={`bg-gray-800 rounded-lg p-4 flex flex-col ring-1 ${project.is_paid ? 'ring-green-500' : 'ring-white/10'}`}>
+              <div key={project.id} className={`bg-gray-800 rounded-lg p-4 flex flex-col ring-1 ${project.contract_address ? 'ring-blue-500' : project.is_paid ? 'ring-green-500' : 'ring-white/10'}`}>
+                
                 <div className="relative w-full text-center">
-                  {project.is_paid && (
-                    <span className="absolute -top-6 -right-6 text-xs bg-green-500 text-white font-bold px-2 py-1 rounded-full z-10">PAGADO</span>
+                  {/* Etiqueta de estado visual */}
+                  {project.contract_address ? (
+                      <span className="absolute -top-6 -right-6 text-xs bg-blue-500 text-white font-bold px-2 py-1 rounded-full z-10">DESPLEGADO</span>
+                  ) : project.is_paid && (
+                      <span className="absolute -top-6 -right-6 text-xs bg-green-500 text-white font-bold px-2 py-1 rounded-full z-10">PAGADO</span>
                   )}
-                  <div className="w-24 h-24 mb-4 rounded-full bg-gray-700 flex items-center justify-center mx-auto overflow-hidden">
-                    {project.logo_url ? (
-                      <Image
-                        src={project.logo_url}
-                        alt={`Logo de ${project.name}`}
-                        width={96}
-                        height={96}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <span className="text-4xl">🪙</span>
-                    )}
-                  </div>
+                  {/* ... (código del logo) ... */}
                 </div>
+
                 <div className="text-center flex-grow">
                   <h2 className="text-lg font-bold">{project.name}</h2>
                   <p className="text-sm text-gray-400 bg-gray-700 px-2 py-1 rounded-full mt-1 inline-block">${project.ticker.toUpperCase()}</p>
                 </div>
                 
                 <div className="mt-4 w-full">
-                  {project.is_paid ? (
+                  {/* ✅ 3. Lógica de 3 ESTADOS para los botones */}
+                  {project.contract_address && project.chain_id ? (
+                    // ESTADO: YA DESPLEGADO
+                    <a 
+                      href={`${explorers[project.chain_id as keyof typeof explorers]}/address/${project.contract_address}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full text-center bg-gray-600 hover:bg-gray-500 text-white font-semibold py-2 rounded-md transition-colors"
+                    >
+                      Ver en Explorador
+                    </a>
+                  ) : project.is_paid ? (
+                    // ESTADO: PAGADO, LISTO PARA DESPLEGAR
                     <Link href={`/deploy/${project.id}`} className="block w-full text-center bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-md transition-colors">
                       Desplegar en Mainnet
                     </Link>
                   ) : (
-                    /**
-                     * ✅ CORRECCIÓN: Reemplazamos el botón de pago por un enlace a la página de despliegue.
-                     */
-                    <Link
-                      href={`/deploy/${project.id}`}
-                      className="w-full block text-center bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-md transition-colors"
-                    >
+                    // ESTADO: NO PAGADO
+                    <Link href={`/deploy/${project.id}`} className="w-full block text-center bg-green-600 hover:bg-green-500 text-white font-semibold py-2 rounded-md transition-colors">
                       Activar y Desplegar
                     </Link>
                   )}
