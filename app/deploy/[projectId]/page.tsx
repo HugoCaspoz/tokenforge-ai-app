@@ -1,4 +1,4 @@
-// En: frontend/app/api/deploy/[projectId]/page.tsx
+// En: frontend/app/deploy/[projectId]/page.tsx
 // ¡Este archivo ya está correcto! No necesita cambios.
 
 import { createClient } from '@/utils/supabase/server';

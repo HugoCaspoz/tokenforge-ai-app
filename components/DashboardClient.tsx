@@ -113,7 +113,7 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
                 
                 <div className="mt-4 w-full">
                   {project.is_paid ? (
-                    <Link href={`/api/deploy/${project.id}`} className="block w-full text-center bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-md transition-colors">
+                    <Link href={`/deploy/${project.id}`} className="block w-full text-center bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 rounded-md transition-colors">
                       Desplegar en Mainnet
                     </Link>
                   ) : (

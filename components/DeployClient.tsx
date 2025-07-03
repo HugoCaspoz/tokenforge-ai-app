@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ProjectForDeploy } from '@/app/api/deploy/[projectId]/page';
+import { ProjectForDeploy } from '@/app/deploy/[projectId]/page';
 import { ConnectWallet } from './ConnectWallet'; // Importa el botón
 import { useAccount } from 'wagmi'; // Importa el hook de wagmi
 
@@ -37,7 +37,7 @@ export function DeployClient({ project }: { project: ProjectForDeploy }) {
     setError('');
 
     try {
-      const response = await fetch('/api/deploy/mainnet', {
+      const response = await fetch('/deploy/mainnet', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

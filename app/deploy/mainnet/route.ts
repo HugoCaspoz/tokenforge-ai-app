@@ -1,4 +1,4 @@
-// En: frontend/app/api/deploy/mainnet/route.ts
+// En: frontend/app/deploy/mainnet/route.ts
 
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
