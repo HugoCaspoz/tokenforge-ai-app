@@ -1,9 +1,9 @@
-// En: frontend/app/layout.tsx
-
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/Header"; // <--- IMPORTA TU HEADER
+import { Header } from "@/components/Header";
+import { Providers } from "./providers"; // <-- 1. IMPORTA EL PROVEEDOR
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,8 +19,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
+        <Providers> {/* <-- 2. ENVUELVE TODO CON PROVIDERS */}
           <Header />
           {children}
+        </Providers>
       </body>
     </html>
   );

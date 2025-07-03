@@ -11,17 +11,23 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@reown/appkit": "^1.7.12",
+    "@reown/appkit-adapter-wagmi": "^1.7.12",
     "@stripe/stripe-js": "^7.4.0",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
     "@supabase/ssr": "^0.6.1",
+    "@tanstack/react-query": "^5.81.5",
+    "@wagmi/core": "^2.17.3",
     "ethers": "^6.14.4",
     "framer-motion": "^12.20.1",
     "next": "15.3.4",
     "openai": "^5.8.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "stripe": "^18.2.1"
+    "stripe": "^18.2.1",
+    "viem": "^2.31.6",
+    "wagmi": "^2.15.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -31,6 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
+    "pino-pretty": "^13.0.0",
     "supabase": "^2.26.9",
     "tailwindcss": "^4",
     "typescript": "^5"

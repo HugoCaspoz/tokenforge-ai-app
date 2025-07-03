@@ -1,28 +1,27 @@
 // En: frontend/app/login/page.tsx
 'use client';
+
 import { Auth } from '@supabase/auth-ui-react';
-import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { ThemeSupa } from '@supabase/auth-ui-shared'; // Cambio aquí, usa la versión de React
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function LoginPage() {
-  const supabase = createClient(); // <-- ESTA ES LA LÍNEA QUE FALTABA
+  const supabase = createClient();
   const router = useRouter();
 
-  // Usamos useEffect para registrar el listener cuando el componente se monta
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN') {
-        // Redirige al usuario al dashboard después de iniciar sesión.
+        // Este listener es la forma más fiable de redirigir tras el login.
         router.push('/dashboard');
-        router.refresh(); // Refresca la página para asegurar que el estado del servidor se actualiza
+        router.refresh(); 
       }
     });
 
-    // Limpiamos el listener cuando el componente se desmonta
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, [router, supabase]);
 
@@ -38,8 +37,9 @@ export default function LoginPage() {
           theme="dark"
           providers={['github']}
           socialLayout="horizontal"
-          // Opcional: redirige al usuario si ya ha iniciado sesión
-          redirectTo={`${window.location.origin}/dashboard`}
+          // Apuntamos a la ruta de callback para el flujo de OAuth (GitHub)
+          // El listener de arriba se encargará de la redirección final.
+          redirectTo={`${location.origin}/auth/callback`}
         />
       </div>
     </div>

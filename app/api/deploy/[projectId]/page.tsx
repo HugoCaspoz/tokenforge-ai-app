@@ -1,6 +1,7 @@
-// En: frontend/app/deploy/[projectId]/page.tsx
+// En: frontend/app/api/deploy/[projectId]/page.tsx
+// ¡Este archivo ya está correcto! No necesita cambios.
+
 import { createClient } from '@/utils/supabase/server';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { DeployClient } from '@/components/DeployClient';
 
@@ -11,9 +12,9 @@ export interface ProjectForDeploy {
   supply: number | null;
 }
 
+// Esta firma de función ya es la correcta, por eso no da error.
 export default async function DeployPage({ params }: { params: { projectId: string } }) {
-  const cookieStore = cookies();
-  const supabase = createClient(cookieStore);
+  const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {

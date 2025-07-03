@@ -1,9 +1,10 @@
 // En: frontend/app/dashboard/page.tsx
-import { createClient } from '@/utils/supabase/server'
-import { cookies } from 'next/headers' // <-- Necesitamos importar cookies aquí
+
+import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { DashboardClient } from '@/components/DashboardClient';
 
+// La interfaz del proyecto no cambia
 interface Project {
   id: number;
   name: string;
@@ -13,8 +14,7 @@ interface Project {
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams: { payment: string } }) {
-  const cookieStore = cookies() // <-- Obtenemos el cookie store
-  const supabase = createClient(cookieStore); // <-- Se lo pasamos al cliente
+  const supabase = createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -32,7 +32,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: { 
     console.error('Error fetching projects:', error);
   }
   
-  const paymentSuccess = searchParams.payment === 'success';
+  const paymentSuccess = searchParams?.payment === 'success';
 
+  // Pasamos los datos al componente de cliente para que los renderice.
   return <DashboardClient projects={projects || []} paymentSuccess={paymentSuccess} />;
 }

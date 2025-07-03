@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image'; // <--- CAMBIO AQUÍ
+import Image from 'next/image';
 import type { TokenData } from '../Wizard';
 
 interface Step2Props {
@@ -13,32 +13,45 @@ interface Step2Props {
 
 export default function Step2_Design({ tokenData, onDataChange, onComplete }: Step2Props) {
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
-  const handleGenerateLogo = async () => {
+  const handleGenerateAndStoreLogo = async () => {
     setIsLoading(true);
     setError('');
     
     try {
-      const response = await fetch('/api/generate/logo', {
+      // --- PASO A: Generar el logo con DALL-E ---
+      setLoadingMessage('Generando logo con IA...');
+      const dallEResponse = await fetch('/api/generate/logo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: tokenData.name, description: tokenData.description }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Error al conectar con la API de generación de logos.');
-      }
-      
-      const data = await response.json();
-      if (data.error) throw new Error(data.error);
-      
-      setLogoUrl(data.logoUrl);
-      onDataChange({ logoUrl: data.logoUrl });
+      const dallEData = await dallEResponse.json();
+      if (dallEData.error) throw new Error(dallEData.error);
+      const tempLogoUrl = dallEData.logoUrl;
 
-    } catch (err) { // <--- CAMBIO AQUÍ
+      // --- PASO B: Subir el logo a nuestro almacenamiento ---
+      setLoadingMessage('Guardando logo permanentemente...');
+      const storageResponse = await fetch('/api/storage/upload-logo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ imageUrl: tempLogoUrl, projectId: tokenData.id }),
+      });
+
+      const storageData = await storageResponse.json();
+      if (storageData.error) throw new Error(storageData.error);
+
+      const permanentLogoUrl = storageData.permanentUrl;
+      
+      // Actualizamos el estado para mostrar el logo y guardamos en el estado global
+      setLogoUrl(permanentLogoUrl);
+      onDataChange({ logoUrl: permanentLogoUrl });
+
+    } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -46,6 +59,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
       }
     } finally {
       setIsLoading(false);
+      setLoadingMessage('');
     }
   };
 
@@ -62,8 +76,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
 
       {logoUrl ? (
         <div className="text-center">
-            <h3 className="text-lg font-semibold text-green-300 mb-4">¡Logo generado!</h3>
-            {/* CAMBIO AQUÍ */}
+            <h3 className="text-lg font-semibold text-green-300 mb-4">¡Logo guardado!</h3>
             <Image 
               src={logoUrl} 
               alt={`Logo de ${tokenData.name}`} 
@@ -81,11 +94,11 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
         </div>
       ) : (
         <button 
-          onClick={handleGenerateLogo}
+          onClick={handleGenerateAndStoreLogo}
           className="w-full px-6 py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 transition-colors disabled:bg-gray-500"
           disabled={isLoading}
         >
-          {isLoading ? 'Creando logo con DALL·E...' : '✨ Generar Logo con IA'}
+          {isLoading ? loadingMessage : '✨ Generar y Guardar Logo con IA'}
         </button>
       )}
 

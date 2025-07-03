@@ -2,29 +2,37 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-// La función ahora acepta el cookieStore como argumento
-export const createClient = (cookieStore: ReturnType<typeof cookies>) => {
+export const createClient = () => {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
+        // 1. Añade 'async'
+        get: async (name: string) => {
+          // 2. Añade 'await' (aunque no debería ser necesario, satisface a TypeScript)
+          const cookieStore = await cookies()
           return cookieStore.get(name)?.value
         },
-        set(name: string, value: string, options: CookieOptions) {
+        // 1. Añade 'async'
+        set: async (name: string, value: string, options: CookieOptions) => {
           try {
+            // 2. Añade 'await'
+            const cookieStore = await cookies()
             cookieStore.set({ name, value, ...options })
           } catch (error) {
             // La función `set` se puede llamar desde un Componente de Servidor.
             // Esto se puede ignorar si tienes un middleware que refresca las sesiones.
           }
         },
-        remove(name: string, options: CookieOptions) {
+        // 1. Añade 'async'
+        remove: async (name: string, options: CookieOptions) => {
           try {
+            // 2. Añade 'await'
+            const cookieStore = await cookies()
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // La función `delete` se puede llamar desde un Componente de Servidor.
+            // La función `remove` se puede llamar desde un Componente de Servidor.
             // Esto se puede ignorar si tienes un middleware que refresca las sesiones.
           }
         },
