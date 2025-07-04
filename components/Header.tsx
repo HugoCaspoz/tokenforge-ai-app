@@ -9,9 +9,9 @@ import { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
 import { ConnectWallet } from './ConnectWallet';
 
-const navItems = [
-  { name: 'Características', href: '/#features' },
-];
+// const navItems = [
+//   { name: 'Características', href: '/#features' },
+// ];
 
 export const Header = () => {
   const supabase = createClient();
@@ -70,13 +70,13 @@ export const Header = () => {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        <div className="hidden lg:flex lg:gap-x-12">
+        {/* <div className="hidden lg:flex lg:gap-x-12">
           {navItems.map((item) => (
             <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
               {item.name}
             </a>
           ))}
-        </div>
+        </div> */}
         
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
           {showWalletButton && <ConnectWallet />}

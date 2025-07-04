@@ -13,24 +13,24 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 const deploymentPlans = [
   {
     id: 'polygon', 
-    name: 'Plan Eficiente', 
+    name: 'Plan Basic', 
     network: 'Polygon',
-    description: 'Bajas comisiones y alta velocidad.',
-    priceId: 'price_1Rgie3Is18b5tpWUjWBPkHG4',
+    description: 'Despliegue eficiente y económico.',
+    priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n',
   },
   {
     id: 'bnb', 
-    name: 'Plan Rendimiento',
+    name: 'Plan Pro',
     network: 'BNB Chain',
     description: 'Acceso a un ecosistema masivo.', 
-    priceId: 'price_1RgieUIs18b5tpWUeJ1KKoGT',
+    priceId: 'price_1Rh3yDIs18b5tpWUURBZbdKO',
   },
   {
     id: 'ethereum', 
-    name: 'Plan Máxima Seguridad', 
+    name: 'Plan Advanced', 
     network: 'Ethereum',
-    description: 'La red más segura y prestigiosa.', 
-    priceId: 'price_1RgieqIs18b5tpWUAdb8nzpO',
+    description: 'Máxima seguridad y prestigio.', 
+    priceId: 'price_1Rh3ygIs18b5tpWU9hTeI2xx',
   },
 ];
 
