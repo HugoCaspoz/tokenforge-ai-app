@@ -66,7 +66,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-2">Paso 2: Diseño Automático</h2>
-      <p className="text-gray-400 mb-6">Basado en tu idea, hemos definido lo siguiente. Ahora, ¡vamos a crearle un logo!</p>
+      <p className="text-gray-400 mb-6">Basado en tu idea, hemos definido lo siguiente. Ahora, ¡vamos a crear un logo!</p>
       
       <div className="mb-6 p-4 bg-gray-900 rounded-md border border-gray-700">
         <p><strong>Nombre:</strong> {tokenData.name}</p>
