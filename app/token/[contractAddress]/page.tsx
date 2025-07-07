@@ -2,15 +2,10 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
-import { AirdropClient } from '@/components/AirdropClient'; // Crearemos este componente a continuación
+import { AirdropClient } from '@/components/AirdropClient';
 
-// Definimos la información que pasaremos al componente
-export interface TokenForAirdrop {
-  contract_address: string;
-  chain_id: string;
-  name: string;
-  ticker: string;
-}
+// Esta interfaz ya no es necesaria aquí, ya que pasamos las props directamente.
+// export interface TokenForAirdrop { ... }
 
 export default async function ManageTokenPage({ params }: { params: { contractAddress: string } }) {
   const supabase = createClient();
@@ -36,7 +31,16 @@ export default async function ManageTokenPage({ params }: { params: { contractAd
   return (
     <div className="min-h-screen bg-gray-900 text-white flex justify-center p-4 pt-32">
       <main className="w-full max-w-2xl">
-        <AirdropClient token={project as TokenForAirdrop} />
+        {/* ✅ CORRECCIÓN: Pasamos las props de la forma que AirdropClient espera.
+          - contractAddress viene de la URL (params).
+          - tokenSymbol viene del 'ticker' del proyecto.
+          - tokenDecimals se asume como 18, que es el estándar para la mayoría de tokens.
+        */}
+        <AirdropClient 
+          contractAddress={params.contractAddress}
+          tokenSymbol={project.ticker}
+          tokenDecimals={18} 
+        />
       </main>
     </div>
   );
