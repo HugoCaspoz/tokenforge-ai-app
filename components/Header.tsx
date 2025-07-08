@@ -9,10 +9,6 @@ import { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
 import { ConnectWallet } from './ConnectWallet';
 
-// const navItems = [
-//   { name: 'Características', href: '/#features' },
-// ];
-
 export const Header = () => {
   const supabase = createClient();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,7 +16,8 @@ export const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  const showWalletButton = pathname.startsWith('/dashboard');
+  // La lógica para mostrar el botón de la billetera no cambia
+  const showWalletButton = pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token');
 
   useEffect(() => {
     const getSession = async () => {
@@ -36,7 +33,6 @@ export const Header = () => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-    // ✅ CORRECCIÓN: Dependencia añadida para eliminar la advertencia.
   }, [supabase.auth]);
 
   const handleSignOut = async () => {
@@ -70,13 +66,6 @@ export const Header = () => {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        {/* <div className="hidden lg:flex lg:gap-x-12">
-          {navItems.map((item) => (
-            <a key={item.name} href={item.href} className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
-              {item.name}
-            </a>
-          ))}
-        </div> */}
         
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
           {showWalletButton && <ConnectWallet />}
@@ -86,7 +75,10 @@ export const Header = () => {
               <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
                 Dashboard
               </Link>
-              {/* ✅ CORRECCIÓN: Botón añadido que usa la función handleSignOut */}
+              {/* ✅ ENLACE AÑADIDO */}
+              <Link href="/profile" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
+                Mi Perfil
+              </Link>
               <button
                 onClick={handleSignOut}
                 className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400"
@@ -109,21 +101,26 @@ export const Header = () => {
             <div className="mt-6 flow-root">
               <div className="-my-6 divide-y divide-gray-500/25">
                 <div className="space-y-2 py-6">
-                  {/* ... */}
+                  {/* Aquí irían los navItems si los tuvieras */}
                 </div>
                 <div className="py-6 space-y-4">
                   {showWalletButton && <ConnectWallet />}
                   {user ? (
-                    // ✅ CORRECCIÓN: Botón añadido también al menú móvil
-                    <button
-                      onClick={handleSignOut}
-                      className="block w-full text-left rounded-lg py-2 px-3 text-base font-semibold leading-7 text-gray-300 hover:bg-gray-800"
-                    >
-                      Cerrar Sesión
-                    </button>
+                    <>
+                      <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Dashboard</Link>
+                      {/* ✅ ENLACE AÑADIDO EN EL MENÚ MÓVIL */}
+                      <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Mi Perfil</Link>
+                      <button
+                        onClick={() => { handleSignOut(); setMobileMenuOpen(false); }}
+                        className="w-full text-left -mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
+                      >
+                        Cerrar Sesión
+                      </button>
+                    </>
                   ) : (
                     <Link
                       href="/login"
+                      onClick={() => setMobileMenuOpen(false)}
                       className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800"
                     >
                       Iniciar Sesión

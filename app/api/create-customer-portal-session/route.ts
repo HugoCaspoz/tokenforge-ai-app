@@ -1,32 +1,40 @@
-// app/api/create-customer-portal-session/route.ts
-import { NextRequest, NextResponse } from 'next/server'; // Usa NextRequest y NextResponse para el App Router
+import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { createClient } from '@/utils/supabase/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-06-30.basil', // Asegúrate de usar la versión de API que estés utilizando
-});
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-export async function POST(req: NextRequest) { // Usa la función POST para manejar solicitudes POST
+export async function POST(request: Request) {
   try {
-    const { customerId } = await req.json();
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-    if (!customerId) {
-      return NextResponse.json({ error: 'Customer ID is required.' }, { status: 400 });
+    if (!user) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
-    const session = await stripe.billingPortal.sessions.create({
-      customer: customerId,
-      return_url: `${req.nextUrl.origin}/subscription`, // URL a la que el usuario vuelve después de gestionar la suscripción
+    // Buscamos el perfil del usuario para obtener su ID de cliente de Stripe
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile || !profile.stripe_customer_id) {
+      return NextResponse.json({ error: 'No se encontró un cliente de Stripe para este usuario.' }, { status: 404 });
+    }
+
+    // Creamos una sesión en el Portal del Cliente
+    const portalSession = await stripe.billingPortal.sessions.create({
+      customer: profile.stripe_customer_id,
+      return_url: `${process.env.NEXT_PUBLIC_SITE_URL}/profile`,
     });
 
-    return NextResponse.json({ url: session.url }, { status: 200 });
-  } catch (err: any) {
-    console.error('Error al crear la sesión del portal de clientes:', err);
-    return NextResponse.json({ error: err.message || 'Error desconocido al crear la sesión del portal de clientes.' }, { status: 500 });
-  }
-}
+    return NextResponse.json({ url: portalSession.url });
 
-// Puedes añadir otros métodos HTTP si es necesario, por ejemplo, GET no se usa aquí.
-export async function GET() {
-  return NextResponse.json({ message: 'Method not allowed' }, { status: 405 });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+    console.error("Error al crear la sesión del portal:", errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
+  }
 }
