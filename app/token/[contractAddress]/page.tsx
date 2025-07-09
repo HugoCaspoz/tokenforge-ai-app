@@ -2,12 +2,14 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { AirdropClient } from '@/components/AirdropClient';
 
-// Esta interfaz define la "plantilla" de datos que le pasamos al componente cliente.
+// ✅ PASO 1: Ajusta esta interfaz para que sea EXACTAMENTE igual a la de AirdropClient.
+// Cambiamos 'ticker' por 'symbol' y añadimos 'decimals'.
 export interface TokenForAirdrop {
   contract_address: string;
   chain_id: string;
   name: string;
-  ticker: string;
+  symbol: string; 
+  decimals: number; 
 }
 
 export default async function ManageTokenPage({ params }: { params: { contractAddress: string } }) {
@@ -18,9 +20,12 @@ export default async function ManageTokenPage({ params }: { params: { contractAd
     redirect('/login');
   }
 
+  // ✅ PASO 2: Ajusta la consulta a Supabase para que pida 'symbol' y 'decimals'.
+  // Nota: Asegúrate de que tu tabla 'projects' en Supabase tiene columnas llamadas 'symbol' y 'decimals'.
+  // Si tu columna se llama 'ticker', puedes seleccionarla y renombrarla abajo.
   const { data: project, error } = await supabase
     .from('projects')
-    .select('name, ticker, chain_id, contract_address')
+    .select('name, symbol, decimals, chain_id, contract_address') 
     .eq('contract_address', params.contractAddress)
     .eq('user_id', user.id)
     .single();
@@ -30,10 +35,11 @@ export default async function ManageTokenPage({ params }: { params: { contractAd
     return redirect('/dashboard');
   }
 
-  // Creamos un objeto 'token' limpio que coincide con la interfaz que espera el componente.
+  // ✅ PASO 3: Creamos el objeto 'token' con las propiedades correctas.
   const token: TokenForAirdrop = {
     name: project.name,
-    ticker: project.ticker,
+    symbol: project.symbol!, // <-- Usamos 'symbol' en lugar de 'ticker'
+    decimals: project.decimals!, // <-- Añadimos 'decimals'
     chain_id: project.chain_id!,
     contract_address: project.contract_address!,
   };
@@ -41,9 +47,6 @@ export default async function ManageTokenPage({ params }: { params: { contractAd
   return (
     <div className="min-h-screen bg-gray-900 text-white flex justify-center p-4 pt-32">
       <main className="w-full max-w-2xl">
-        {/* ✅ CORRECCIÓN: Ahora la llamada es correcta porque el componente AirdropClient
-            espera una única prop llamada 'token' que contiene toda la información.
-        */}
         <AirdropClient token={token} />
       </main>
     </div>
