@@ -17,15 +17,31 @@ async function updateUserSubscription(subscription: Stripe.Subscription) {
   const priceId = subscription.items.data[0].price.id;
   const customerId = subscription.customer as string;
 
-  const planKey = Object.entries(PLAN_DETAILS).find(
-    ([_, plan]) => process.env[`STRIPE_${plan.id.toUpperCase()}_PRICE_ID`] === priceId
-  )?.[0] as keyof typeof PLAN_DETAILS;
+  // --- INICIO DE CÓDIGO DE DEPURACIÓN ---
+  console.log(`🟡 DEBUG: Webhook recibido para actualizar suscripción.`);
+  console.log(`🟡 DEBUG: Price ID recibido de Stripe: ${priceId}`);
+  // --- FIN DE CÓDIGO DE DEPURACIÓN ---
+
+  const planKey = Object.entries(PLAN_DETAILS).find(([key, plan]) => {
+    // Construimos el nombre de la variable de entorno que esperamos encontrar
+    const envVarName = `STRIPE_${plan.id.toUpperCase()}_PRICE_ID`;
+    // Leemos el valor de esa variable en Vercel
+    const envVarValue = process.env[envVarName];
+
+    // --- INICIO DE CÓDIGO DE DEPURACIÓN ---
+    console.log(`🟡 DEBUG: Comparando con la variable "${envVarName}". Valor en Vercel: "${envVarValue}"`);
+    // --- FIN DE CÓDIGO DE DEPURACIÓN ---
+    
+    return envVarValue === priceId;
+  })?.[0] as keyof typeof PLAN_DETAILS;
 
   if (!planKey) {
-    console.error(`Price ID ${priceId} no se encontró en las variables de entorno.`);
+    // Este mensaje ahora aparecerá si la comparación falla
+    console.error(`🔴 ERROR: No se encontró un plan que coincida con el Price ID "${priceId}". La actualización del perfil se ha detenido.`);
     return;
   }
-  
+
+  console.log(`🟢 ÉXITO: Plan encontrado: "${planKey}". Procediendo a actualizar la base de datos.`);
   const planLimits = PLAN_DETAILS[planKey].limits;
 
   await supabaseAdmin
