@@ -123,7 +123,7 @@ export function AirdropClient({ token }: AirdropClientProps) {
   if (!userHasPermission) {
     return (
       <div className="bg-red-900/20 text-red-400 p-6 rounded-lg text-center border border-red-600">
-        <p>No tienes los permisos necesarios para realizar un airdrop para este token.</p>
+        <p>No tienes los permisos necesarios para realizar un airdrop para este token</p>
       </div>
     );
   }
