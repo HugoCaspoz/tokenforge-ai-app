@@ -33,11 +33,10 @@ async function updateUserSubscription(subscription: Stripe.Subscription) {
     .update({
       plan_activo: planKey,
       is_subscribed: true,
-      subscripcion_activa_hasta: new Date(subscription.current_period_end * 1000).toISOString(),
+      subscripcion_activa_hasta: new Date((subscription as any).current_period_end * 1000).toISOString(),
       polygon_tokens_allowed: planLimits['0x89'],
       bnb_tokens_allowed: planLimits['0x38'],
       ethereum_tokens_allowed: planLimits['0x1'],
-      // Al crear o renovar, reseteamos el uso
       polygon_tokens_used: 0,
       bnb_tokens_used: 0,
       ethereum_tokens_used: 0,
