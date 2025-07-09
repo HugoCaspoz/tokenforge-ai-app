@@ -13,21 +13,21 @@ const subscriptionPlans = [
     name: 'Basic',
     description: '2 tokens en Polygon',
     price: '4,99 €/mes',
-    priceId: 'price_YOUR_BASIC_PLAN_PRICE_ID', // ✅ Reemplaza con el Price ID REAL de Stripe
+    priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n', 
   },
   {
     id: 'pro',
     name: 'Pro',
     description: '3 tokens (máx 2 en Polygon, 1 en BNB)',
     price: '9,99 €/mes',
-    priceId: 'price_YOUR_PRO_PLAN_PRICE_ID', // ✅ Reemplaza con el Price ID REAL de Stripe
+    priceId: 'price_1Rh3yDIs18b5tpWUURBZbdKO',
   },
   {
     id: 'advanced',
     name: 'Advanced',
     description: '5 tokens (máx 1 en Ethereum), extras desde 4€',
     price: '24,99 €/mes',
-    priceId: 'price_YOUR_ADVANCED_PLAN_PRICE_ID', // ✅ Reemplaza con el Price ID REAL de Stripe
+    priceId: 'price_1Rh3ygIs18b5tpWU9hTeI2xx',
   },
 ];
 

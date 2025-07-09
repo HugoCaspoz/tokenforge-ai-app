@@ -1,11 +1,14 @@
-// En: app/token/[contractAddress]/page.tsx
-
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { AirdropClient } from '@/components/AirdropClient';
 
-// Esta interfaz ya no es necesaria aquí, ya que pasamos las props directamente.
-// export interface TokenForAirdrop { ... }
+// Esta interfaz define la "plantilla" de datos que le pasamos al componente cliente.
+export interface TokenForAirdrop {
+  contract_address: string;
+  chain_id: string;
+  name: string;
+  ticker: string;
+}
 
 export default async function ManageTokenPage({ params }: { params: { contractAddress: string } }) {
   const supabase = createClient();
@@ -15,7 +18,6 @@ export default async function ManageTokenPage({ params }: { params: { contractAd
     redirect('/login');
   }
 
-  // Buscamos el proyecto que corresponde a esta dirección de contrato y a este usuario
   const { data: project, error } = await supabase
     .from('projects')
     .select('name, ticker, chain_id, contract_address')
@@ -28,19 +30,21 @@ export default async function ManageTokenPage({ params }: { params: { contractAd
     return redirect('/dashboard');
   }
 
+  // Creamos un objeto 'token' limpio que coincide con la interfaz que espera el componente.
+  const token: TokenForAirdrop = {
+    name: project.name,
+    ticker: project.ticker,
+    chain_id: project.chain_id!,
+    contract_address: project.contract_address!,
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white flex justify-center p-4 pt-32">
       <main className="w-full max-w-2xl">
-        {/* ✅ CORRECCIÓN: Pasamos las props de la forma que AirdropClient espera.
-          - contractAddress viene de la URL (params).
-          - tokenSymbol viene del 'ticker' del proyecto.
-          - tokenDecimals se asume como 18, que es el estándar para la mayoría de tokens.
+        {/* ✅ CORRECCIÓN: Ahora la llamada es correcta porque el componente AirdropClient
+            espera una única prop llamada 'token' que contiene toda la información.
         */}
-        <AirdropClient 
-          contractAddress={params.contractAddress}
-          tokenSymbol={project.ticker}
-          tokenDecimals={18} 
-        />
+        <AirdropClient token={token} />
       </main>
     </div>
   );

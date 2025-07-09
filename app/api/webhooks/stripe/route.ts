@@ -2,10 +2,12 @@
 import Stripe from 'stripe';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { PLAN_DETAILS } from '@/lib/plans'; // ✅ IMPORTANTE: Traemos la configuración de los planes
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+// ✅ Usa el rol de servicio para tener permisos de escritura en el backend
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -26,52 +28,82 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
+      // ✅ Evento principal: cuando el usuario completa el pago por primera vez
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
-        const stripeCustomerId = session.customer as string;
-        const planId = session.metadata?.planId;
+        const planKey = session.metadata?.planId as keyof typeof PLAN_DETAILS; // 'basic', 'pro', etc.
 
-        if (!userId || !stripeCustomerId || !planId) {
-          throw new Error('Faltan datos en los metadatos de la sesión.');
+        if (!userId || !planKey || !PLAN_DETAILS[planKey]) {
+          throw new Error('Faltan metadatos esenciales (userId, planId) o el plan no es válido.');
         }
 
+        // Recuperamos la suscripción completa para obtener la fecha de fin de periodo
+        const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+        const planLimits = PLAN_DETAILS[planKey].limits;
+
+        // Actualizamos el perfil del usuario con TODA la información necesaria
         await supabaseAdmin
           .from('profiles')
           .update({
-            stripe_customer_id: stripeCustomerId,
-            plan_activo: planId,
+            plan_activo: planKey,
+            is_subscribed: true,
+            subscripcion_activa_hasta: new Date(subscription.current_period_end * 1000).toISOString(),
+            // Reseteamos los límites según el nuevo plan
+            polygon_tokens_allowed: planLimits['0x89'],
+            bnb_tokens_allowed: planLimits['0x38'],
+            ethereum_tokens_allowed: planLimits['0x1'],
+            // Reseteamos el uso actual
+            polygon_tokens_used: 0,
+            bnb_tokens_used: 0,
+            ethereum_tokens_used: 0,
           })
           .eq('id', userId);
         break;
       }
+      
+      // ✅ Evento para renovaciones mensuales
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
-        const stripeCustomerId = invoice.customer as string;
-        const nuevaFechaCaducidad = new Date();
-        nuevaFechaCaducidad.setMonth(nuevaFechaCaducidad.getMonth() + 1);
+        const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
 
+        // Actualizamos la fecha de renovación y reseteamos los contadores de uso del mes
         await supabaseAdmin
           .from('profiles')
-          .update({ subscripcion_activa_hasta: nuevaFechaCaducidad.toISOString() })
-          .eq('stripe_customer_id', stripeCustomerId);
+          .update({
+            subscripcion_activa_hasta: new Date(subscription.current_period_end * 1000).toISOString(),
+            polygon_tokens_used: 0,
+            bnb_tokens_used: 0,
+            ethereum_tokens_used: 0,
+          })
+          .eq('stripe_customer_id', subscription.customer as string);
         break;
       }
-      case 'customer.subscription.deleted':
-      case 'customer.subscription.updated': {
+
+      // ✅ Evento para cuando la suscripción se cancela definitivamente
+      case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
-        if (subscription.cancel_at_period_end || subscription.status === 'canceled') {
-          const stripeCustomerId = subscription.customer as string;
-          await supabaseAdmin
-            .from('profiles')
-            .update({ plan_activo: 'free' })
-            .eq('stripe_customer_id', stripeCustomerId);
-        }
+        const freePlanLimits = PLAN_DETAILS.free.limits;
+
+        // Devolvemos al usuario al plan gratuito
+        await supabaseAdmin
+          .from('profiles')
+          .update({
+            plan_activo: 'free',
+            is_subscribed: false,
+            subscripcion_activa_hasta: null,
+            polygon_tokens_allowed: freePlanLimits['0x89'],
+            bnb_tokens_allowed: freePlanLimits['0x38'],
+            ethereum_tokens_allowed: freePlanLimits['0x1'],
+          })
+          .eq('stripe_customer_id', subscription.customer as string);
         break;
       }
     }
   } catch (dbError) {
-    return NextResponse.json({ error: 'Error de base de datos.' }, { status: 500 });
+    const errorMessage = dbError instanceof Error ? dbError.message : 'Error desconocido de base de datos.';
+    console.error('Error procesando el webhook:', errorMessage);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });
