@@ -12,31 +12,37 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// ✅ --- NUEVA FUNCIÓN GET PARA LA PRUEBA --- ✅
+// Esta función es solo para depuración.
+export async function GET(req: Request) {
+  // Este log TIENE que aparecer si la función se ejecuta.
+  console.log("🟢 PRUEBA GET: ¡El endpoint ha sido llamado manualmente desde el navegador!");
+  
+  return NextResponse.json({ 
+    status: "success",
+    message: "Prueba de GET exitosa. Revisa los logs de la función en Vercel. Deberías ver un mensaje que empieza con '🟢 PRUEBA GET'." 
+  });
+}
+
+
+// --- TU CÓDIGO ANTERIOR PARA EL WEBHOOK (POST) SE MANTIENE ---
+
 // Función auxiliar para actualizar el perfil del usuario
 async function updateUserSubscription(subscription: Stripe.Subscription) {
   const priceId = subscription.items.data[0].price.id;
   const customerId = subscription.customer as string;
 
-  // --- INICIO DE CÓDIGO DE DEPURACIÓN ---
-  console.log(`🟡 DEBUG: Webhook recibido para actualizar suscripción.`);
+  console.log(`🟡 DEBUG: Webhook POST recibido para actualizar suscripción.`);
   console.log(`🟡 DEBUG: Price ID recibido de Stripe: ${priceId}`);
-  // --- FIN DE CÓDIGO DE DEPURACIÓN ---
 
   const planKey = Object.entries(PLAN_DETAILS).find(([key, plan]) => {
-    // Construimos el nombre de la variable de entorno que esperamos encontrar
     const envVarName = `STRIPE_${plan.id.toUpperCase()}_PRICE_ID`;
-    // Leemos el valor de esa variable en Vercel
     const envVarValue = process.env[envVarName];
-
-    // --- INICIO DE CÓDIGO DE DEPURACIÓN ---
     console.log(`🟡 DEBUG: Comparando con la variable "${envVarName}". Valor en Vercel: "${envVarValue}"`);
-    // --- FIN DE CÓDIGO DE DEPURACIÓN ---
-    
     return envVarValue === priceId;
   })?.[0] as keyof typeof PLAN_DETAILS;
 
   if (!planKey) {
-    // Este mensaje ahora aparecerá si la comparación falla
     console.error(`🔴 ERROR: No se encontró un plan que coincida con el Price ID "${priceId}". La actualización del perfil se ha detenido.`);
     return;
   }
@@ -62,6 +68,7 @@ async function updateUserSubscription(subscription: Stripe.Subscription) {
 
 
 export async function POST(req: Request) {
+  console.log("🟢 WEBHOOK INVOCADO POR POST (Stripe): ¡La función ha comenzado a ejecutarse!");
   const body = await req.text();
   const signature = req.headers.get('stripe-signature');
 
@@ -70,17 +77,16 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(body, signature!, webhookSecret);
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error(`🔴 ERROR de firma de webhook: ${errorMessage}`);
     return NextResponse.json({ error: `Webhook Error: ${errorMessage}` }, { status: 400 });
   }
 
   try {
     switch (event.type) {
-      // ✅ Se usa solo para asegurar que el customer ID está en la base de datos
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.userId;
         const stripeCustomerId = session.customer as string;
-        
         if (userId && stripeCustomerId) {
           await supabaseAdmin
             .from('profiles')
@@ -89,52 +95,32 @@ export async function POST(req: Request) {
         }
         break;
       }
-
-      // ✅ Evento principal para la creación inicial y upgrades/downgrades
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription;
         await updateUserSubscription(subscription);
         break;
       }
-      
-      // ✅ Evento para renovaciones (también resetea los contadores)
       case 'invoice.payment_succeeded': {
         const invoice = event.data.object as Stripe.Invoice;
-        
         if (invoice.billing_reason === 'subscription_cycle') {
-          // La información de la suscripción (a veces es un string, a veces un objeto)
           const subscriptionData = invoice.lines.data[0]?.subscription;
-
           if (!subscriptionData) {
-            console.error('No se encontró información de la suscripción en la factura.');
             break;
           }
-
           let subscription: Stripe.Subscription;
-
-          // ✅ FIX: Comprobamos si ya tenemos el objeto completo o solo el ID (string)
           if (typeof subscriptionData === 'string') {
-            // Si es un string (ID), lo recuperamos con la API
             subscription = await stripe.subscriptions.retrieve(subscriptionData);
           } else {
-            // Si ya es un objeto, lo usamos directamente
             subscription = subscriptionData;
           }
-
-          // Si por alguna razón no tenemos la suscripción, salimos.
           if (!subscription) {
-            console.error('No se pudo obtener el objeto de la suscripción.');
             break;
           }
-          
-          // Llamamos a la función auxiliar para actualizar la base de datos
           await updateUserSubscription(subscription);
         }
         break;
       }
-
-      // ✅ Evento para cuando la suscripción se cancela definitivamente
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription;
         const freePlanLimits = PLAN_DETAILS.free.limits;
