@@ -13,11 +13,19 @@ const supabaseAdmin = createClient(
 );
 
 // ✅ --- FUNCIÓN CORREGIDA --- ✅
-// Ahora la función recibe solo el ID de suscripción y lo busca en la API de Stripe
 async function updateUserSubscription(subscriptionId: string) {
   try {
-    // CORRECCIÓN: Usamos `as Stripe.Subscription` para un tipado correcto
-    const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as Stripe.Subscription;
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['plan.product'], // Esto asegura que la información completa esté disponible
+    }) as Stripe.Subscription;
+
+    // ✅ CORRECCIÓN: Usamos un tipo de aserción para asegurar que la propiedad existe
+    const currentPeriodEnd = (subscription as any).current_period_end;
+
+    if (currentPeriodEnd === undefined) {
+      console.error('🔴 ERROR: current_period_end no se encuentra en el objeto de suscripción.');
+      return false;
+    }
 
     const priceId = subscription.items.data[0].price.id;
     const customerId = subscription.customer as string;
@@ -36,7 +44,7 @@ async function updateUserSubscription(subscriptionId: string) {
       .from('profiles')
       .update({
         plan_activo: plan.name,
-        subscripcion_activa_hasta: new Date(subscription.current_period_end * 1000).toISOString(),
+        subscripcion_activa_hasta: new Date(currentPeriodEnd * 1000).toISOString(),
       })
       .eq('stripe_customer_id', customerId);
 
