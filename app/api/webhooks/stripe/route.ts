@@ -4,6 +4,33 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { PLAN_DETAILS } from '@/lib/plans';
 
+const handleSubscriptionEvent = async (stripeCustomerId: string, priceId: string | null) => {
+    // Busca el plan en tus variables de entorno por el Price ID
+    const planKey = Object.keys(process.env).find(key => 
+        (process.env[key] === priceId) && key.includes('_PRICE_ID')
+    );
+    const planName = planKey ? planKey.replace('_PRICE_ID', '').toLowerCase() : 'free';
+    
+    // Si se encuentra un plan, actualiza la base de datos
+    if (planName !== 'free') {
+        const { data, error } = await supabaseAdmin
+            .from('profiles')
+            .update({
+                plan_activo: planName,
+                is_subscribed: true,
+            })
+            .eq('stripe_customer_id', stripeCustomerId); // <-- Usa el customer ID para encontrar al usuario
+        
+        if (error) {
+            console.error('🔴 ERROR al actualizar la suscripción en Supabase:', error);
+            return false;
+        }
+        console.log(`🟢 ÉXITO: Usuario con Stripe ID ${stripeCustomerId} actualizado a plan ${planName}`);
+        return true;
+    }
+    return false;
+};
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -83,62 +110,49 @@ export async function POST(req: Request) {
 
   try {
     switch (event.type) {
-      case 'checkout.session.completed': {
+    case 'checkout.session.completed':
         const session = event.data.object as Stripe.Checkout.Session;
-          console.log('🟡 DEBUG: Metadata completa de la sesión:', session.metadata); 
-        const userId = session.metadata?.userId;
+        const userId = session.metadata?.userId as string;
         const stripeCustomerId = session.customer as string;
+
         if (userId && stripeCustomerId) {
-          await supabaseAdmin
-            .from('profiles')
-            .update({ stripe_customer_id: stripeCustomerId })
-            .eq('id', userId);
+            // Primero, asegúrate de que el stripe_customer_id se guarde en tu base de datos.
+            await supabaseAdmin
+                .from('profiles')
+                .update({ stripe_customer_id: stripeCustomerId })
+                .eq('id', userId);
+
+            // Luego, si hay un precio, llama a la función de actualización
+            const priceId = session.line_items?.data[0].price?.id as string;
+            if (priceId) {
+                await handleSubscriptionEvent(stripeCustomerId, priceId);
+            }
         }
         break;
-      }
-      case 'customer.subscription.created':
-      case 'customer.subscription.updated': {
+
+    case 'customer.subscription.created':
+    case 'customer.subscription.updated':
         const subscription = event.data.object as Stripe.Subscription;
-        await updateUserSubscription(subscription);
+        await handleSubscriptionEvent(
+            subscription.customer as string,
+            subscription.items.data[0].price.id
+        );
         break;
-      }
-      case 'invoice.payment_succeeded': {
-        const invoice = event.data.object as Stripe.Invoice;
-        if (invoice.billing_reason === 'subscription_cycle') {
-          const subscriptionData = invoice.lines.data[0]?.subscription;
-          if (!subscriptionData) {
-            break;
-          }
-          let subscription: Stripe.Subscription;
-          if (typeof subscriptionData === 'string') {
-            subscription = await stripe.subscriptions.retrieve(subscriptionData);
-          } else {
-            subscription = subscriptionData;
-          }
-          if (!subscription) {
-            break;
-          }
-          await updateUserSubscription(subscription);
-        }
-        break;
-      }
-      case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription;
-        const freePlanLimits = PLAN_DETAILS.free.limits;
+
+    case 'customer.subscription.deleted':
+        const deletedSubscription = event.data.object as Stripe.Subscription;
         await supabaseAdmin
-          .from('profiles')
-          .update({
-            plan_activo: 'free',
-            is_subscribed: false,
-            subscripcion_activa_hasta: null,
-            polygon_tokens_allowed: freePlanLimits['0x89'],
-            bnb_tokens_allowed: freePlanLimits['0x38'],
-            ethereum_tokens_allowed: freePlanLimits['0x1'],
-          })
-          .eq('stripe_customer_id', subscription.customer as string);
+            .from('profiles')
+            .update({
+                plan_activo: 'free',
+                is_subscribed: false
+            })
+            .eq('stripe_customer_id', deletedSubscription.customer as string);
         break;
-      }
-    }
+
+    default:
+        console.log(`Evento no manejado: ${event.type}`);
+}
   } catch (dbError) {
     const errorMessage = dbError instanceof Error ? dbError.message : 'Error procesando el webhook.';
     console.error(errorMessage, dbError);
