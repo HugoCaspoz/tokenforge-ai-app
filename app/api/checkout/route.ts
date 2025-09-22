@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@/utils/supabase/server';
+import { createClient } from '@/utils/supabase/server'; // Revisa que esta importación sea la correcta
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -8,18 +8,22 @@ export async function POST(request: Request) {
   try {
     const { projectId, priceId, planId } = await request.json();
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (authError || !user) {
+      console.error('🔴 ERROR de autenticación en la ruta checkout:', authError);
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
+    
+    console.log('🟢 Usuario autenticado en el servidor:', user.id);
 
     // ✅ Lógica para encontrar o crear un cliente de Stripe
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
-      .select('stripe_customer_id')
-      .eq('id', user.id)
-      .single();
+    .select('stripe_customer_id')
+    .eq('id', user.id)
+    .single();
 
     if (profileError) {
       console.error('🔴 ERROR al obtener el perfil de Supabase:', profileError);
@@ -50,7 +54,7 @@ export async function POST(request: Request) {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
-      customer: customerId, // ✅ Usamos el ID de cliente en lugar del email
+      customer: customerId,
       success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?payment=success`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`,
       metadata: {
