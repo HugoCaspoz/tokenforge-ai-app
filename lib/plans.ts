@@ -46,3 +46,8 @@ export const PLAN_DETAILS = {
     },
   },
 };
+export const NETWORK_NAMES = {
+  '0x89': 'Polygon',
+  '0x38': 'BNB Chain',
+  '0x1': 'Ethereum',
+};
