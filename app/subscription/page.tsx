@@ -83,6 +83,7 @@ export default function SubscriptionPage() {
     }
 
     try {
+        console.log('🟡 DEBUG: El ID del usuario en el frontend es:', user.id);
       // Llama a tu API de checkout para crear la sesión de Stripe Checkout
       const response = await fetch('/api/checkout', {
         method: 'POST',

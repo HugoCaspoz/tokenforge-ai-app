@@ -32,7 +32,7 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
         {paymentSuccess && (
           <div className="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-lg relative mb-8" role="alert">
             <strong className="font-bold">¡Pago completado!</strong>
-            <span className="block sm:inline"> Tu proyecto ha sido activado.</span>
+            <span className="block sm:inline"> Tu subscripción ha sido activada.</span>
           </div>
         )}
 
