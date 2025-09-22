@@ -16,10 +16,9 @@ const supabaseAdmin = createClient(
 async function updateUserSubscription(subscriptionId: string) {
   try {
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-      expand: ['plan.product'], // Esto asegura que la información completa esté disponible
+      expand: ['plan.product'],
     }) as Stripe.Subscription;
 
-    // ✅ CORRECCIÓN: Usamos un tipo de aserción para asegurar que la propiedad existe
     const currentPeriodEnd = (subscription as any).current_period_end;
 
     if (currentPeriodEnd === undefined) {
@@ -80,7 +79,7 @@ export async function POST(req: Request) {
     try {
       event = stripe.webhooks.constructEvent(rawBody, signature!, webhookSecret);
     } catch (err) {
-      console.error(`🔴 ERROR de firma de webhook: ${err.message}`);
+      console.error(`🔴 ERROR de firma de webhook: ${err instanceof Error ? err.message : 'Error desconocido'}`);
       return NextResponse.json({ error: 'Firma de webhook inválida' }, { status: 400 });
     }
 
