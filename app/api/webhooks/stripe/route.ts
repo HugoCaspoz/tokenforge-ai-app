@@ -16,7 +16,8 @@ const supabaseAdmin = createClient(
 // Ahora la función recibe solo el ID de suscripción y lo busca en la API de Stripe
 async function updateUserSubscription(subscriptionId: string) {
   try {
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+    // CORRECCIÓN: Usamos `as Stripe.Subscription` para un tipado correcto
+    const subscription = (await stripe.subscriptions.retrieve(subscriptionId)) as Stripe.Subscription;
 
     const priceId = subscription.items.data[0].price.id;
     const customerId = subscription.customer as string;
