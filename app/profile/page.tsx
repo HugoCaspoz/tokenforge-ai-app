@@ -57,8 +57,8 @@ export default async function ProfilePage() {
 
   // Creamos el array de uso para pasarlo al cliente
   const usageData: NetworkUsage[] = Object.keys(planLimits).map(chainId => ({
-    networkName: NETWORK_NAMES[chainId] || 'Red Desconocida',
-    deployed: deploymentsByNetwork[chainId] || 0,
+    networkName: NETWORK_NAMES[chainId as keyof typeof NETWORK_NAMES] || 'Red Desconocida',
+    deployed: deploymentsByNetwork[chainId as keyof typeof deploymentsByNetwork] || 0,
     limit: planLimits[chainId as keyof typeof planLimits],
   }));
 
