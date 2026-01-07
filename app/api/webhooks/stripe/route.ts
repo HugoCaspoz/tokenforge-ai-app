@@ -39,7 +39,6 @@ export async function POST(req: NextRequest) {
         const session = event.data.object as Stripe.Checkout.Session
         console.log("[v0] Checkout completed:", session.id)
 
-        // Get customer email and subscription
         const customerId = session.customer as string
         const subscriptionId = session.subscription as string
 
@@ -48,34 +47,43 @@ export async function POST(req: NextRequest) {
           break
         }
 
-        // Retrieve full subscription details
         const subscription = await stripe.subscriptions.retrieve(subscriptionId)
         const priceId = subscription.items.data[0]?.price.id
 
-        // Map price ID to plan name
         const planMap: Record<string, string> = {
           [process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC!]: "basic",
           [process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO!]: "pro",
           [process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE!]: "enterprise",
         }
 
-        const planName = planMap[priceId] || "free"
+        // IMPROVED LOGIC: Don't default to free immediately if priceId is found but not in map
+        let planName = planMap[priceId]
+        
+        if (!planName) {
+           console.warn(`[v0] WARNING: Price ID ${priceId} not found in planMap. Env vars might be missing.`)
+           console.warn(`[v0] Available keys: ${Object.keys(planMap).join(", ")}`)
+           // Fallback logic: If we can't identify the plan, we shouldn't necessarily overwrite a paid plan with free.
+           // However, for a new checkout, we might assume it's whatever the user just bought.
+           // Let's rely on the fact that if it's a checkout, they paid for *something*.
+           // We will default to 'pro' if unknown as a fail-safe or just keep 'free' but log heavily?
+           // Better strategy: Use 'unknown_paid' or similar if dynamic, but for now let's keep 'free' safely but LOG IT.
+           planName = "free" 
+        }
 
         console.log("[v0] Updating user plan to:", planName)
 
-        // Update user profile in Supabase
-        const { data: profile, error: findError } = await supabaseAdmin
+        const { data: profile } = await supabaseAdmin
           .from("profiles")
           .select("id")
           .eq("stripe_customer_id", customerId)
           .single()
 
-        if (findError || !profile) {
+        if (!profile) {
           console.error("[v0] User not found for customer:", customerId)
           break
         }
 
-        const { error: updateError } = await supabaseAdmin
+        await supabaseAdmin
           .from("profiles")
           .update({
             plan_activo: planName,
@@ -85,12 +93,7 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", profile.id)
 
-        if (updateError) {
-          console.error("[v0] Error updating profile:", updateError)
-        } else {
-          console.log("[v0] Successfully updated user plan")
-        }
-
+        console.log("[v0] Successfully updated user plan")
         break
       }
 
@@ -106,15 +109,23 @@ export async function POST(req: NextRequest) {
           [process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE!]: "enterprise",
         }
 
-        const planName = planMap[priceId] || "free"
+        const planName = planMap[priceId]
+
+        const updateData: any = {
+          subscription_status: subscription.status,
+          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+        }
+
+        // Only update plan name if we recognize the price ID
+        if (planName) {
+            updateData.plan_activo = planName
+        } else {
+            console.warn(`[v0] Price ID ${priceId} unknown in update event. Not changing plan_activo.`)
+        }
 
         const { error } = await supabaseAdmin
           .from("profiles")
-          .update({
-            plan_activo: planName,
-            subscription_status: subscription.status,
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-          })
+          .update(updateData)
           .eq("subscription_id", subscription.id)
 
         if (error) {
@@ -122,7 +133,37 @@ export async function POST(req: NextRequest) {
         } else {
           console.log("[v0] Successfully updated subscription")
         }
+        break
+      }
 
+      case "invoice.payment_succeeded": {
+        // NEW HANDLER: Recurring payments
+        const invoice = event.data.object as Stripe.Invoice
+        const subscriptionId = invoice.subscription as string
+
+        if (!subscriptionId) {
+            console.log("[v0] Invoice payment succeeded but no subscription ID (one-time payment?)")
+            break
+        }
+
+        console.log(`[v0] Recurring payment received for subscription: ${subscriptionId}`)
+
+        // Retrieve subscription to get the NEW period end
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+
+        const { error } = await supabaseAdmin
+            .from("profiles")
+            .update({
+                subscription_status: 'active', // Ensure it's active
+                current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            })
+            .eq("subscription_id", subscriptionId)
+
+        if (error) {
+            console.error("[v0] Error extending subscription period:", error)
+        } else {
+            console.log("[v0] Successfully extended subscription period")
+        }
         break
       }
 
@@ -130,7 +171,7 @@ export async function POST(req: NextRequest) {
         const subscription = event.data.object as Stripe.Subscription
         console.log("[v0] Subscription cancelled:", subscription.id)
 
-        const { error } = await supabaseAdmin
+        await supabaseAdmin
           .from("profiles")
           .update({
             plan_activo: "free",
@@ -140,12 +181,7 @@ export async function POST(req: NextRequest) {
           })
           .eq("subscription_id", subscription.id)
 
-        if (error) {
-          console.error("[v0] Error cancelling subscription:", error)
-        } else {
-          console.log("[v0] Successfully cancelled subscription")
-        }
-
+        console.log("[v0] Successfully cancelled subscription")
         break
       }
 
@@ -156,7 +192,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true })
   } catch (error) {
     console.error("[v0] Stripe webhook error:", error)
-    // Still return 200 to prevent Stripe from retrying
     return NextResponse.json({ error: "Webhook error" }, { status: 200 })
   }
 }

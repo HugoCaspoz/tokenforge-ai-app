@@ -5,17 +5,21 @@ import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const supabase = createClient();
   const router = useRouter();
+  const [redirectUrl, setRedirectUrl] = useState('');
 
   useEffect(() => {
+    // Set the redirect URL safely on the client side
+    setRedirectUrl(`${window.location.origin}/auth/callback`);
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
         router.push('/dashboard');
-        router.refresh(); 
+        router.refresh();
       }
     });
 
@@ -23,6 +27,10 @@ export default function LoginPage() {
       subscription?.unsubscribe();
     };
   }, [router, supabase]);
+
+  if (!redirectUrl) {
+    return null; // Or a loading spinner
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
@@ -36,11 +44,7 @@ export default function LoginPage() {
           theme="dark"
           providers={['github']}
           socialLayout="horizontal"
-          /**
-           * ✅ CORRECCIÓN: Reemplazamos `location.origin` por una variable de entorno.
-           * Esto funciona de forma segura tanto en el servidor como en el cliente.
-           */
-          redirectTo={`${process.env.NEXTAUTH_URL}/auth/callback`}
+          redirectTo={redirectUrl}
         />
       </div>
     </div>
