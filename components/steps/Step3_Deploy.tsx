@@ -101,53 +101,48 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       return;
     }
 
-    if (!walletClient || !publicClient) {
-      setError('Por favor conecta tu wallet para desplegar.');
+    // Server-Side: We assume the admin pays gas.
+    // However, we need the user's address to assign ownership.
+    let ownerAddress = '';
+
+    if (walletClient) {
+      const addresses = await walletClient.getAddresses();
+      ownerAddress = addresses[0];
+    } else {
+      // If wallet not connected, we prompt them to connect just for the address
+      setError('Por favor conecta tu wallet para verificar tu dirección (No pagarás gas).');
+      return;
+    }
+
+    if (!ownerAddress) {
+      setError('No se pudo detectar tu dirección de wallet.');
       return;
     }
 
     setLoadingDeploy(true);
     try {
-      setStatus('Iniciando despliegue... Por favor confirma la transacción en tu wallet.');
+      setStatus('Solicitando despliegue al servidor... (Nosotros pagamos el gas ⛽)');
 
-      const hash = await walletClient.deployContract({
-        abi: TOKEN_ABI,
-        bytecode: TOKEN_BYTECODE as `0x${string}`,
-        args: [tokenData.name, tokenData.ticker, parseEther(supply.toString()), await walletClient.getAddresses().then(a => a[0])],
-      });
-
-      setStatus(`Transacción enviada: ${hash}. Esperando confirmación...`);
-
-      const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
-      if (receipt.status !== 'success') {
-        throw new Error('La transacción falló en la blockchain.');
-      }
-
-      const newContractAddress = receipt.contractAddress;
-      if (!newContractAddress) throw new Error('No se obtuvo la dirección del contrato.');
-
-      setStatus('Registrando token en la plataforma...');
-
-      // Save to DB
-      const response = await fetch('/api/record-deployment', {
+      // Call API for Server-Side Deployment
+      const response = await fetch('/api/deploy-mainnet-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           tokenData,
           chainId: selectedChainId,
-          contractAddress: newContractAddress,
-          transactionHash: hash
+          initialSupply: supply,
+          ownerAddress: ownerAddress // Send connected address to receive ownership
         }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error registrando el despliegue.');
+        throw new Error(data.error || 'Error al solicitar el despliegue.');
       }
 
-      setStatus(`Despliegue exitoso. Dirección: ${newContractAddress}`);
+      const newContractAddress = data.contractAddress;
+      setStatus(`¡Despliegue exitoso! Dirección: ${newContractAddress}`);
       setContractAddress(newContractAddress);
 
     } catch (err: any) {
