@@ -61,6 +61,12 @@ export const NETWORK_NAMES = {
   "0x1": "Ethereum",
 } as const
 
+export const NETWORK_EXPLORERS = {
+  "0x89": "https://polygonscan.com",
+  "0x38": "https://bscscan.com",
+  "0x1": "https://etherscan.io",
+} as const
+
 // Tipo helper para TypeScript
 export type PlanId = keyof typeof PLAN_DETAILS
 export type NetworkId = keyof typeof NETWORK_NAMES

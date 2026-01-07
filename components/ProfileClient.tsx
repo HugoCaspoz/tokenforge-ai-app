@@ -3,24 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { UserProfile as ServerUserProfile, DeployedToken, NetworkUsage } from '@/app/profile/page';
-import { PLAN_DETAILS } from '@/lib/plans';
+import { PLAN_DETAILS, NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
 // Type override to avoid import issues if needed, or use the imported one.
 // Since UserProfile is exported from page.tsx, we can use it directly.
 type UserProfile = ServerUserProfile;
-
-const explorers = {
-  'Polygon': 'https://polygonscan.com',
-  'BNB Chain': 'https://bscscan.com',
-  'Ethereum': 'https://etherscan.io',
-};
-
-// Mapeo inverso de nombre a chain_id para buscar en los exploradores
-const networkNameToChainId: { [key: string]: string } = {
-  'Polygon': '0x89',
-  'BNB Chain': '0x38',
-  'Ethereum': '0x1',
-};
 
 interface ProfileClientProps {
   profile: UserProfile | null;
@@ -122,15 +109,51 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
         <h2 className="text-2xl font-semibold mb-4">Mis Tokens Desplegados</h2>
         {deployedTokens.length > 0 ? (
           <ul className="space-y-2">
-            {deployedTokens.map(token => (
-              <li key={token.contract_address} className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
-                <div>
-                  <span className="font-bold">{token.name}</span>
-                  <span className="text-sm text-gray-400 ml-2">${token.ticker.toUpperCase()}</span>
-                </div>
-                {/* Puedes añadir más detalles o enlaces al explorador si quieres */}
-              </li>
-            ))}
+            {deployedTokens.map(token => {
+              const chainId = token.chain_id as keyof typeof NETWORK_NAMES;
+              const networkName = NETWORK_NAMES[chainId] || token.chain_id;
+              const explorerBaseUrl = NETWORK_EXPLORERS[chainId as keyof typeof NETWORK_EXPLORERS];
+              const explorerUrl = explorerBaseUrl ? `${explorerBaseUrl}/address/${token.contract_address}` : '#';
+
+              return (
+                <li key={token.contract_address} className="bg-gray-700 p-4 rounded-md flex items-start gap-4">
+                  {/* Logo */}
+                  <div className="flex-shrink-0 w-12 h-12 bg-gray-600 rounded-full overflow-hidden flex items-center justify-center">
+                    {token.logo_url ? (
+                      <img src={token.logo_url} alt={`${token.name} logo`} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-xl font-bold text-gray-400">{token.ticker[0]}</span>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-xl font-bold text-white">{token.name} <span className="text-gray-400 text-sm ml-2">${token.ticker}</span></h3>
+                        <p className="text-sm text-blue-400 mb-1">{networkName}</p>
+                      </div>
+                      <a
+                        href={explorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs bg-gray-600 hover:bg-gray-500 text-white px-3 py-1 rounded transition-colors"
+                      >
+                        Ver en Explorer ↗
+                      </a>
+                    </div>
+
+                    {token.description && (
+                      <p className="text-gray-300 text-sm mt-2">{token.description}</p>
+                    )}
+
+                    <div className="mt-3 p-2 bg-gray-800 rounded text-xs font-mono text-gray-500 break-all select-all">
+                      {token.contract_address}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="text-gray-400">Aún no has desplegado ningún token.</p>

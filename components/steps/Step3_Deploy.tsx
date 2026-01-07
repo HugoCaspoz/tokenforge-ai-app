@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import type { TokenData } from '../Wizard';
 import Link from 'next/link';
-import { PLAN_DETAILS, NETWORK_NAMES } from '@/lib/plans';
+import { PLAN_DETAILS, NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
 const networkKeys = Object.keys(NETWORK_NAMES) as Array<keyof typeof NETWORK_NAMES>;
 
@@ -231,7 +231,19 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
 
       {contractAddress && (
         <div className="mt-6 text-center text-white bg-green-500/20 p-4 rounded border border-green-500">
-          Contrato: {contractAddress}
+          <p className="font-semibold text-lg mb-2">¡Contrato desplegado con éxito! 🎉</p>
+          <p className="text-sm text-gray-300 mb-4">Tu token ya vive en la blockchain.</p>
+
+          <a
+            href={`${NETWORK_EXPLORERS[selectedChainId as keyof typeof NETWORK_EXPLORERS] || 'https://etherscan.io'}/address/${contractAddress}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-bold transition-colors"
+          >
+            Ver en {NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES] || 'Explorer'}
+          </a>
+
+          <p className="font-mono text-xs text-gray-500 break-all mt-4">{contractAddress}</p>
         </div>
       )}
     </div>

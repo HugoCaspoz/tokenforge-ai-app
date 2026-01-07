@@ -14,6 +14,8 @@ export interface DeployedToken {
   ticker: string;
   chain_id: string;
   contract_address: string;
+  description: string | null;
+  logo_url: string | null;
 }
 
 // ✅ Nuevo tipo para los datos de uso que pasaremos al cliente
@@ -39,7 +41,7 @@ export default async function ProfilePage() {
 
   const { data: deployedTokens } = await supabase
     .from('projects')
-    .select('name, ticker, chain_id, contract_address')
+    .select('name, ticker, chain_id, contract_address, description, logo_url')
     .eq('user_id', user.id)
     .not('contract_address', 'is', null);
 
