@@ -5,14 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { createClient } from '@/utils/supabase/client';
 import { NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
-// ABI mínimo para ERC20 + Ownable
-const TOKEN_ABI = [
-    { inputs: [], name: 'owner', outputs: [{ name: '', type: 'address' }], stateMutability: 'view', type: 'function' },
-    { inputs: [{ name: 'newOwner', type: 'address' }], name: 'transferOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-    { inputs: [], name: 'renounceOwnership', outputs: [], stateMutability: 'nonpayable', type: 'function' },
-    { inputs: [], name: 'totalSupply', outputs: [{ name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' },
-    { inputs: [{ name: 'account', type: 'address' }], name: 'balanceOf', outputs: [{ name: '', type: 'uint256' }], stateMutability: 'view', type: 'function' }
-] as const;
+import { TOKEN_ABI } from '@/lib/tokenArtifacts';
 
 interface TokenDashboardProps {
     token: {
