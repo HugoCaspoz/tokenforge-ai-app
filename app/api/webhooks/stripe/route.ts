@@ -56,6 +56,11 @@ export async function POST(req: NextRequest) {
           [process.env.NEXT_PUBLIC_STRIPE_PRICE_ENTERPRISE!]: "enterprise",
         }
 
+        console.log(`[v0] Debug - Price ID from Stripe: ${priceId}`)
+        console.log(`[v0] Debug - Env Basic: ${process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC}`)
+        console.log(`[v0] Debug - Env Pro: ${process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO}`)
+        console.log(`[v0] Debug - Map Result: ${planMap[priceId]}`)
+
         // IMPROVED LOGIC: Don't default to free immediately if priceId is found but not in map
         let planName = planMap[priceId]
 
@@ -79,11 +84,12 @@ export async function POST(req: NextRequest) {
           .single()
 
         if (!profile) {
-          console.error("[v0] User not found for customer:", customerId)
+          console.error(`[v0] CRITICAL: User not found for stripe_customer_id: ${customerId}. Verified DB has correct customer ID?`)
           break
         }
+        console.log(`[v0] Debug - Found profile ID: ${profile.id}`)
 
-        await supabaseAdmin
+        const { error: updateError } = await supabaseAdmin
           .from("profiles")
           .update({
             plan_activo: planName,
@@ -93,7 +99,11 @@ export async function POST(req: NextRequest) {
           })
           .eq("id", profile.id)
 
-        console.log("[v0] Successfully updated user plan")
+        if (updateError) {
+          console.error(`[v0] CRITICAL: DB Update Failed: ${updateError.message}`)
+        } else {
+          console.log("[v0] Successfully updated user plan in DB")
+        }
         break
       }
 
