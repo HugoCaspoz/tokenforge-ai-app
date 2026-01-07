@@ -73,7 +73,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     if (!plan) return 0;
 
     // @ts-ignore - Typescript check for generic key access
-    const limit = plan.limits[chainId] || 0;
+    const limit = plan.limits[chainId as keyof typeof NETWORK_NAMES] || 0;
     if (limit === -1) return 9999; // Infinito
 
     const used = deploymentsCount[chainId] || 0;
@@ -140,7 +140,8 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
         <p className="text-gray-300 text-sm mt-2">Límites de tu plan:</p>
         <ul className="text-gray-400 text-sm list-disc pl-5">
           {networkKeys.map(chainId => {
-            const limit = PLAN_DETAILS[activePlanKey]?.limits[chainId as any]; // Safe access
+            const plan = PLAN_DETAILS[activePlanKey];
+            const limit = plan ? plan.limits[chainId] : 0;
             const label = limit === -1 ? "Ilimitados" : `${getTokensAvailable(chainId)} de ${limit}`;
             const name = NETWORK_NAMES[chainId] || chainId;
             return <li key={chainId}>{name}: {label}</li>
@@ -179,7 +180,8 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
               const name = NETWORK_NAMES[chainId];
               // Si el límite del plan es 0 para esta red, no está permitida (o si available es 0 y no es -1)
               // Simplificación: usaremos available > 0 (o ilimitado) para habilitar
-              const limit = PLAN_DETAILS[activePlanKey]?.limits[chainId as any];
+              const plan = PLAN_DETAILS[activePlanKey];
+              const limit = plan ? plan.limits[chainId] : 0;
               const isDisabled = !isSubscribed || (limit !== -1 && available <= 0) || limit === 0;
 
               return (
@@ -188,8 +190,8 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
                   onClick={() => setSelectedChainId(chainId)}
                   disabled={isDisabled}
                   className={`p-4 rounded-lg border-2 text-left transition-all ${selectedChainId === chainId
-                      ? 'border-purple-500 bg-purple-900/50 scale-105'
-                      : 'border-gray-600 bg-gray-800 hover:border-gray-500'
+                    ? 'border-purple-500 bg-purple-900/50 scale-105'
+                    : 'border-gray-600 bg-gray-800 hover:border-gray-500'
                     } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                   <p className="font-bold text-white">{name}</p>
