@@ -6,22 +6,10 @@ import { PLAN_DETAILS, NETWORK_NAMES } from '@/lib/plans'; // ✅ Importamos nue
 // ✅ Tipos de datos actualizados para reflejar la nueva estructura
 export interface UserProfile {
   plan_activo: keyof typeof PLAN_DETAILS; // 'free', 'basic', 'pro'
-  subscripcion_activa_hasta: string | null;
+  current_period_end: string | null;
 }
 
-export interface DeployedToken {
-  name: string;
-  ticker: string;
-  chain_id: string;
-  contract_address: string;
-}
-
-// ✅ Nuevo tipo para los datos de uso que pasaremos al cliente
-export interface NetworkUsage {
-  networkName: string;
-  deployed: number;
-  limit: number;
-}
+// ... imports remain the same
 
 export default async function ProfilePage() {
   const supabase = createClient();
@@ -33,7 +21,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('plan_activo, subscripcion_activa_hasta')
+    .select('plan_activo, current_period_end')
     .eq('id', user.id)
     .single<UserProfile>();
 
@@ -65,7 +53,7 @@ export default async function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-900 text-white flex justify-center p-4 pt-32">
       <main className="w-full max-w-4xl">
-        <ProfileClient 
+        <ProfileClient
           profile={profile}
           deployedTokens={deployedTokens as DeployedToken[] || []}
           usage={usageData} // ✅ Pasamos los datos de uso ya calculados

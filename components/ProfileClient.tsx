@@ -1,9 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // ✅ Importamos el router de Next.js
-import type { UserProfile, DeployedToken, NetworkUsage } from '@/app/profile/page'; 
+import { useRouter } from 'next/navigation';
+import type { UserProfile as ServerUserProfile, DeployedToken, NetworkUsage } from '@/app/profile/page';
 import { PLAN_DETAILS } from '@/lib/plans';
+
+// Type override to avoid import issues if needed, or use the imported one.
+// Since UserProfile is exported from page.tsx, we can use it directly.
+type UserProfile = ServerUserProfile;
 
 const explorers = {
   'Polygon': 'https://polygonscan.com',
@@ -54,9 +58,9 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
 
   if (!profile) {
     return (
-        <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-            <p className="text-yellow-400">No se pudo cargar tu perfil. Inténtalo de nuevo más tarde.</p>
-        </div>
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg text-center">
+        <p className="text-yellow-400">No se pudo cargar tu perfil. Inténtalo de nuevo más tarde.</p>
+      </div>
     );
   }
 
@@ -74,23 +78,23 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
           <div>
             <p className="text-lg">Plan Actual: <span className="font-bold text-purple-400">{currentPlanName}</span></p>
             {/* ✅ Mostramos la fecha de renovación si existe y no es el plan gratuito */}
-            {profile.subscripcion_activa_hasta && !isFreePlan && (
+            {profile.current_period_end && !isFreePlan && (
               <p className="text-sm text-gray-400 mt-1">
-                Tu plan se renueva el: {new Date(profile.subscripcion_activa_hasta).toLocaleDateString()}
+                Tu plan se renueva el: {new Date(profile.current_period_end).toLocaleDateString()}
               </p>
             )}
           </div>
           {/* ✅ Botón dinámico que cambia de texto y de función */}
-          <button 
-            onClick={handleSubscriptionClick} 
-            disabled={loading} 
+          <button
+            onClick={handleSubscriptionClick}
+            disabled={loading}
             className="px-6 py-2 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-500 transition-colors disabled:bg-gray-500"
           >
             {loading ? 'Cargando...' : (isFreePlan ? 'Elegir un Plan' : 'Gestionar Suscripción')}
           </button>
         </div>
       </div>
-      
+
       {/* Sección de Uso por Red */}
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold mb-4">Uso de Despliegues</h2>
@@ -108,7 +112,7 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
               </div>
             ))
           ) : (
-             <p className="text-gray-400">Tu plan actual no incluye despliegues en redes principales. <a href="/subscription" className="text-purple-400 hover:underline">¡Mejora tu plan!</a></p>
+            <p className="text-gray-400">Tu plan actual no incluye despliegues en redes principales. <a href="/subscription" className="text-purple-400 hover:underline">¡Mejora tu plan!</a></p>
           )}
         </div>
       </div>
@@ -117,19 +121,19 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
         <h2 className="text-2xl font-semibold mb-4">Mis Tokens Desplegados</h2>
         {deployedTokens.length > 0 ? (
-            <ul className="space-y-2">
-                {deployedTokens.map(token => (
-                    <li key={token.contract_address} className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
-                        <div>
-                            <span className="font-bold">{token.name}</span>
-                            <span className="text-sm text-gray-400 ml-2">${token.ticker.toUpperCase()}</span>
-                        </div>
-                        {/* Puedes añadir más detalles o enlaces al explorador si quieres */}
-                    </li>
-                ))}
-            </ul>
+          <ul className="space-y-2">
+            {deployedTokens.map(token => (
+              <li key={token.contract_address} className="flex justify-between items-center bg-gray-700 p-3 rounded-md">
+                <div>
+                  <span className="font-bold">{token.name}</span>
+                  <span className="text-sm text-gray-400 ml-2">${token.ticker.toUpperCase()}</span>
+                </div>
+                {/* Puedes añadir más detalles o enlaces al explorador si quieres */}
+              </li>
+            ))}
+          </ul>
         ) : (
-            <p className="text-gray-400">Aún no has desplegado ningún token.</p>
+          <p className="text-gray-400">Aún no has desplegado ningún token.</p>
         )}
       </div>
     </div>

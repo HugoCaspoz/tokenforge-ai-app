@@ -33,9 +33,9 @@ export const PLAN_DETAILS = {
       "0x1": 50,
     },
   },
-  premium: {
-    id: "premium",
-    name: "Premium Plan",
+  enterprise: {
+    id: "enterprise",
+    name: "Enterprise Plan",
     description: "For large companies or unlimited projects.",
     priceId: "price_1Rh3ygIs18b5tpWU9hTeI2xx",
     limits: {
