@@ -67,6 +67,12 @@ export const NETWORK_EXPLORERS = {
   "0x1": "https://etherscan.io",
 } as const
 
+export const NETWORK_RPCS = {
+  "0x89": "https://polygon-rpc.com",
+  "0x38": "https://bsc-dataseed.binance.org",
+  "0x1": "https://cloudflare-eth.com",
+} as const
+
 // Tipo helper para TypeScript
 export type PlanId = keyof typeof PLAN_DETAILS
 export type NetworkId = keyof typeof NETWORK_NAMES

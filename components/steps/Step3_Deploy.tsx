@@ -242,7 +242,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
           disabled={loadingDeploy || !isSubscribed || getTokensAvailable(selectedChainId) <= 0}
           className="w-full px-6 py-4 bg-green-600 text-white font-bold text-lg rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-500"
         >
-          {loadingDeploy ? 'Desplegando...' : `🚀 Desplegar en ${NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES]}`}
+          {loadingDeploy ? 'Desplegando (Nosotros pagamos el gas)...' : `🚀 Solicitar Despliegue en ${NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES]} (Gas Gratis)`}
         </button>
       </div>
 
