@@ -3,7 +3,7 @@ import Stripe from "stripe"
 import { createClient } from "@supabase/supabase-js"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-12-18.acacia",
+  apiVersion: "2025-06-30.basil",
 })
 
 const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
@@ -58,16 +58,16 @@ export async function POST(req: NextRequest) {
 
         // IMPROVED LOGIC: Don't default to free immediately if priceId is found but not in map
         let planName = planMap[priceId]
-        
+
         if (!planName) {
-           console.warn(`[v0] WARNING: Price ID ${priceId} not found in planMap. Env vars might be missing.`)
-           console.warn(`[v0] Available keys: ${Object.keys(planMap).join(", ")}`)
-           // Fallback logic: If we can't identify the plan, we shouldn't necessarily overwrite a paid plan with free.
-           // However, for a new checkout, we might assume it's whatever the user just bought.
-           // Let's rely on the fact that if it's a checkout, they paid for *something*.
-           // We will default to 'pro' if unknown as a fail-safe or just keep 'free' but log heavily?
-           // Better strategy: Use 'unknown_paid' or similar if dynamic, but for now let's keep 'free' safely but LOG IT.
-           planName = "free" 
+          console.warn(`[v0] WARNING: Price ID ${priceId} not found in planMap. Env vars might be missing.`)
+          console.warn(`[v0] Available keys: ${Object.keys(planMap).join(", ")}`)
+          // Fallback logic: If we can't identify the plan, we shouldn't necessarily overwrite a paid plan with free.
+          // However, for a new checkout, we might assume it's whatever the user just bought.
+          // Let's rely on the fact that if it's a checkout, they paid for *something*.
+          // We will default to 'pro' if unknown as a fail-safe or just keep 'free' but log heavily?
+          // Better strategy: Use 'unknown_paid' or similar if dynamic, but for now let's keep 'free' safely but LOG IT.
+          planName = "free"
         }
 
         console.log("[v0] Updating user plan to:", planName)
@@ -118,9 +118,9 @@ export async function POST(req: NextRequest) {
 
         // Only update plan name if we recognize the price ID
         if (planName) {
-            updateData.plan_activo = planName
+          updateData.plan_activo = planName
         } else {
-            console.warn(`[v0] Price ID ${priceId} unknown in update event. Not changing plan_activo.`)
+          console.warn(`[v0] Price ID ${priceId} unknown in update event. Not changing plan_activo.`)
         }
 
         const { error } = await supabaseAdmin
@@ -142,8 +142,8 @@ export async function POST(req: NextRequest) {
         const subscriptionId = invoice.subscription as string
 
         if (!subscriptionId) {
-            console.log("[v0] Invoice payment succeeded but no subscription ID (one-time payment?)")
-            break
+          console.log("[v0] Invoice payment succeeded but no subscription ID (one-time payment?)")
+          break
         }
 
         console.log(`[v0] Recurring payment received for subscription: ${subscriptionId}`)
@@ -152,17 +152,17 @@ export async function POST(req: NextRequest) {
         const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
         const { error } = await supabaseAdmin
-            .from("profiles")
-            .update({
-                subscription_status: 'active', // Ensure it's active
-                current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            })
-            .eq("subscription_id", subscriptionId)
+          .from("profiles")
+          .update({
+            subscription_status: 'active', // Ensure it's active
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          })
+          .eq("subscription_id", subscriptionId)
 
         if (error) {
-            console.error("[v0] Error extending subscription period:", error)
+          console.error("[v0] Error extending subscription period:", error)
         } else {
-            console.log("[v0] Successfully extended subscription period")
+          console.log("[v0] Successfully extended subscription period")
         }
         break
       }
