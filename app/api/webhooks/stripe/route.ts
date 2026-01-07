@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
             plan_activo: planName,
             subscription_id: subscriptionId,
             subscription_status: subscription.status,
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
           })
           .eq("id", profile.id)
 
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
 
         const updateData: any = {
           subscription_status: subscription.status,
-          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
         }
 
         // Only update plan name if we recognize the price ID
@@ -155,7 +155,7 @@ export async function POST(req: NextRequest) {
           .from("profiles")
           .update({
             subscription_status: 'active', // Ensure it's active
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
           })
           .eq("subscription_id", subscriptionId)
 
