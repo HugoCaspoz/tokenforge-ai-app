@@ -13,6 +13,21 @@ const supabaseAdmin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, proces
   },
 })
 
+// Helper to safely extract current_period_end
+function getSafeCurrentPeriodEnd(subscription: any): string {
+  let periodEnd = subscription.current_period_end;
+  // If undefined at root, try getting it from the first item
+  if (!periodEnd && subscription.items && subscription.items.data && subscription.items.data.length > 0) {
+    periodEnd = subscription.items.data[0].current_period_end;
+  }
+  // If still missing, default to now + 30 days (approximation) or just NOW to avoid proper crash
+  if (!periodEnd) {
+    console.warn("[v0] WARNING: Could not find current_period_end in subscription object. Defaulting to now.");
+    return new Date().toISOString();
+  }
+  return new Date(periodEnd * 1000).toISOString();
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text()
@@ -95,7 +110,7 @@ export async function POST(req: NextRequest) {
             plan_activo: planName,
             subscription_id: subscriptionId,
             subscription_status: subscription.status,
-            current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
+            current_period_end: getSafeCurrentPeriodEnd(subscription),
           })
           .eq("id", profile.id)
 
