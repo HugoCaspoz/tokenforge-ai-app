@@ -37,7 +37,7 @@ export async function POST(request: Request) {
     const { data: publicUrlData } = supabase.storage
       .from('logos')
       .getPublicUrl(uploadData.path);
-    
+
     const permanentUrl = publicUrlData.publicUrl;
 
     // 4. Actualizar la tabla 'projects' con la nueva URL permanente
@@ -55,7 +55,8 @@ export async function POST(request: Request) {
 
   } catch (err) {
     console.error('Error en el proceso de subida del logo:', err);
-    const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+    // Supabase errors are often objects with a message property but not instances of Error
+    const errorMessage = (err as any)?.message || (err instanceof Error ? err.message : 'Error desconocido');
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
