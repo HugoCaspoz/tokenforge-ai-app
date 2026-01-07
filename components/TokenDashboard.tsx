@@ -26,19 +26,23 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth'>('overview');
 
     // Blockchain State
-    const { data: ownerAddress } = useReadContract({
+    const { data: ownerAddress, error: ownerError } = useReadContract({
         address: token.contract_address as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'owner',
         chainId: Number(token.chain_id),
     });
 
-    const { data: totalSupply } = useReadContract({
+    const { data: totalSupply, error: supplyError } = useReadContract({
         address: token.contract_address as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'totalSupply',
         chainId: Number(token.chain_id),
     });
+
+    // Debug Logging
+    if (ownerError) console.error("Owner Fetch Error:", ownerError);
+    if (supplyError) console.error("Supply Fetch Error:", supplyError);
 
     // Derived State
     const isOwner = userAddress && ownerAddress && userAddress.toLowerCase() === ownerAddress.toLowerCase();
@@ -63,6 +67,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm border border-green-500/30">Eres el Owner</span>
                         ) : (
                             <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-sm border border-yellow-500/30">Solo Vista (No eres Owner)</span>
+                        )}
+                        {/* Error Debug Badge */}
+                        {(ownerError || supplyError) && (
+                            <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded text-sm border border-red-500/30" title={String(ownerError || supplyError)}>
+                                Error de Lectura (Hover)
+                            </span>
                         )}
                     </div>
                 </div>

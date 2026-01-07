@@ -17,7 +17,7 @@ export const Header = () => {
   const pathname = usePathname();
 
   // La lógica para mostrar el botón de la billetera no cambia
-  const showWalletButton = pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token');
+  const showWalletButton = pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token') || pathname.startsWith('/manage');
 
   useEffect(() => {
     const getSession = async () => {
@@ -42,8 +42,8 @@ export const Header = () => {
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <motion.nav 
-        className="flex items-center justify-between p-6 lg:px-8" 
+      <motion.nav
+        className="flex items-center justify-between p-6 lg:px-8"
         aria-label="Global"
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -66,7 +66,7 @@ export const Header = () => {
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
           </button>
         </div>
-        
+
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
           {showWalletButton && <ConnectWallet />}
 
