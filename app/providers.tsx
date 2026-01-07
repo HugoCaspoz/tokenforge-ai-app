@@ -14,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   // Mueve la creación de la config y el cliente DENTRO del componente
   // y envuélvelo en useState para que solo se ejecute una vez en el cliente.
   const [queryClient] = useState(() => new QueryClient());
-  const [config] = useState(() => 
+  const [config] = useState(() =>
     createConfig({
       chains: [polygon],
       connectors: [
@@ -22,7 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         walletConnect({ projectId }),
       ],
       transports: {
-        [polygon.id]: http(),
+        [polygon.id]: http('https://polygon-rpc.com'),
       },
     })
   );
