@@ -9,7 +9,19 @@ export interface UserProfile {
   current_period_end: string | null;
 }
 
-// ... imports remain the same
+export interface DeployedToken {
+  name: string;
+  ticker: string;
+  chain_id: string;
+  contract_address: string;
+}
+
+// ✅ Nuevo tipo para los datos de uso que pasaremos al cliente
+export interface NetworkUsage {
+  networkName: string;
+  deployed: number;
+  limit: number;
+}
 
 export default async function ProfilePage() {
   const supabase = createClient();
