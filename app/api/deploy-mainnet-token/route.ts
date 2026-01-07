@@ -81,14 +81,14 @@ export async function POST(req: NextRequest) {
                 description: tokenData.description,
                 chain_id: chainId,
                 contract_address: mockAddress,
-                logo_url: tokenData.logoUrl,
-                status: 'deployed', // O el estado que uses
-                supply: initialSupply
+                logo_url: tokenData.logoUrl
+                // status: 'deployed', // Removed: Not in schema
+                // supply: initialSupply // Removed: Not in schema
             });
 
         if (insertError) {
             console.error('Error inserting project:', insertError);
-            return NextResponse.json({ error: 'Failed to record deployment' }, { status: 500 });
+            return NextResponse.json({ error: `Failed to record deployment: ${insertError.message}` }, { status: 500 });
         }
 
         // Responder con éxito
