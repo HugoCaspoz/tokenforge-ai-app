@@ -73,7 +73,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     if (!plan) return 0;
 
     // @ts-ignore - Typescript check for generic key access
-    const limit = plan.limits[chainId as keyof typeof NETWORK_NAMES] || 0;
+    const limit = (plan.limits[chainId as keyof typeof NETWORK_NAMES] || 0) as number;
     if (limit === -1) return 9999; // Infinito
 
     const used = deploymentsCount[chainId] || 0;
@@ -154,7 +154,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
         <ul className="text-gray-400 text-sm list-disc pl-5">
           {networkKeys.map(chainId => {
             const plan = PLAN_DETAILS[activePlanKey];
-            const limit = plan ? plan.limits[chainId] : 0;
+            const limit = (plan ? plan.limits[chainId] : 0) as number;
             const label = limit === -1 ? "Ilimitados" : `${getTokensAvailable(chainId)} de ${limit}`;
             const name = NETWORK_NAMES[chainId] || chainId;
             return <li key={chainId}>{name}: {label}</li>
@@ -194,7 +194,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
               // Si el límite del plan es 0 para esta red, no está permitida (o si available es 0 y no es -1)
               // Simplificación: usaremos available > 0 (o ilimitado) para habilitar
               const plan = PLAN_DETAILS[activePlanKey];
-              const limit = plan ? plan.limits[chainId] : 0;
+              const limit = (plan ? plan.limits[chainId] : 0) as number;
               const isDisabled = !isSubscribed || (limit !== -1 && available <= 0) || limit === 0;
 
               return (
