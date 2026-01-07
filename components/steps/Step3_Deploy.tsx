@@ -90,8 +90,21 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     }
 
     const available = getTokensAvailable(selectedChainId);
+
+    // Validar límite total (Global Limit Check)
+    const plan = PLAN_DETAILS[activePlanKey];
+    // @ts-ignore
+    const totalLimit = plan?.totalLimit ?? 0;
+    const totalUsed = Object.values(deploymentsCount).reduce((a, b) => a + b, 0);
+    const globalAvailable = totalLimit - totalUsed;
+
     if (available <= 0) {
       setError(`Has alcanzado el límite de tokens para esta red con tu plan actual.`);
+      return;
+    }
+
+    if (totalLimit > 0 && globalAvailable <= 0) {
+      setError(`Has alcanzado el límite TOTAL de tokens (${totalLimit}) de tu plan.`);
       return;
     }
 
