@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
       case "invoice.payment_succeeded": {
         // NEW HANDLER: Recurring payments
         const invoice = event.data.object as Stripe.Invoice
-        const subscriptionId = invoice.subscription as string
+        const subscriptionId = (invoice as any).subscription as string
 
         if (!subscriptionId) {
           console.log("[v0] Invoice payment succeeded but no subscription ID (one-time payment?)")
