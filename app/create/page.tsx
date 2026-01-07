@@ -1,6 +1,7 @@
 // En: frontend/app/create/page.tsx
 
 import Wizard from "@/components/Wizard";
+import RequireWallet from "@/components/RequireWallet";
 
 export default function CreatePage() {
   return (
@@ -13,8 +14,10 @@ export default function CreatePage() {
           Crea tu propia criptomoneda en minutos. Sin escribir código.
         </p>
       </div>
-      
-      <Wizard />
+
+      <RequireWallet>
+        <Wizard />
+      </RequireWallet>
 
     </main>
   );

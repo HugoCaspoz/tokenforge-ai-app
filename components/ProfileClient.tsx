@@ -147,8 +147,16 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
                       <p className="text-gray-300 text-sm mt-2">{token.description}</p>
                     )}
 
-                    <div className="mt-3 p-2 bg-gray-800 rounded text-xs font-mono text-gray-500 break-all select-all">
-                      {token.contract_address}
+                    <div className="flex items-center gap-4 mt-4">
+                      <div className="p-2 bg-gray-800 rounded text-xs font-mono text-gray-500 break-all select-all flex-grow">
+                        {token.contract_address}
+                      </div>
+                      <a
+                        href={`/manage/${token.contract_address}`}
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded text-white text-xs font-bold transition-colors whitespace-nowrap"
+                      >
+                        Gestionar ⚙️
+                      </a>
                     </div>
                   </div>
                 </li>
