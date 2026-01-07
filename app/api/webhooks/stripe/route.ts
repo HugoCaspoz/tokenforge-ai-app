@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
           break
         }
 
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription
         const priceId = subscription.items.data[0]?.price.id
 
         const planMap: Record<string, string> = {
@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
         console.log(`[v0] Recurring payment received for subscription: ${subscriptionId}`)
 
         // Retrieve subscription to get the NEW period end
-        const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+        const subscription = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription
 
         const { error } = await supabaseAdmin
           .from("profiles")
