@@ -7,6 +7,7 @@ import { NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
 import LiquidityWizard from './LiquidityWizard';
+import WhaleWatcher from './WhaleWatcher';
 
 interface TokenDashboardProps {
     token: {
@@ -390,6 +391,30 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <div className="text-4xl mb-3">📢</div>
                                     <h3 className="font-bold">Compartir</h3>
                                     <p className="text-xs text-gray-300 mt-2">Generar imagen para redes</p>
+                                </div>
+                            </div>
+
+                            {/* WHALE WATCHER & HOLDERS */}
+                            <div className="mb-6 space-y-4">
+                                <h3 className="text-xl font-bold mb-4 text-blue-400">📊 Monitorización Avanzada</h3>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <a
+                                        href={`https://polygonscan.com/token/${token.contract_address}#balances`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-gray-800 p-4 rounded-lg flex items-center gap-4 hover:bg-gray-700 transition-colors border border-gray-700 hover:border-purple-500"
+                                    >
+                                        <div className="text-2xl">👥</div>
+                                        <div>
+                                            <h4 className="font-bold text-white">Top Holders</h4>
+                                            <p className="text-xs text-gray-400">Ver lista oficial en Explorador</p>
+                                        </div>
+                                    </a>
+                                    <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                        <h4 className="font-bold text-white mb-2 flex items-center gap-2">🐋 Alertas de Ballenas</h4>
+                                        <WhaleWatcher tokenAddress={token.contract_address as `0x${string}`} />
+                                    </div>
                                 </div>
                             </div>
                         </div>
