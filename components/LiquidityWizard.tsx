@@ -6,6 +6,7 @@ import { TOKEN_ABI } from '../lib/tokenArtifacts';
 // QuickSwap V3 NonfungiblePositionManager on Polygon
 const NPM_ADDRESS = '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6';
 const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
+const FACTORY_ADDRESS = '0x411b0fAcC3489691f02038A3b646f8b4a53eE495';
 
 // Separate ABIs for clearer usage
 const CREATE_ABI = [
@@ -57,6 +58,18 @@ const MINT_ABI = [
     }
 ] as const;
 
+const FACTORY_ABI = [{
+    "inputs": [
+        { "internalType": "address", "name": "", "type": "address" },
+        { "internalType": "address", "name": "", "type": "address" },
+        { "internalType": "uint24", "name": "", "type": "uint24" }
+    ],
+    "name": "getPool",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+}] as const;
+
 function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
     if (amount0 === BigInt(0)) return BigInt(0);
     const numerator = amount1 * (BigInt(1) << BigInt(192));
@@ -73,6 +86,7 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
     const { address, chainId } = useAccount();
+    const publicClient = usePublicClient();
 
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
@@ -82,21 +96,45 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
     const token0 = isToken0 ? tokenAddress : WMATIC;
     const token1 = isToken0 ? WMATIC : tokenAddress;
 
+    // Check if Pool Exists
+    const { data: poolAddress, refetch: refetchPool } = useReadContract({
+        address: FACTORY_ADDRESS,
+        abi: FACTORY_ABI,
+        functionName: 'getPool',
+        args: [token0, token1, 3000],
+        // chainId: 137 // Removed to allow safe connector usage
+    });
+
+    const poolExists = poolAddress && poolAddress !== '0x0000000000000000000000000000000000000000';
+
     const { writeContractAsync } = useWriteContract();
+
+    // Helper to wait for tx
+    const waitTx = async (hash: `0x${string}`, loadingMsg: string) => {
+        setIsProcessing(true);
+        try {
+            console.log("Waiting for tx:", hash);
+            const receipt = await publicClient?.waitForTransactionReceipt({ hash });
+            if (receipt?.status !== 'success') throw new Error("Transaction Refunded/Failed on chain.");
+            return receipt;
+        } catch (e) {
+            throw e;
+        }
+    };
 
     // STEP 1: APPROVE
     const handleApprove = async () => {
         if (!amountToken) return;
         setIsProcessing(true);
         try {
-            await writeContractAsync({
+            const hash = await writeContractAsync({
                 address: tokenAddress,
                 abi: TOKEN_ABI,
                 functionName: 'approve',
                 args: [NPM_ADDRESS, maxUint256],
-                // chainId removed to avoid connector crash
             });
-            alert("✅ Aprobado. Ahora dale a 'Inicializar' (Paso 2).");
+            await waitTx(hash, "Aprobando...");
+            alert("✅ Aprobado Confirmado en Blockchain.");
         } catch (e) {
             console.error(e);
             alert("❌ Error al aprobar: " + ((e as any).shortMessage || (e as any).message));
@@ -108,23 +146,30 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
     // STEP 2: CREATE POOL
     const handleCreatePool = async () => {
         if (!amountToken || !amountPOL) return;
+        if (poolExists) {
+            alert("ℹ️ El mercado YA existe. Salta al Paso 3.");
+            return;
+        }
+
         setIsProcessing(true);
         try {
             const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
             const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
             const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
 
-            await writeContractAsync({
+            const hash = await writeContractAsync({
                 address: NPM_ADDRESS,
                 abi: CREATE_ABI,
                 functionName: 'createAndInitializePoolIfNecessary',
                 args: [token0, token1, 3000, sqrtPriceX96],
-                // chainId removed to avoid connector crash
             });
-            alert("✅ Mercado Inicializado. Ahora dale a 'Añadir Liquidez' (Paso 3).");
+
+            await waitTx(hash, "Inicializando Mercado...");
+            await refetchPool(); // Check again
+            alert("✅ Mercado Inicializado Correctamente.");
         } catch (e) {
             console.error(e);
-            alert("⚠️ Info: Si el mercado ya existe, esto puede fallar o no hacer nada. Continúa al Paso 3.");
+            alert("⚠️ Error (posiblemente ya existe). Intenta el Paso 3.");
         } finally {
             setIsProcessing(false);
         }
@@ -141,7 +186,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             const tickLower = -887220;
             const tickUpper = 887220;
 
-            await writeContractAsync({
+            const hash = await writeContractAsync({
                 address: NPM_ADDRESS,
                 abi: MINT_ABI,
                 functionName: 'mint',
@@ -159,10 +204,10 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                     deadline: BigInt(Math.floor(Date.now() / 1000) + 1200)
                 }],
                 value: parseUnits(amountPOL, 18),
-                // chainId removed to avoid connector crash
             });
 
-            alert("🎉 ¡ÉXITO! Liquidez Añadida. Refresca QuickSwap en unos minutos.");
+            await waitTx(hash, "Añadiendo Liquidez...");
+            alert("🎉 ¡ÉXITO TOTAL! Liquidez Añadida.");
         } catch (e) {
             console.error(e);
             alert("❌ Error al añadir liquidez: " + ((e as any).shortMessage || (e as any).message));
