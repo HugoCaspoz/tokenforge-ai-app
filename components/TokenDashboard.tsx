@@ -360,11 +360,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 </a>
 
 
-                                <div className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer">
+                                {/* <div className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer">
                                     <div className="text-4xl mb-3">📢</div>
                                     <h3 className="font-bold">Compartir</h3>
                                     <p className="text-xs text-gray-300 mt-2">Generar imagen para redes</p>
-                                </div>
+                                </div> */}
                             </div>
 
                             {/* WHALE WATCHER & HOLDERS */}
