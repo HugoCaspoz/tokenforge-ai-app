@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
-import { parseUnits, formatUnits, maxUint256 } from 'viem';
+import { useAccount, useWriteContract } from 'wagmi';
+import { parseUnits, encodeFunctionData, maxUint256 } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
 // QuickSwap V3 NonfungiblePositionManager on Polygon
 const NPM_ADDRESS = '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6';
+const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
-// Minimal ABI for NPM minting
+// Extended ABI for Multicall + Init
 const NPM_ABI = [
+    {
+        "inputs": [{ "internalType": "bytes[]", "name": "data", "type": "bytes[]" }],
+        "name": "multicall",
+        "outputs": [{ "internalType": "bytes[]", "name": "results", "type": "bytes[]" }],
+        "stateMutability": "payable",
+        "type": "function"
+    },
     {
         "inputs": [
             {
@@ -50,19 +58,42 @@ const NPM_ABI = [
         "outputs": [{ "internalType": "address", "name": "pool", "type": "address" }],
         "stateMutability": "payable",
         "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "refundETH",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
     }
 ] as const;
+
+// Helper to calculate sqrtPriceX96 = sqrt(amount1/amount0) * 2^96
+function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
+    if (amount0 === BigInt(0)) return BigInt(0);
+    // price = amount1 / amount0
+    // sqrtPrice = sqrt(price)
+    // Q96 = 2^96
+    // We do: sqrt( (amount1 * 2^192) / amount0 )
+    // This maintains precision.
+    const numerator = amount1 * (BigInt(1) << BigInt(192));
+    const ratio = numerator / amount0;
+
+    // Integer square root
+    let z = (ratio + BigInt(1)) / BigInt(2);
+    let y = ratio;
+    while (z < y) {
+        y = z;
+        z = (ratio / z + z) / BigInt(2);
+    }
+    return y;
+}
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
     const { address } = useAccount();
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
     const [isApproving, setIsApproving] = useState(false);
-
-    // Sort tokens to determine token0/token1
-    // POL is technically "Native" but in V3 interactions we often use WMATIC (Wrapped POL) address for sorting?
-    // QuickSwap V3 uses WMATIC: 0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270
-    const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
     const isToken0 = tokenAddress.toLowerCase() < WMATIC.toLowerCase();
     const token0 = isToken0 ? tokenAddress : WMATIC;
@@ -78,7 +109,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 address: tokenAddress,
                 abi: TOKEN_ABI,
                 functionName: 'approve',
-                args: [NPM_ADDRESS, maxUint256], // Max approval for simplicity
+                args: [NPM_ADDRESS, maxUint256],
             });
             alert("Aprobado! Ahora puedes crear la liquidez.");
         } catch (e) {
@@ -96,53 +127,76 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
             const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
 
-            // Full Range Ticks for V3 (Min/Max)
-            const tickLower = -887220; // Min valid tick for tickSpacing 60
-            const tickUpper = 887220;  // Max valid tick
+            // 1. Calculate Initial Price (SqrtPriceX96)
+            const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
 
-            // Note: If pool doesn't exist, we must initialize it. 
-            // For simplicity MVP: assume we just call mint and it fails if not initialized? 
-            // Or call createAndInitialize first? 
-            // Let's try calling mint directly first, but usually you need a pool.
-            // Actually, `mint` expects a pool to exist.
-            // We'll add a "Initialize" step if needed later.
+            // 2. Prepare Calldatas for Multicall
+            // Uses standard multicall pattern to chain Init -> Mint -> Refund
+            const calldatas: `0x${string}`[] = [];
 
+            // A. Create/Init Pool
+            calldatas.push(
+                encodeFunctionData({
+                    abi: NPM_ABI,
+                    functionName: 'createAndInitializePoolIfNecessary',
+                    args: [token0, token1, 3000, sqrtPriceX96]
+                })
+            );
+
+            // B. Mint Position
+            const tickLower = -887220;
+            const tickUpper = 887220;
+
+            calldatas.push(
+                encodeFunctionData({
+                    abi: NPM_ABI,
+                    functionName: 'mint',
+                    args: [{
+                        token0,
+                        token1,
+                        fee: 3000,
+                        tickLower,
+                        tickUpper,
+                        amount0Desired: amount0,
+                        amount1Desired: amount1,
+                        amount0Min: BigInt(0),
+                        amount1Min: BigInt(0),
+                        recipient: address,
+                        deadline: BigInt(Math.floor(Date.now() / 1000) + 1200)
+                    }]
+                })
+            );
+
+            // C. Refund ETH (If using native POL, essential to get back change)
+            calldatas.push(
+                encodeFunctionData({
+                    abi: NPM_ABI,
+                    functionName: 'refundETH'
+                })
+            );
+
+            // 3. Execute Multicall
+            // Send full users input value as msg.value. 
+            // The router will wrap it to WMATIC for the pool, and refundETH will return the remaining dust.
             await writeContractAsync({
                 address: NPM_ADDRESS,
                 abi: NPM_ABI,
-                functionName: 'mint',
-                args: [{
-                    token0,
-                    token1,
-                    fee: 3000, // 0.3%
-                    tickLower,
-                    tickUpper,
-                    amount0Desired: amount0,
-                    amount1Desired: amount1,
-                    amount0Min: BigInt(0), // High slippage allowed (User is first provider)
-                    amount1Min: BigInt(0),
-                    recipient: address,
-                    deadline: BigInt(Math.floor(Date.now() / 1000) + 1200) // 20 mins
-                }],
-                value: parseUnits(amountPOL, 18) // Send MATIC/POL as value? No, NPM takes WMATIC. 
-                // Wait, if we send Native MATIC to NPM, does it wrap? 
-                // QuickSwap V3 NPM is a Multicall usually. 
-                // Standard NPM requires WMATIC approval too if used as ERC20. 
-                // BUT usually standard flow allows sending ETH (Native) which gets wrapped.
-                // Let's try sending VALUE.
+                functionName: 'multicall',
+                args: [calldatas],
+                value: parseUnits(amountPOL, 18)
             });
 
-            alert("¡Liquidez Añadida! 🦄");
+            alert("¡Mercado Creado con Éxito! 🦄🚀");
         } catch (e) {
             console.error(e);
-            alert("Error: " + (e as any).shortMessage || (e as any).message);
+            alert("Error: " + ((e as any).shortMessage || (e as any).message));
         }
     };
 
     return (
         <div className="bg-gradient-to-br from-blue-900 to-purple-900 p-6 rounded-xl border border-blue-500/30">
-            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez (Auto-Launch)</h3>
-            <p className="text-sm text-gray-300 mb-4">Crea tu mercado sin salir de la app.</p>
+            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez Auto-Launch</h3>
+            <p className="text-sm text-gray-300 mb-4">Crea tu mercado y establece el precio inicial automáticamente.</p>
 
             <div className="space-y-4">
                 <div>
