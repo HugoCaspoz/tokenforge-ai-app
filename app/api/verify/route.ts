@@ -34,9 +34,9 @@ export async function POST(req: NextRequest) {
         const constructorArguments = encodedArgs.slice(2);
 
         // 3. Submit to Etherscan V2 API (Unified Endpoint)
+        // CRITICAL: chainid MUST be a Query Parameter, not just Body
         // See: https://docs.etherscan.io/v2/api-endpoints/contracts
         const params = new URLSearchParams();
-        params.append('chainid', '137'); // Required for V2 Keys targeting Polygon
         params.append('apikey', apiKey);
         params.append('module', 'contract');
         params.append('action', 'verifysourcecode');
@@ -49,12 +49,12 @@ export async function POST(req: NextRequest) {
         params.append('optimizationUsed', '1'); // Standard
         params.append('runs', '200');
         params.append('evmversion', 'paris'); // Default for >=0.8.20
-        params.append('constructorArguements', constructorArguments); // API typo "Arguements" is standard in Etherscan/Polygonscan
+        params.append('constructorArguements', constructorArguments);
 
-        console.log(`Submitting verification for ${contractAddress} to Etherscan V2...`);
+        console.log(`Submitting verification for ${contractAddress} to Etherscan V2 (Chain 137)...`);
 
-        // V2 Endpoint
-        const response = await fetch('https://api.etherscan.io/v2/api', {
+        // V2 Endpoint with chainid in URL
+        const response = await fetch('https://api.etherscan.io/v2/api?chainid=137', {
             method: 'POST',
             body: params
         });
@@ -65,8 +65,8 @@ export async function POST(req: NextRequest) {
         if (data.status === '1') {
             return NextResponse.json({ success: true, guid: data.result });
         } else {
-            console.error("Verification Error:", data);
-            return NextResponse.json({ error: data.result || "Unknown Error" }, { status: 400 });
+            console.error("Verification Error from Etherscan:", data);
+            return NextResponse.json({ error: data.result || JSON.stringify(data) }, { status: 400 });
         }
 
     } catch (e: any) {
