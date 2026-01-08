@@ -24,6 +24,8 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const supabase = createClient();
     const { address: userAddress, isConnected } = useAccount();
     const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth'>('overview');
+    const [showVerifyModal, setShowVerifyModal] = useState(false);
+    const [flatCode, setFlatCode] = useState("");
 
     const { writeContract, isPending: isAirdropPending, error: airdropError } = useWriteContract();
 
@@ -178,7 +180,73 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <p className="text-sm text-gray-400 mb-4">Nadie podrá controlar el contrato nunca más. Es necesario para "tokens comunitarios".</p>
                                 <button disabled={!isOwner} className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">Renunciar</button>
                             </div>
+                            <div>
+                                <h3 className="font-bold text-lg mb-2">Comunidad</h3>
+                                <p className="text-sm text-gray-400 mb-4">Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).</p>
+                                <button
+                                    onClick={() => alert("Función de renuncia no implementada en UI por seguridad. Usar Remix si es necesario.")}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded text-white font-semibold w-full opacity-50 cursor-not-allowed"
+                                >
+                                    Renunciar (Próximamente)
+                                </button>
+                            </div>
                         </div>
+
+                        {/* Verification Section */}
+                        {!showVerifyModal ? (
+                            <div className="mt-8 border-t border-gray-700 pt-8">
+                                <h3 className="text-xl font-bold mb-4 text-yellow-400">✅ Verificación de Contrato</h3>
+                                <p className="text-gray-400 mb-4">Verificar tu contrato en el explorador es CRUCIAL para que los inversores confíen en ti. Aparecerá el check verde ✅.</p>
+                                <button
+                                    onClick={async () => {
+                                        setShowVerifyModal(true);
+                                        try {
+                                            const res = await fetch('/SimpleToken_flat.sol');
+                                            const text = await res.text();
+                                            setFlatCode(text);
+                                        } catch (e) {
+                                            alert("Error cargando código fuente.");
+                                        }
+                                    }}
+                                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded transition-colors"
+                                >
+                                    Abrir Guía de Verificación
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="mt-8 bg-gray-900 p-6 rounded-xl border border-yellow-500/30">
+                                <div className="flex justify-between items-start mb-4">
+                                    <h3 className="text-xl font-bold text-yellow-400">Guía de Verificación</h3>
+                                    <button onClick={() => setShowVerifyModal(false)} className="text-gray-400 hover:text-white">✕</button>
+                                </div>
+
+                                <ol className="list-decimal list-inside space-y-3 text-gray-300 mb-6">
+                                    <li>Ve a <a href={`${explorerUrl}/verifyContract?a=${token.contract_address}`} target="_blank" className="text-blue-400 underline">PolygonScan Verify</a>.</li>
+                                    <li><strong>Compiler Type:</strong> Solidity (Single file).</li>
+                                    <li><strong>Compiler Version:</strong> v0.8.20+commit...</li>
+                                    <li><strong>License:</strong> MIT.</li>
+                                    <li><strong>Optimization:</strong> No (o Yes con 200 runs si falla).</li>
+                                    <li><strong>Source Code:</strong> Copia y pega TODO el siguiente código:</li>
+                                </ol>
+
+                                <div className="relative">
+                                    <textarea
+                                        readOnly
+                                        value={flatCode || "Cargando código..."}
+                                        className="w-full h-48 bg-black text-xs text-green-400 font-mono p-4 rounded border border-gray-700"
+                                    />
+                                    <button
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(flatCode);
+                                            alert("Código Copiado!");
+                                        }}
+                                        className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1 rounded"
+                                    >
+                                        Copiar
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
