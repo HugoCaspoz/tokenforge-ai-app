@@ -16,7 +16,13 @@ function resolveImport(importPath, currentDir) {
     return null;
 }
 
+let emittedSPDX = false;
+let emittedPragma = false;
+
 function processFile(filePath) {
+    // Normalize path for consistent checking (though we use Set for dedup)
+    filePath = path.resolve(filePath);
+
     if (processedFiles.has(filePath)) return "";
     processedFiles.add(filePath);
 
@@ -26,7 +32,8 @@ function processFile(filePath) {
     let output = "";
 
     for (let line of lines) {
-        if (line.trim().startsWith('import')) {
+        const trimmed = line.trim();
+        if (trimmed.startsWith('import')) {
             const match = line.match(/import\s+["']([^"']+)["'];/);
             if (match) {
                 const importPath = match[1];
@@ -38,9 +45,6 @@ function processFile(filePath) {
                     output += `// MISSING IMPORT: ${importPath}\n`;
                 }
             } else {
-                // Handle named imports by simplistic regex or just ignoring (assuming standard OZ structure)
-                // OZ usually uses `import { X } from "Y";` or `import "Y";`
-                // Let's handle generic `from "path"`
                 const matchFrom = line.match(/from\s+["']([^"']+)["'];/);
                 if (matchFrom) {
                     const importPath = matchFrom[1];
@@ -50,20 +54,19 @@ function processFile(filePath) {
                     }
                 }
             }
-        } else if (line.trim().startsWith('pragma solidity')) {
-            // Only keep the pragma from the main file or highest version?
-            // For flattening, we usually strip pragmas except base one, or keep all.
-            // PolygonScan handles multiple pragmas usually, but best to comment out duplicates.
-            if (filePath !== ENTRY_FILE) {
-                output += `// ${line}`;
-            } else {
+        } else if (trimmed.startsWith('pragma solidity')) {
+            if (!emittedPragma) {
                 output += line + "\n";
+                emittedPragma = true;
+            } else {
+                output += `// ${line}\n`;
             }
-        } else if (line.trim().startsWith('// SPDX-License-Identifier')) {
-            if (filePath !== ENTRY_FILE) {
-                output += `// ${line}`;
-            } else {
+        } else if (trimmed.startsWith('// SPDX-License-Identifier')) {
+            if (!emittedSPDX) {
                 output += line + "\n";
+                emittedSPDX = true;
+            } else {
+                output += `// ${line}\n`;
             }
         } else {
             output += line + "\n";
