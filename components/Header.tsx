@@ -17,7 +17,7 @@ export const Header = () => {
   const pathname = usePathname();
 
   // La lógica para mostrar el botón de la billetera no cambia
-  const showWalletButton = pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token') || pathname.startsWith('/manage');
+  const showWalletButton = pathname === '/' || pathname.startsWith('/profile') || pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token') || pathname.startsWith('/manage');
 
   useEffect(() => {
     const getSession = async () => {
