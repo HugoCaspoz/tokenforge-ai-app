@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import type { UserProfile as ServerUserProfile, DeployedToken, NetworkUsage } from '@/app/profile/page';
 import { PLAN_DETAILS, NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
@@ -106,7 +107,18 @@ export function ProfileClient({ profile, deployedTokens, usage }: ProfileClientP
 
       {/* Sección de Tokens Desplegados */}
       <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-        <h2 className="text-2xl font-semibold mb-4">Mis Tokens Desplegados</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold">Mis Tokens Desplegados</h2>
+          {/* ✅ Check if user has quota remaining in ANY network */}
+          {usage.some(u => u.deployed < u.limit) && (
+            <Link
+              href="/create"
+              className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded transition-colors text-sm flex items-center gap-2"
+            >
+              <span>+</span> Crear Nuevo Token
+            </Link>
+          )}
+        </div>
         {deployedTokens.length > 0 ? (
           <ul className="space-y-2">
             {deployedTokens.map(token => {

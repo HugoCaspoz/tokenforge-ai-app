@@ -24,10 +24,12 @@ export default async function DashboardPage({ searchParams }: Props) {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false });
 
+  console.log("Dashboard Debug - User:", user.id);
+  console.log("Dashboard Debug - Projects:", projects?.length, projects);
   if (error) {
     console.error('Error fetching projects:', error);
   }
-  
+
   const paymentSuccess = searchParams.payment === 'success';
 
   return <DashboardClient projects={projects || []} paymentSuccess={paymentSuccess} />;
