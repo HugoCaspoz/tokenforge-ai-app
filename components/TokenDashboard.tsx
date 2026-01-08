@@ -256,7 +256,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             <h2 className="text-2xl font-bold mb-4 text-green-400">Herramientas de Crecimiento</h2>
                             <p className="text-gray-400 mb-6">Utiliza estas herramientas para distribuir tu token y aumentar tu comunidad.</p>
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <LiquidityWizard
+                                    tokenAddress={token.contract_address as `0x${string}`}
+                                    tokenSymbol={token.ticker}
+                                />
+
+                                {/* Manual Fallback Button */}
                                 <a
                                     href={(() => {
                                         const chainId = token.chain_id; // "0x89"
