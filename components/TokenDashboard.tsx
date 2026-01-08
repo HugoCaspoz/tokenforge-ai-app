@@ -40,7 +40,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
         chainId: Number(token.chain_id),
     });
 
-    // Debug Logging
+    // Debug logging for Ownership
+    console.log("---- DEBUG OWNERSHIP ----");
+    console.log("User Address:", userAddress);
+    console.log("Contract Owner:", ownerAddress);
+    console.log("Match?", userAddress && ownerAddress && userAddress.toLowerCase() === ownerAddress.toLowerCase());
+
     if (ownerError) console.error("Owner Fetch Error:", ownerError);
     if (supplyError) console.error("Supply Fetch Error:", supplyError);
 

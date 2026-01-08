@@ -115,18 +115,24 @@ export async function POST(req: NextRequest) {
 
         console.log(`Deployment queued. TX: ${txHash}, Predicted Address: ${deployedAddress}`);
 
-        // 6. Guardar en DB
+        // 6. Guardar en DB (Upsert to avoid duplicates if ID exists)
+        const dbPayload: any = {
+            user_id: user.id,
+            name: tokenData.name,
+            ticker: tokenData.ticker,
+            description: tokenData.description,
+            chain_id: chainId,
+            contract_address: deployedAddress,
+            logo_url: tokenData.logoUrl
+        };
+        // If we have a draft ID, use it to update the existing record
+        if (tokenData.id) {
+            dbPayload.id = tokenData.id;
+        }
+
         const { error: insertError } = await supabase
             .from('projects')
-            .insert({
-                user_id: user.id,
-                name: tokenData.name,
-                ticker: tokenData.ticker,
-                description: tokenData.description,
-                chain_id: chainId,
-                contract_address: deployedAddress,
-                logo_url: tokenData.logoUrl
-            });
+            .upsert(dbPayload)
 
         if (insertError) {
             // Critical: Contract deployed but DB failed. Log heavily.
