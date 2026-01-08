@@ -192,18 +192,25 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <a
                                     href={(() => {
                                         const chainId = token.chain_id; // "0x89"
-                                        if (chainId === "0x89") return `https://quickswap.exchange/#/add/ETH/${token.contract_address}`;
-                                        if (chainId === "0x38") return `https://pancakeswap.finance/add/BNB/${token.contract_address}`;
+                                        // QuickSwap: Uses Hyphen separator and WMATIC Address
+                                        if (chainId === "0x89") return `https://quickswap.exchange/#/add/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270-${token.contract_address}`;
+                                        // PancakeSwap: Uses WBNB Address
+                                        if (chainId === "0x38") return `https://pancakeswap.finance/add/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/${token.contract_address}`;
+                                        // Uniswap: Uses ETH (Native)
                                         if (chainId === "0x1") return `https://app.uniswap.org/#/add/ETH/${token.contract_address}`;
                                         return '#';
                                     })()}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer block border border-transparent hover:border-pink-500 group"
+                                    className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer block border border-transparent hover:border-pink-500 group relative"
+                                    title="Debes conectar tu wallet en el DEX para ver el par"
                                 >
                                     <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🦄</div>
                                     <h3 className="font-bold text-white">Añadir Liquidez</h3>
                                     <p className="text-xs text-gray-300 mt-2">Crear Mercado (Pool)</p>
+                                    <span className="absolute bottom-2 left-0 w-full text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        (Click para abrir DEX)
+                                    </span>
                                 </a>
 
                                 <div className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer border border-green-500/50">
