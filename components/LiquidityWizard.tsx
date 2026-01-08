@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useAccount, useWriteContract } from 'wagmi';
-import { parseUnits, maxUint256 } from 'viem';
+import { useState, useEffect } from 'react';
+import { useAccount, useWriteContract, usePublicClient, useReadContract } from 'wagmi';
+import { parseUnits, maxUint256, formatEther } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
 // QuickSwap V3 NonfungiblePositionManager on Polygon
@@ -61,7 +61,7 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
     if (amount0 === BigInt(0)) return BigInt(0);
     const numerator = amount1 * (BigInt(1) << BigInt(192));
     const ratio = numerator / amount0;
-    
+
     let z = (ratio + BigInt(1)) / BigInt(2);
     let y = ratio;
     while (z < y) {
@@ -73,11 +73,11 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
     const { address, chainId } = useAccount();
-    
+
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
-    
+
     const isToken0 = tokenAddress.toLowerCase() < WMATIC.toLowerCase();
     const token0 = isToken0 ? tokenAddress : WMATIC;
     const token1 = isToken0 ? WMATIC : tokenAddress;
@@ -119,7 +119,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 abi: CREATE_ABI,
                 functionName: 'createAndInitializePoolIfNecessary',
                 args: [token0, token1, 3000, sqrtPriceX96],
-                 // chainId removed to avoid connector crash
+                // chainId removed to avoid connector crash
             });
             alert("✅ Mercado Inicializado. Ahora dale a 'Añadir Liquidez' (Paso 3).");
         } catch (e) {
@@ -153,15 +153,15 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                     tickUpper,
                     amount0Desired: amount0,
                     amount1Desired: amount1,
-                    amount0Min: BigInt(0), 
+                    amount0Min: BigInt(0),
                     amount1Min: BigInt(0),
                     recipient: address,
                     deadline: BigInt(Math.floor(Date.now() / 1000) + 1200)
                 }],
                 value: parseUnits(amountPOL, 18),
-                 // chainId removed to avoid connector crash
+                // chainId removed to avoid connector crash
             });
-            
+
             alert("🎉 ¡ÉXITO! Liquidez Añadida. Refresca QuickSwap en unos minutos.");
         } catch (e) {
             console.error(e);
@@ -177,28 +177,28 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             <p className="text-sm text-gray-300 mb-4">Sigue los pasos en orden para evitar errores.</p>
 
             <div className="space-y-4">
-                 {/* Safety Check UI */}
+                {/* Safety Check UI */}
                 {chainId && chainId !== 137 && (
-                     <div className="bg-red-500/20 border border-red-500 p-2 rounded text-center text-xs text-red-200 font-bold animate-pulse">
+                    <div className="bg-red-500/20 border border-red-500 p-2 rounded text-center text-xs text-red-200 font-bold animate-pulse">
                         ⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet en tu Wallet.
                     </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
-                     <div>
+                    <div>
                         <label className="text-xs text-gray-400">Tokens ({tokenSymbol})</label>
-                        <input 
-                            type="number" 
+                        <input
+                            type="number"
                             value={amountToken}
                             onChange={e => setAmountToken(e.target.value)}
                             className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
                             placeholder="Ej. 900000"
                         />
                     </div>
-                     <div>
+                    <div>
                         <label className="text-xs text-gray-400">POL (Matic)</label>
-                        <input 
-                            type="number" 
+                        <input
+                            type="number"
                             value={amountPOL}
                             onChange={e => setAmountPOL(e.target.value)}
                             className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
@@ -216,14 +216,14 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                         <span>1. Aprobar {tokenSymbol}</span>
                         <span>🔓</span>
                     </button>
-                    
+
                     <button
                         onClick={handleCreatePool}
-                        disabled={isProcessing}
-                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded flex justify-between px-4"
+                        disabled={isProcessing || !!poolExists}
+                        className={`w-full font-bold py-2 rounded flex justify-between px-4 ${poolExists ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
                     >
-                        <span>2. Inicializar Mercado</span>
-                        <span>🏗️</span>
+                        <span>{poolExists ? "2. Mercado Ya Existe (Saltar)" : "2. Inicializar Mercado"}</span>
+                        <span>{poolExists ? "✅" : "🏗️"}</span>
                     </button>
 
                     <button
