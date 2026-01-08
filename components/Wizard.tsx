@@ -34,43 +34,13 @@ export default function Wizard() {
     setSaveError('');
 
     // Si tenemos los datos mínimos para guardar, procedemos
+    /* 
+       DISABLED: User requested NO draft creation. Saved only on deployment.
     if (updatedData.name && updatedData.ticker) {
       setIsSaving(true);
-
-      // 1. Preguntamos a Supabase directamente por el usuario actual.
-      const { data: { user } } = await supabase.auth.getUser();
-
-      // 2. Si existe el usuario, usamos su ID (que es un UUID de Supabase).
-      if (user) {
-        const objectToSave = {
-          id: updatedData.id,
-          user_id: user.id, // ¡Este es el ID de Supabase, no de GitHub!
-          name: updatedData.name,
-          ticker: updatedData.ticker,
-          description: updatedData.description,
-          logo_url: updatedData.logoUrl,
-        };
-
-        const { data, error } = await supabase
-          .from('projects')
-          .upsert(objectToSave)
-          .select()
-          .single();
-
-        if (error) {
-          console.error('Error al guardar en Supabase:', error);
-          setSaveError('No se pudo guardar el proyecto.');
-        } else if (data) {
-          setTokenData(prev => ({ ...prev, id: data.id }));
-        }
-
-      } else {
-        const errorMsg = "No se puede guardar: Sesión de usuario no encontrada.";
-        console.error(errorMsg);
-        setSaveError(errorMsg);
-      }
-      setIsSaving(false);
+       ... logic removed ...
     }
+    */
   };
 
   const nextStep = () => setStep(prev => prev + 1);

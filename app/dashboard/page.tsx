@@ -22,6 +22,7 @@ export default async function DashboardPage({ searchParams }: Props) {
     .from('projects')
     .select('id, name, ticker, logo_url, contract_address, chain_id')
     .eq('user_id', user.id)
+    .not('contract_address', 'is', null)
     .order('created_at', { ascending: false });
 
   console.log("Dashboard Debug - User:", user.id);
