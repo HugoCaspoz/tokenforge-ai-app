@@ -189,11 +189,23 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             <p className="text-gray-400 mb-6">Utiliza estas herramientas para distribuir tu token y aumentar tu comunidad.</p>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                                <div className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer">
-                                    <div className="text-4xl mb-3">🦄</div>
-                                    <h3 className="font-bold">Añadir Liquidez</h3>
-                                    <p className="text-xs text-gray-300 mt-2">Crear par en Uniswap</p>
-                                </div>
+                                <a
+                                    href={(() => {
+                                        const chainId = token.chain_id; // "0x89"
+                                        if (chainId === "0x89") return `https://quickswap.exchange/#/add/ETH/${token.contract_address}`;
+                                        if (chainId === "0x38") return `https://pancakeswap.finance/add/BNB/${token.contract_address}`;
+                                        if (chainId === "0x1") return `https://app.uniswap.org/#/add/ETH/${token.contract_address}`;
+                                        return '#';
+                                    })()}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer block border border-transparent hover:border-pink-500 group"
+                                >
+                                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">🦄</div>
+                                    <h3 className="font-bold text-white">Añadir Liquidez</h3>
+                                    <p className="text-xs text-gray-300 mt-2">Crear Mercado (Pool)</p>
+                                </a>
+
                                 <div className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer border border-green-500/50">
                                     <div className="text-4xl mb-3">🎁</div>
                                     <h3 className="font-bold">Airdrop</h3>
