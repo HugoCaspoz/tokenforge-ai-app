@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAccount, useWriteContract, useSwitchChain } from 'wagmi';
+import { useAccount, useWriteContract } from 'wagmi';
 import { parseUnits, encodeFunctionData, maxUint256 } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
@@ -7,7 +7,6 @@ import { TOKEN_ABI } from '../lib/tokenArtifacts';
 const NPM_ADDRESS = '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6';
 const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
-// Extended ABI for Multicall + Init
 const NPM_ABI = [
     {
         "inputs": [{ "internalType": "bytes[]", "name": "data", "type": "bytes[]" }],
@@ -68,18 +67,11 @@ const NPM_ABI = [
     }
 ] as const;
 
-// Helper to calculate sqrtPriceX96 = sqrt(amount1/amount0) * 2^96
 function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
     if (amount0 === BigInt(0)) return BigInt(0);
-    // price = amount1 / amount0
-    // sqrtPrice = sqrt(price)
-    // Q96 = 2^96
-    // We do: sqrt( (amount1 * 2^192) / amount0 )
-    // This maintains precision.
     const numerator = amount1 * (BigInt(1) << BigInt(192));
     const ratio = numerator / amount0;
 
-    // Integer square root
     let z = (ratio + BigInt(1)) / BigInt(2);
     let y = ratio;
     while (z < y) {
@@ -90,8 +82,8 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
 }
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
+    // Removed useSwitchChain to rely on writeContract's internal handling
     const { address, chainId } = useAccount();
-    const { switchChainAsync } = useSwitchChain();
 
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
@@ -107,22 +99,12 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
         if (!amountToken) return;
         setIsApproving(true);
         try {
-            // Force Polygon
-            if (chainId !== 137) {
-                try {
-                    await switchChainAsync({ chainId: 137 });
-                } catch (switchError) {
-                    console.error("Failed to switch chain", switchError);
-                    alert("Por favor, cambia tu red a Polygon Mainnet.");
-                    return;
-                }
-            }
-
             await writeContractAsync({
                 address: tokenAddress,
                 abi: TOKEN_ABI,
                 functionName: 'approve',
                 args: [NPM_ADDRESS, maxUint256],
+                chainId: 137
             });
             alert("Aprobado! Ahora puedes crear la liquidez.");
         } catch (e) {
@@ -137,27 +119,13 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
         if (!amountToken || !amountPOL || !address) return;
 
         try {
-            // Force Polygon
-            if (chainId !== 137) {
-                try {
-                    await switchChainAsync({ chainId: 137 });
-                } catch (switchError) {
-                    console.error("Failed to switch chain", switchError);
-                    alert("Por favor, cambia tu red a Polygon Mainnet.");
-                    return;
-                }
-            }
-
             const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
             const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
 
-            // 1. Calculate Initial Price (SqrtPriceX96)
             const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
 
-            // 2. Prepare Calldatas for Multicall
             const calldatas: `0x${string}`[] = [];
 
-            // A. Create/Init Pool
             calldatas.push(
                 encodeFunctionData({
                     abi: NPM_ABI,
@@ -166,7 +134,6 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 })
             );
 
-            // B. Mint Position
             const tickLower = -887220;
             const tickUpper = 887220;
 
@@ -190,7 +157,6 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 })
             );
 
-            // C. Refund ETH (If using native POL, essential to get back change)
             calldatas.push(
                 encodeFunctionData({
                     abi: NPM_ABI,
@@ -198,13 +164,13 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 })
             );
 
-            // 3. Execute Multicall
             await writeContractAsync({
                 address: NPM_ADDRESS,
                 abi: NPM_ABI,
                 functionName: 'multicall',
                 args: [calldatas],
-                value: parseUnits(amountPOL, 18)
+                value: parseUnits(amountPOL, 18),
+                chainId: 137
             });
 
             alert("¡Mercado Creado con Éxito! 🦄🚀");
@@ -257,7 +223,12 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                         2. Lanzar Mercado 🚀
                     </button>
                 </div>
-                <p className="text-xs text-gray-400 text-center">Fee: 0.3% | Rango: Full Range (Automático)</p>
+                {chainId !== 137 && (
+                    <p className="text-xs text-red-400 text-center mt-2">
+                        ⚠️ Asegúrate de estar en Polygon Mainnet
+                    </p>
+                )}
+                <p className="text-xs text-gray-400 text-center mt-1">Fee: 0.3% | Rango: Full Range (Automático)</p>
             </div>
         </div>
     );
