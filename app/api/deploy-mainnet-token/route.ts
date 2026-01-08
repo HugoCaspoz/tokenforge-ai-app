@@ -105,12 +105,15 @@ export async function POST(req: NextRequest) {
 
         const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress);
 
-        console.log(`Deploy transaction sent: ${contract.deploymentTransaction()?.hash}`);
+        // console.log(`Deploy transaction sent: ${contract.deploymentTransaction()?.hash}`);
 
-        await contract.waitForDeployment();
+        // OPTIMIZATION: Do NOT wait for blocking deployment (avoid Vercel Timeout)
+        // await contract.waitForDeployment();
 
         const deployedAddress = await contract.getAddress();
-        console.log(`Deployed at: ${deployedAddress}`);
+        const txHash = contract.deploymentTransaction()?.hash;
+
+        console.log(`Deployment queued. TX: ${txHash}, Predicted Address: ${deployedAddress}`);
 
         // 6. Guardar en DB
         const { error: insertError } = await supabase
