@@ -1,5 +1,5 @@
 const RPC_URL = 'https://polygon-rpc.com';
-const CONTRACT_ADDRESS = '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174';
+const CONTRACT_ADDRESS = '0x1aFB0b83074f661248af48739b61A063571B32f3';
 
 async function main() {
     console.log(`Checking code at ${CONTRACT_ADDRESS} via ${RPC_URL}...`);
@@ -59,11 +59,17 @@ async function main() {
                 params: [{ to: CONTRACT_ADDRESS, data: '0x8da5cb5b' }, 'latest']
             })
         });
-        const readData = await readRes.json();
-        if (readData.error) {
-            console.error('Owner Read Error:', readData.error);
-        } else {
-            console.log('Owner Read Result:', readData.result);
+        const readText = await readRes.text();
+        console.log("Raw Owner Response:", readText);
+        try {
+            const readData = JSON.parse(readText);
+            if (readData.error) {
+                console.error('Owner Read Error:', readData.error);
+            } else {
+                console.log('Owner Read Result:', readData.result);
+            }
+        } catch (e) {
+            console.error("JSON Parse Error:", e);
         }
 
         // Read Raw Storage Slot 0 (Owner usually)

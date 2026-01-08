@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@openzeppelin/contracts": "^5.4.0",
     "@stripe/stripe-js": "^7.4.0",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
@@ -23,6 +24,7 @@
     "openai": "^5.8.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "solc": "^0.8.33",
     "stripe": "^18.2.1",
     "viem": "^2.31.6",
     "wagmi": "^2.15.6"
