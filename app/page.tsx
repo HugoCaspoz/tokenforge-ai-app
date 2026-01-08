@@ -31,19 +31,19 @@ export default function LandingPage() {
           initial="hidden"
           animate="visible"
         >
-          <motion.h1 
+          <motion.h1
             className="text-4xl font-bold tracking-tight text-white sm:text-6xl"
             variants={itemVariants}
           >
-            Tu Visión, Tu Token, <br /> Potenciado por <span className="text-purple-400">Inteligencia Artificial</span>
+            Lanza tu token rapidamente, <br /> configura airdrops y gestiona tu liquidez <span className="text-purple-400">desde un solo lugar.</span>
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="mt-6 text-lg leading-8 text-gray-300"
             variants={itemVariants}
           >
-            Deja de imaginar. Crea, diseña y lanza tu propia criptomoneda en minutos. Sin una sola línea de código.
+
           </motion.p>
-          <motion.div 
+          <motion.div
             className="mt-10 flex items-center justify-center gap-x-6"
             variants={itemVariants}
           >
@@ -61,32 +61,62 @@ export default function LandingPage() {
       <ScrollAnimation className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-2xl mx-auto lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-purple-400">La Plataforma Definitiva</h2>
+            <h2 className="text-base font-semibold leading-7 text-purple-400">Simple y Rápido</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              De la Idea al Lanzamiento, Todo en un Mismo Lugar
+              Cómo funciona
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              {/* Feature Grande */}
-              <div className="lg:col-span-2 rounded-xl bg-white/5 p-8 ring-1 ring-inset ring-white/10">
-                <h3 className="text-xl font-bold text-white">🧠 Asistente Creativo con IA</h3>
-                <p className="mt-4 text-gray-300">¿Sin ideas? No hay problema. Nuestra IA sugiere nombres, tickers, logos y hasta el propósito de tu token, convirtiendo el bloqueo creativo en un torbellino de posibilidades.</p>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+              {/* Step 1 */}
+              <div className="flex flex-col items-center text-center p-6 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/50 transition-colors">
+                <div className="mb-4 text-4xl">⚙️</div>
+                <h3 className="text-xl font-bold text-white mb-2">1. Configura</h3>
+                <p className="text-gray-300">Define nombre y funciones.</p>
               </div>
-              {/* Feature Pequeña */}
-              <div className="rounded-xl bg-white/5 p-8 ring-1 ring-inset ring-white/10">
-                <h3 className="text-xl font-bold text-white">📄 Contratos Seguros</h3>
-                <p className="mt-4 text-gray-300">Generamos código ERC20 estándar, basado en plantillas auditadas.</p>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center text-center p-6 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/50 transition-colors">
+                <div className="mb-4 text-4xl">🚀</div>
+                <h3 className="text-xl font-bold text-white mb-2">2. Despliega</h3>
+                <p className="text-gray-300">Lanza a la red con un clic.</p>
               </div>
-              {/* Feature Pequeña */}
-              <div className="rounded-xl bg-white/5 p-8 ring-1 ring-inset ring-white/10">
-                <h3 className="text-xl font-bold text-white">🚀 Despliegue en 1 Clic</h3>
-                <p className="mt-4 text-gray-300">Lanza en Testnet para probar sin riesgo, o en Mainnet cuando estés listo para el mundo.</p>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center text-center p-6 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/50 transition-colors">
+                <div className="mb-4 text-4xl">📊</div>
+                <h3 className="text-xl font-bold text-white mb-2">3. Gestiona</h3>
+                <p className="text-gray-300">Envía drops y controla tus holders.</p>
               </div>
-              {/* Feature Grande */}
-              <div className="lg:col-span-2 rounded-xl bg-white/5 p-8 ring-1 ring-inset ring-white/10">
-                <h3 className="text-xl font-bold text-white">🎨 Diseño de Identidad Visual</h3>
-                <p className="mt-4 text-gray-300">No solo creas un token, creas una marca. La IA de DALL·E 3 genera un logo profesional y único que representa la esencia de tu proyecto.</p>
+            </div>
+          </div>
+
+          {/* Networks Section */}
+          <div className="mt-24 border-t border-white/10 pt-16">
+            <div className="mx-auto max-w-7xl px-6 lg:px-8">
+              <h2 className="text-center text-lg font-semibold leading-8 text-white mb-10">
+                Disponible en las mejores redes
+              </h2>
+              <div className="mx-auto grid max-w-lg grid-cols-3 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:gap-x-10 lg:mx-0 lg:max-w-none">
+
+                {/* Polygon */}
+                <div className="flex flex-col items-center gap-2">
+                  <svg className="h-12 w-12 text-[#8247E5]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#8247E5" opacity="0.2" /><path d="M16.586 11.838l-4.596 7.641-4.596-7.641 4.596-7.636 4.596 7.636zM12 19.479l4.596-7.641H7.404L12 19.479zm0-15.282L7.404 11.838h9.192L12 4.197z" fill="#FFF" /></svg>
+                  <span className="text-sm font-medium text-gray-400">Polygon</span>
+                </div>
+
+                {/* BNB */}
+                <div className="flex flex-col items-center gap-2 opacity-60">
+                  <svg className="h-12 w-12 text-[#F0B90B]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#F0B90B" opacity="0.2" /><path d="M12 16.5l3-3-3-3-3 3 3 3zm0-9l-3 3 3 3 3-3-3-3zm-6 4.5l3 3-3 3-3-3 3-3zm12 0l3 3-3 3-3-3 3-3z" fill="#FFF" /></svg>
+                  <span className="text-sm font-medium text-gray-500">BNB (Próximamente)</span>
+                </div>
+
+                {/* Ethereum */}
+                <div className="flex flex-col items-center gap-2 opacity-60">
+                  <svg className="h-12 w-12 text-[#627EEA]" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#627EEA" opacity="0.2" /><path d="M12 4.5l-6 10 6 3.5 6-3.5-6-10zm0 15l-6-3.5 6 8.5 6-8.5-6 3.5z" fill="#FFF" /></svg>
+                  <span className="text-sm font-medium text-gray-500">Ethereum (Próximamente)</span>
+                </div>
+
               </div>
             </div>
           </div>
