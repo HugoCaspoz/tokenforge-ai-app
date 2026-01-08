@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/client';
 import { NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
+import LiquidityWizard from './LiquidityWizard';
 
 interface TokenDashboardProps {
     token: {
