@@ -90,7 +90,9 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
 }
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
-    const { address } = useAccount();
+    const { address, chainId } = useAccount();
+    const { switchChainAsync } = useSwitchChain();
+
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
     const [isApproving, setIsApproving] = useState(false);
@@ -105,6 +107,17 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
         if (!amountToken) return;
         setIsApproving(true);
         try {
+            // Force Polygon
+            if (chainId !== 137) {
+                try {
+                    await switchChainAsync({ chainId: 137 });
+                } catch (switchError) {
+                    console.error("Failed to switch chain", switchError);
+                    alert("Por favor, cambia tu red a Polygon Mainnet.");
+                    return;
+                }
+            }
+
             await writeContractAsync({
                 address: tokenAddress,
                 abi: TOKEN_ABI,
@@ -114,7 +127,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             alert("Aprobado! Ahora puedes crear la liquidez.");
         } catch (e) {
             console.error(e);
-            alert("Error al aprobar.");
+            alert("Error al aprobar: " + ((e as any).shortMessage || (e as any).message));
         } finally {
             setIsApproving(false);
         }
@@ -124,6 +137,17 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
         if (!amountToken || !amountPOL || !address) return;
 
         try {
+            // Force Polygon
+            if (chainId !== 137) {
+                try {
+                    await switchChainAsync({ chainId: 137 });
+                } catch (switchError) {
+                    console.error("Failed to switch chain", switchError);
+                    alert("Por favor, cambia tu red a Polygon Mainnet.");
+                    return;
+                }
+            }
+
             const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
             const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
 
@@ -131,7 +155,6 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
 
             // 2. Prepare Calldatas for Multicall
-            // Uses standard multicall pattern to chain Init -> Mint -> Refund
             const calldatas: `0x${string}`[] = [];
 
             // A. Create/Init Pool
@@ -176,8 +199,6 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             );
 
             // 3. Execute Multicall
-            // Send full users input value as msg.value. 
-            // The router will wrap it to WMATIC for the pool, and refundETH will return the remaining dust.
             await writeContractAsync({
                 address: NPM_ADDRESS,
                 abi: NPM_ABI,
