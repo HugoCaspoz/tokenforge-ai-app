@@ -36,6 +36,17 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
         chainId: Number(token.chain_id),
     });
 
+    const { data: balanceOf } = useReadContract({
+        address: token.contract_address as `0x${string}`,
+        abi: TOKEN_ABI,
+        functionName: 'balanceOf',
+        args: [userAddress as `0x${string}`],
+        chainId: Number(token.chain_id),
+        query: {
+            enabled: !!userAddress,
+        }
+    });
+
     const { data: totalSupply, error: supplyError } = useReadContract({
         address: token.contract_address as `0x${string}`,
         abi: TOKEN_ABI,
@@ -118,7 +129,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             {totalSupply ? (Number(totalSupply) / 10 ** 18).toLocaleString() : 'Cargando...'}
                                         </span>
                                     </div>
-                                    <div className="flex justify-between">
+                                    <div className="flex justify-between border-t border-gray-800 pt-2 mt-2">
+                                        <span className="text-gray-400">Tu Balance:</span>
+                                        <span className="font-mono text-green-400 font-bold">
+                                            {balanceOf ? (Number(balanceOf) / 10 ** 18).toLocaleString() : '0'}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between border-t border-gray-800 pt-2 mt-2">
                                         <span className="text-gray-400">Contract Owner:</span>
                                         <span className="font-mono text-blue-400 text-xs truncate max-w-[150px]" title={ownerAddress as string}>{ownerAddress as string || '...'}</span>
                                     </div>
