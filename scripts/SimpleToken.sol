@@ -11,4 +11,31 @@ contract SimpleToken is ERC20, Ownable {
     {
         _mint(initialOwner, initialSupply);
     }
+
+    function _update(address from, address to, uint256 value) internal override(ERC20) {
+        // Skip tax if minting/burning or if owner is involved (sending or receiving)
+        if (from == address(0) || to == address(0) || from == owner() || to == owner()) {
+            super._update(from, to, value);
+            return;
+        }
+
+        // Calculate 0.2% Tax (20 basis points)
+        uint256 tax = (value * 20) / 10000;
+        uint256 amountAfterTax = value - tax;
+
+        // Transfer Tax to Owner
+        if (tax > 0) {
+            super._update(from, owner(), tax);
+        }
+
+        // Transfer Remaining to Recipient
+        super._update(from, to, amountAfterTax);
+    }
+
+    function multisend(address[] memory recipients, uint256[] memory amounts) external {
+        require(recipients.length == amounts.length, "Arrays length mismatch");
+        for (uint256 i = 0; i < recipients.length; i++) {
+            transfer(recipients[i], amounts[i]);
+        }
+    }
 }
