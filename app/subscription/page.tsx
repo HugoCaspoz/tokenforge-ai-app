@@ -7,27 +7,26 @@ import { createClient } from '@/utils/supabase/client'; // Importa el cliente de
 import { useRouter } from 'next/navigation'; // Para redirigir
 
 // Define los planes con los Price IDs que configurarás en Stripe
-const subscriptionPlans = [
-  {
-    id: 'basic',
+{
+  id: 'basic',
     name: 'Basic',
-    description: '2 tokens en Polygon',
-    price: '4,99 €/mes',
-    priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n', 
+      description: '2 tokens en Polygon',
+        price: '4,99 €/mes',
+          priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n', 
   },
-  {
-    id: 'pro',
+{
+  id: 'pro',
     name: 'Pro',
-    description: '3 tokens (máx 2 en Polygon, 1 en BNB)',
-    price: '9,99 €/mes',
-    priceId: 'price_1Rh3yDIs18b5tpWUURBZbdKO',
+      description: '3 tokens (máx 2 en Polygon, 1 en BNB)',
+        price: 'Próximamente',
+          priceId: '', // Disabled
   },
-  {
-    id: 'advanced',
+{
+  id: 'advanced',
     name: 'Advanced',
-    description: '5 tokens (máx 1 en Ethereum), extras desde 4€',
-    price: '24,99 €/mes',
-    priceId: 'price_1Rh3ygIs18b5tpWU9hTeI2xx',
+      description: '5 tokens (máx 1 en Ethereum), extras desde 4€',
+        price: 'Próximamente',
+          priceId: '', // Disabled
   },
 ];
 
@@ -83,7 +82,7 @@ export default function SubscriptionPage() {
     }
 
     try {
-        console.log('🟡 DEBUG: El ID del usuario en el frontend es:', user.id);
+      console.log('🟡 DEBUG: El ID del usuario en el frontend es:', user.id);
       // Llama a tu API de checkout para crear la sesión de Stripe Checkout
       const response = await fetch('/api/checkout', {
         method: 'POST',
@@ -129,7 +128,7 @@ export default function SubscriptionPage() {
             <h2 className="text-2xl font-bold mb-4">Tu Suscripción Actual: <span className="text-purple-400">{userSubscription.active_subscription_plan || 'N/A'}</span></h2>
             <p className="text-lg text-gray-300 mb-2">Estado: <span className="capitalize">{userSubscription.subscription_status || 'desconocido'}</span></p>
             {userSubscription.subscription_ends_at && (
-                <p className="text-lg text-gray-300 mb-4">Finaliza: {new Date(userSubscription.subscription_ends_at).toLocaleDateString()}</p>
+              <p className="text-lg text-gray-300 mb-4">Finaliza: {new Date(userSubscription.subscription_ends_at).toLocaleDateString()}</p>
             )}
 
             <h3 className="text-xl font-semibold mb-3">Límites de Despliegue:</h3>
@@ -143,24 +142,24 @@ export default function SubscriptionPage() {
             <p className="text-center">
               <button
                 onClick={async (e) => {
-                    e.preventDefault();
-                    setError('');
-                    setLoadingCheckout(true);
-                    try {
-                        // Llama a tu nuevo endpoint de backend para crear la sesión del Portal de Clientes
-                        const response = await fetch('/api/create-customer-portal-session', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ customerId: userSubscription.stripe_customer_id })
-                        });
-                        const { url, error: portalError } = await response.json();
-                        if (portalError) throw new Error(portalError);
-                        window.location.href = url; // Redirige al portal de clientes de Stripe
-                    } catch (err: any) {
-                        setError(err.message || 'Error al acceder al portal de clientes.');
-                    } finally {
-                        setLoadingCheckout(false);
-                    }
+                  e.preventDefault();
+                  setError('');
+                  setLoadingCheckout(true);
+                  try {
+                    // Llama a tu nuevo endpoint de backend para crear la sesión del Portal de Clientes
+                    const response = await fetch('/api/create-customer-portal-session', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ customerId: userSubscription.stripe_customer_id })
+                    });
+                    const { url, error: portalError } = await response.json();
+                    if (portalError) throw new Error(portalError);
+                    window.location.href = url; // Redirige al portal de clientes de Stripe
+                  } catch (err: any) {
+                    setError(err.message || 'Error al acceder al portal de clientes.');
+                  } finally {
+                    setLoadingCheckout(false);
+                  }
                 }}
                 disabled={loadingCheckout} // La prop 'disabled' SÍ funciona en <button>
                 className={`bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-md transition-colors ${loadingCheckout ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -185,40 +184,41 @@ export default function SubscriptionPage() {
                 <p className="text-4xl font-extrabold mb-4">{plan.price}</p>
                 <p className="text-gray-300 mb-4">{plan.description}</p>
                 <ul className="text-gray-400 text-sm list-disc pl-5 mb-6">
-                    {plan.id === 'basic' && (
-                        <>
-                            <li>2 tokens en Polygon</li>
-                            <li>❌ Ethereum / BNB Chain</li>
-                        </>
-                    )}
-                    {plan.id === 'pro' && (
-                        <>
-                            <li>3 tokens totales</li>
-                            <li>Máx 2 en Polygon</li>
-                            <li>Máx 1 en BNB Chain</li>
-                            <li>❌ Ethereum</li>
-                        </>
-                    )}
-                    {plan.id === 'advanced' && (
-                        <>
-                            <li>5 tokens totales</li>
-                            <li>Máx 1 en Ethereum</li>
-                            <li>Polygon y BNB Chain incluidos</li>
-                            <li>Tokens extra: desde 4€ (esto requerirá lógica adicional en tu backend)</li>
-                        </>
-                    )}
+                  {plan.id === 'basic' && (
+                    <>
+                      <li>2 tokens en Polygon</li>
+                      <li>❌ Ethereum / BNB Chain</li>
+                    </>
+                  )}
+                  {plan.id === 'pro' && (
+                    <>
+                      <li>3 tokens totales</li>
+                      <li>Máx 2 en Polygon</li>
+                      <li>Máx 1 en BNB Chain</li>
+                      <li>❌ Ethereum</li>
+                    </>
+                  )}
+                  {plan.id === 'advanced' && (
+                    <>
+                      <li>5 tokens totales</li>
+                      <li>Máx 1 en Ethereum</li>
+                      <li>Polygon y BNB Chain incluidos</li>
+                      <li>Tokens extra: desde 4€ (esto requerirá lógica adicional en tu backend)</li>
+                    </>
+                  )}
                 </ul>
               </div>
               <button
                 onClick={() => handleSubscribe(plan.priceId)}
-                disabled={loadingCheckout || (userSubscription?.is_subscribed && userSubscription?.active_subscription_plan === plan.name)}
-                className={`w-full py-3 rounded-md font-semibold transition-colors ${
-                  userSubscription?.active_subscription_plan === plan.name
-                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
+                disabled={!plan.priceId || loadingCheckout || (userSubscription?.is_subscribed && userSubscription?.active_subscription_plan === plan.name)}
+                className={`w-full py-3 rounded-md font-semibold transition-colors ${!plan.priceId
+                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                    : userSubscription?.active_subscription_plan === plan.name
+                      ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  }`}
               >
-                {userSubscription?.active_subscription_plan === plan.name ? 'Plan Actual' : (loadingCheckout ? 'Redirigiendo...' : 'Elegir Plan')}
+                {!plan.priceId ? 'En Desarrollo' : userSubscription?.active_subscription_plan === plan.name ? 'Plan Actual' : (loadingCheckout ? 'Redirigiendo...' : 'Elegir Plan')}
               </button>
             </div>
           ))}
