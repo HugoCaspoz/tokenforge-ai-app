@@ -260,10 +260,10 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <a
                                     href={(() => {
                                         const chainId = token.chain_id; // "0x89"
-                                        // QuickSwap: Pointing to App directly. Standard compliant format.
-                                        if (chainId === "0x89") return `https://quickswap.exchange/#/add/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270/${token.contract_address}`;
+                                        // QuickSwap DApp: Use standard query params. 'ETH' is often used as placeholder for Native Token (POL/MATIC) in EVM forks.
+                                        if (chainId === "0x89") return `https://dapp.quickswap.exchange/pool?currency0=ETH&currency1=${token.contract_address}`;
                                         // PancakeSwap: Uses WBNB Address
-                                        if (chainId === "0x38") return `https://pancakeswap.finance/add/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c/${token.contract_address}`;
+                                        if (chainId === "0x38") return `https://pancakeswap.finance/add/BNB/${token.contract_address}`;
                                         // Uniswap: Uses ETH (Native)
                                         if (chainId === "0x1") return `https://app.uniswap.org/#/add/ETH/${token.contract_address}`;
                                         return '#';
