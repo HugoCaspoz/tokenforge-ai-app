@@ -8,7 +8,7 @@ interface Project {
   name: string;
   ticker: string;
   logo_url: string | null;
-  is_paid: boolean;
+  is_paid?: boolean;
   contract_address: string | null;
   chain_id: string | null;
 }
@@ -21,14 +21,14 @@ interface DashboardClientProps {
 const explorers = {
   '0x89': 'https://polygonscan.com',
   '0x38': 'https://bscscan.com',
-  '0x1':  'https://etherscan.io',
+  '0x1': 'https://etherscan.io',
 };
 
 export function DashboardClient({ projects, paymentSuccess }: DashboardClientProps) {
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-32">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {paymentSuccess && (
           <div className="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-lg relative mb-8" role="alert">
             <strong className="font-bold">¡Pago completado!</strong>
@@ -47,12 +47,12 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
           {projects && projects.length > 0 ? (
             projects.map((project) => (
               <div key={project.id} className={`bg-gray-800 rounded-lg p-4 flex flex-col ring-1 ${project.contract_address ? 'ring-blue-500' : project.is_paid ? 'ring-green-500' : 'ring-white/10'}`}>
-                
+
                 <div className="relative w-full text-center">
                   {project.contract_address ? (
-                      <span className="absolute -top-6 -right-6 text-xs bg-blue-500 text-white font-bold px-2 py-1 rounded-full z-10">DESPLEGADO</span>
+                    <span className="absolute -top-6 -right-6 text-xs bg-blue-500 text-white font-bold px-2 py-1 rounded-full z-10">DESPLEGADO</span>
                   ) : project.is_paid && (
-                      <span className="absolute -top-6 -right-6 text-xs bg-green-500 text-white font-bold px-2 py-1 rounded-full z-10">PAGADO</span>
+                    <span className="absolute -top-6 -right-6 text-xs bg-green-500 text-white font-bold px-2 py-1 rounded-full z-10">PAGADO</span>
                   )}
 
                   {/* ✅ CORRECCIÓN: El código para mostrar el logo se ha añadido de nuevo aquí. */}
@@ -75,10 +75,10 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
                   <h2 className="text-lg font-bold">{project.name}</h2>
                   <p className="text-sm text-gray-400 bg-gray-700 px-2 py-1 rounded-full mt-1 inline-block">${project.ticker.toUpperCase()}</p>
                 </div>
-                
+
                 <div className="mt-4 w-full">
                   {project.contract_address && project.chain_id ? (
-                    <a 
+                    <a
                       href={`${explorers[project.chain_id as keyof typeof explorers]}/address/${project.contract_address}`}
                       target="_blank"
                       rel="noopener noreferrer"
