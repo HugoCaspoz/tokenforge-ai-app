@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/ERC20.sol)
 
-// pragma solidity ^0.8.20;
 
-// // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/IERC20.sol)
 
-// pragma solidity >=0.4.16;
 
 /**
  * @dev Interface of the ERC-20 standard as defined in the ERC.
@@ -87,10 +83,8 @@ interface IERC20 {
 }
 
 
-// // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.4.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
-// pragma solidity >=0.6.2;
 
 
 
@@ -115,10 +109,8 @@ interface IERC20Metadata is IERC20 {
 }
 
 
-// // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
-// pragma solidity ^0.8.20;
 
 /**
  * @dev Provides information about the current execution context, including the
@@ -145,9 +137,7 @@ abstract contract Context {
 }
 
 
-// // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.4.0) (interfaces/draft-IERC6093.sol)
-// pragma solidity >=0.8.4;
 
 /**
  * @dev Standard ERC-20 Errors
@@ -606,10 +596,8 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
 }
 
 
-// // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)
 
-// pragma solidity ^0.8.20;
 
 
 

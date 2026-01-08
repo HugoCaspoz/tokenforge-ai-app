@@ -58,16 +58,14 @@ function processFile(filePath) {
             if (!emittedPragma) {
                 output += line + "\n";
                 emittedPragma = true;
-            } else {
-                output += `// ${line}\n`;
             }
+            // Else skip completely
         } else if (trimmed.startsWith('// SPDX-License-Identifier')) {
             if (!emittedSPDX) {
                 output += line + "\n";
                 emittedSPDX = true;
-            } else {
-                output += `// ${line}\n`;
             }
+            // Else skip completely
         } else {
             output += line + "\n";
         }
