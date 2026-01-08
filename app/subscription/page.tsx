@@ -7,26 +7,27 @@ import { createClient } from '@/utils/supabase/client'; // Importa el cliente de
 import { useRouter } from 'next/navigation'; // Para redirigir
 
 // Define los planes con los Price IDs que configurarás en Stripe
-{
-  id: 'basic',
+const subscriptionPlans = [
+  {
+    id: 'basic',
     name: 'Basic',
-      description: '2 tokens en Polygon',
-        price: '4,99 €/mes',
-          priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n', 
+    description: '2 tokens en Polygon',
+    price: '4,99 €/mes',
+    priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n',
   },
-{
-  id: 'pro',
+  {
+    id: 'pro',
     name: 'Pro',
-      description: '3 tokens (máx 2 en Polygon, 1 en BNB)',
-        price: 'Próximamente',
-          priceId: '', // Disabled
+    description: '3 tokens (máx 2 en Polygon, 1 en BNB)',
+    price: 'Próximamente',
+    priceId: '', // Disabled
   },
-{
-  id: 'advanced',
+  {
+    id: 'advanced',
     name: 'Advanced',
-      description: '5 tokens (máx 1 en Ethereum), extras desde 4€',
-        price: 'Próximamente',
-          priceId: '', // Disabled
+    description: '5 tokens (máx 1 en Ethereum), extras desde 4€',
+    price: 'Próximamente',
+    priceId: '', // Disabled
   },
 ];
 
@@ -212,10 +213,10 @@ export default function SubscriptionPage() {
                 onClick={() => handleSubscribe(plan.priceId)}
                 disabled={!plan.priceId || loadingCheckout || (userSubscription?.is_subscribed && userSubscription?.active_subscription_plan === plan.name)}
                 className={`w-full py-3 rounded-md font-semibold transition-colors ${!plan.priceId
-                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                    : userSubscription?.active_subscription_plan === plan.name
-                      ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
-                      : 'bg-green-600 hover:bg-green-700 text-white'
+                  ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                  : userSubscription?.active_subscription_plan === plan.name
+                    ? 'bg-gray-600 text-gray-300 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700 text-white'
                   }`}
               >
                 {!plan.priceId ? 'En Desarrollo' : userSubscription?.active_subscription_plan === plan.name ? 'Plan Actual' : (loadingCheckout ? 'Redirigiendo...' : 'Elegir Plan')}
