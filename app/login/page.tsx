@@ -42,7 +42,7 @@ export default function LoginPage() {
           supabaseClient={supabase}
           appearance={{ theme: ThemeSupa }}
           theme="dark"
-          providers={['github']}
+          providers={['github', 'google', 'apple']}
           socialLayout="horizontal"
           redirectTo={redirectUrl}
         />
