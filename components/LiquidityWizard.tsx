@@ -3,18 +3,17 @@ import { useAccount, useWriteContract, usePublicClient, useReadContract } from '
 import { parseUnits, maxUint256, formatEther } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
-// QuickSwap V3 NonfungiblePositionManager on Polygon
+// QuickSwap V3 (Algebra) Addresses on Polygon
 const NPM_ADDRESS = '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6';
-const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 const FACTORY_ADDRESS = '0x411b0fAcC3489691f02038A3b646f8b4a53eE495';
+const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
-// Separate ABIs for clearer usage
+// ALGEBRA (QuickSwap V3) ABIs - NO FEE PARAM IN STRUCTS/FUNCTIONS
 const CREATE_ABI = [
     {
         "inputs": [
             { "internalType": "address", "name": "token0", "type": "address" },
             { "internalType": "address", "name": "token1", "type": "address" },
-            { "internalType": "uint24", "name": "fee", "type": "uint24" },
             { "internalType": "uint160", "name": "sqrtPriceX96", "type": "uint160" }
         ],
         "name": "createAndInitializePoolIfNecessary",
@@ -31,7 +30,7 @@ const MINT_ABI = [
                 "components": [
                     { "internalType": "address", "name": "token0", "type": "address" },
                     { "internalType": "address", "name": "token1", "type": "address" },
-                    { "internalType": "uint24", "name": "fee", "type": "uint24" },
+                    // NO FEE HERE for Algebra
                     { "internalType": "int24", "name": "tickLower", "type": "int24" },
                     { "internalType": "int24", "name": "tickUpper", "type": "int24" },
                     { "internalType": "uint256", "name": "amount0Desired", "type": "uint256" },
@@ -61,10 +60,9 @@ const MINT_ABI = [
 const FACTORY_ABI = [{
     "inputs": [
         { "internalType": "address", "name": "", "type": "address" },
-        { "internalType": "address", "name": "", "type": "address" },
-        { "internalType": "uint24", "name": "", "type": "uint24" }
+        { "internalType": "address", "name": "", "type": "address" }
     ],
-    "name": "getPool",
+    "name": "poolByPair", // Algebra uses poolByPair, not getPool
     "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
@@ -96,13 +94,12 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
     const token0 = isToken0 ? tokenAddress : WMATIC;
     const token1 = isToken0 ? WMATIC : tokenAddress;
 
-    // Check if Pool Exists
+    // Check if Pool Exists (Algebra)
     const { data: poolAddress, refetch: refetchPool } = useReadContract({
         address: FACTORY_ADDRESS,
         abi: FACTORY_ABI,
-        functionName: 'getPool',
-        args: [token0, token1, 3000],
-        // chainId: 137 // Removed to allow safe connector usage
+        functionName: 'poolByPair',
+        args: [token0, token1],
     });
 
     const poolExists = poolAddress && poolAddress !== '0x0000000000000000000000000000000000000000';
@@ -134,7 +131,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 args: [NPM_ADDRESS, maxUint256],
             });
             await waitTx(hash, "Aprobando...");
-            alert("✅ Aprobado Confirmado en Blockchain.");
+            alert("✅ Aprobado Confirmado.");
         } catch (e) {
             console.error(e);
             alert("❌ Error al aprobar: " + ((e as any).shortMessage || (e as any).message));
@@ -143,7 +140,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
         }
     };
 
-    // STEP 2: CREATE POOL
+    // STEP 2: CREATE POOL (Algebra)
     const handleCreatePool = async () => {
         if (!amountToken || !amountPOL) return;
         if (poolExists) {
@@ -161,21 +158,21 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 address: NPM_ADDRESS,
                 abi: CREATE_ABI,
                 functionName: 'createAndInitializePoolIfNecessary',
-                args: [token0, token1, 3000, sqrtPriceX96],
+                args: [token0, token1, sqrtPriceX96], // NO FEE
             });
 
             await waitTx(hash, "Inicializando Mercado...");
-            await refetchPool(); // Check again
+            await refetchPool();
             alert("✅ Mercado Inicializado Correctamente.");
         } catch (e) {
             console.error(e);
-            alert("⚠️ Error (posiblemente ya existe). Intenta el Paso 3.");
+            alert("⚠️ Error: " + ((e as any).shortMessage || (e as any).message));
         } finally {
             setIsProcessing(false);
         }
     };
 
-    // STEP 3: MINT (ADD LIQUIDITY)
+    // STEP 3: MINT (Algebra)
     const handleMint = async () => {
         if (!amountToken || !amountPOL || !address) return;
         setIsProcessing(true);
@@ -183,7 +180,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
             const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
             const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
 
-            const tickLower = -887220;
+            const tickLower = -887220; // Max Range
             const tickUpper = 887220;
 
             const hash = await writeContractAsync({
@@ -193,7 +190,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 args: [{
                     token0,
                     token1,
-                    fee: 3000,
+                    // fee: 3000, // REMOVED
                     tickLower,
                     tickUpper,
                     amount0Desired: amount0,
@@ -216,16 +213,18 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
         }
     };
 
+    const qsLink = `https://quickswap.exchange/#/add-liquidity?currency0=${tokenAddress}&currency1=ETH`;
+
     return (
         <div className="bg-gradient-to-br from-blue-900 to-purple-900 p-6 rounded-xl border border-blue-500/30">
-            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez (Modo Seguro 🛡️)</h3>
-            <p className="text-sm text-gray-300 mb-4">Sigue los pasos en orden para evitar errores.</p>
+            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez (Algebra V3 🛡️)</h3>
+            <p className="text-sm text-gray-300 mb-4">Integración oficial QuickSwap V3 (Algebra).</p>
 
             <div className="space-y-4">
                 {/* Safety Check UI */}
                 {chainId && chainId !== 137 && (
                     <div className="bg-red-500/20 border border-red-500 p-2 rounded text-center text-xs text-red-200 font-bold animate-pulse">
-                        ⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet en tu Wallet.
+                        ⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet.
                     </div>
                 )}
 
@@ -267,7 +266,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                         disabled={isProcessing || !!poolExists}
                         className={`w-full font-bold py-2 rounded flex justify-between px-4 ${poolExists ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
                     >
-                        <span>{poolExists ? "2. Mercado Ya Existe (Saltar)" : "2. Inicializar Mercado"}</span>
+                        <span>{poolExists ? "2. Mercado Ya Existe (Saltar)" : "2. Inicializar (Algebra)"}</span>
                         <span>{poolExists ? "✅" : "🏗️"}</span>
                     </button>
 
@@ -280,7 +279,12 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                         <span>🦄</span>
                     </button>
                 </div>
-                <p className="text-xs text-gray-400 text-center">Si el paso 2 falla o no hace nada, es que ya está creado. Pasa al 3.</p>
+
+                <div className="text-center pt-4">
+                    <a href={qsLink} target="_blank" className="text-xs text-blue-300 underline hover:text-blue-100">
+                        ¿Problemas? Hazlo manualmente en QuickSwap (Click Aquí)
+                    </a>
+                </div>
             </div>
         </div>
     );
