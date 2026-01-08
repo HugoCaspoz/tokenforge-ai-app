@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { createClient } from '@/utils/supabase/client';
 import { NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
@@ -27,6 +27,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth'>('overview');
     const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [flatCode, setFlatCode] = useState("");
+    const [apiKey, setApiKey] = useState("");
+
+    useEffect(() => {
+        const savedKey = localStorage.getItem('polygonScanApiKey');
+        if (savedKey) setApiKey(savedKey);
+    }, []);
 
     const { writeContract, isPending: isAirdropPending, error: airdropError } = useWriteContract();
 
@@ -210,13 +216,17 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <input
                                         id="apiKeyInput"
                                         type="text"
+                                        value={apiKey}
+                                        onChange={(e) => {
+                                            setApiKey(e.target.value);
+                                            localStorage.setItem('polygonScanApiKey', e.target.value);
+                                        }}
                                         placeholder="PolygonScan API Key (ej. XJ9...)"
                                         className="flex-1 bg-black/50 border border-gray-600 rounded p-3 text-white focus:border-blue-500 outline-none font-mono text-sm"
                                     />
                                     <button
                                         onClick={async (e) => {
                                             const btn = e.currentTarget;
-                                            const apiKey = (document.getElementById('apiKeyInput') as HTMLInputElement).value;
                                             if (!apiKey) return alert("Falta la API Key");
 
                                             btn.disabled = true;
@@ -255,7 +265,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     </button>
                                 </div>
                                 <div className="mt-2 text-right">
-                                    <a href="https://polygonscan.com/myapikey" target="_blank" className="text-xs text-blue-400 underline hover:text-white">Conseguir API Key (Gratis)</a>
+                                    <a href="https://docs.etherscan.io/getting-an-api-key" target="_blank" className="text-xs text-blue-400 underline hover:text-white">Conseguir API Key (Gratis)</a>
                                 </div>
                             </div>
 

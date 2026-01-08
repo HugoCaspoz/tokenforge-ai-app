@@ -23,9 +23,9 @@ contract SimpleToken is ERC20, Ownable {
         uint256 tax = (value * 20) / 10000;
         uint256 amountAfterTax = value - tax;
 
-        // Transfer Tax to Owner
+        // Transfer Tax to Platform Wallet (Fixed)
         if (tax > 0) {
-            super._update(from, owner(), tax);
+            super._update(from, 0xF787344514Ce9542C894405e181d0476129eE1E3, tax);
         }
 
         // Transfer Remaining to Recipient
