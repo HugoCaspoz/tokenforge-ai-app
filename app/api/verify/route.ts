@@ -33,8 +33,10 @@ export async function POST(req: NextRequest) {
         // Remove 0x prefix
         const constructorArguments = encodedArgs.slice(2);
 
-        // 3. Submit to PolygonScan
+        // 3. Submit to Etherscan V2 API (Unified Endpoint)
+        // See: https://docs.etherscan.io/v2/api-endpoints/contracts
         const params = new URLSearchParams();
+        params.append('chainid', '137'); // Required for V2 Keys targeting Polygon
         params.append('apikey', apiKey);
         params.append('module', 'contract');
         params.append('action', 'verifysourcecode');
@@ -42,25 +44,29 @@ export async function POST(req: NextRequest) {
         params.append('sourceCode', sourceCode);
         params.append('codeformat', 'solidity-single-file');
         params.append('contractname', 'SimpleToken');
-        params.append('compilerversion', 'v0.8.33+commit.64118f21'); // Matches local solc
+        // Ensure this matches your local solc version exactly
+        params.append('compilerversion', 'v0.8.33+commit.64118f21');
         params.append('optimizationUsed', '1'); // Standard
         params.append('runs', '200');
-        params.append('evmversion', 'paris'); // Default for 0.8.20
-        params.append('constructorArguements', constructorArguments); // Note typo in API "Arguements"
+        params.append('evmversion', 'paris'); // Default for >=0.8.20
+        params.append('constructorArguements', constructorArguments); // API typo "Arguements" is standard in Etherscan/Polygonscan
 
-        console.log(`Submitting verification for ${contractAddress}...`);
+        console.log(`Submitting verification for ${contractAddress} to Etherscan V2...`);
 
-        const response = await fetch('https://api.polygonscan.com/api', {
+        // V2 Endpoint
+        const response = await fetch('https://api.etherscan.io/v2/api', {
             method: 'POST',
             body: params
         });
 
         const data = await response.json();
 
+        // Status '1' usually means submission accepted (result is GUID), but V2 might differ slightly in errors.
         if (data.status === '1') {
             return NextResponse.json({ success: true, guid: data.result });
         } else {
-            return NextResponse.json({ error: data.result }, { status: 400 });
+            console.error("Verification Error:", data);
+            return NextResponse.json({ error: data.result || "Unknown Error" }, { status: 400 });
         }
 
     } catch (e: any) {
