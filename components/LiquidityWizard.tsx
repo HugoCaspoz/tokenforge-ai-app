@@ -1,20 +1,29 @@
 import { useState } from 'react';
 import { useAccount, useWriteContract } from 'wagmi';
-import { parseUnits, encodeFunctionData, maxUint256 } from 'viem';
+import { parseUnits, maxUint256 } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
 // QuickSwap V3 NonfungiblePositionManager on Polygon
 const NPM_ADDRESS = '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6';
 const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
-const NPM_ABI = [
+// Separate ABIs for clearer usage
+const CREATE_ABI = [
     {
-        "inputs": [{ "internalType": "bytes[]", "name": "data", "type": "bytes[]" }],
-        "name": "multicall",
-        "outputs": [{ "internalType": "bytes[]", "name": "results", "type": "bytes[]" }],
+        "inputs": [
+            { "internalType": "address", "name": "token0", "type": "address" },
+            { "internalType": "address", "name": "token1", "type": "address" },
+            { "internalType": "uint24", "name": "fee", "type": "uint24" },
+            { "internalType": "uint160", "name": "sqrtPriceX96", "type": "uint160" }
+        ],
+        "name": "createAndInitializePoolIfNecessary",
+        "outputs": [{ "internalType": "address", "name": "pool", "type": "address" }],
         "stateMutability": "payable",
         "type": "function"
-    },
+    }
+] as const;
+
+const MINT_ABI = [
     {
         "inputs": [
             {
@@ -45,25 +54,6 @@ const NPM_ABI = [
         ],
         "stateMutability": "payable",
         "type": "function"
-    },
-    {
-        "inputs": [
-            { "internalType": "address", "name": "token0", "type": "address" },
-            { "internalType": "address", "name": "token1", "type": "address" },
-            { "internalType": "uint24", "name": "fee", "type": "uint24" },
-            { "internalType": "uint160", "name": "sqrtPriceX96", "type": "uint160" }
-        ],
-        "name": "createAndInitializePoolIfNecessary",
-        "outputs": [{ "internalType": "address", "name": "pool", "type": "address" }],
-        "stateMutability": "payable",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "refundETH",
-        "outputs": [],
-        "stateMutability": "payable",
-        "type": "function"
     }
 ] as const;
 
@@ -82,12 +72,11 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
 }
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
-    // Removed useSwitchChain to rely on writeContract's internal handling
-    const { address, chainId } = useAccount();
+    const { address } = useAccount();
 
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
-    const [isApproving, setIsApproving] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     const isToken0 = tokenAddress.toLowerCase() < WMATIC.toLowerCase();
     const token0 = isToken0 ? tokenAddress : WMATIC;
@@ -95,9 +84,10 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
 
     const { writeContractAsync } = useWriteContract();
 
+    // STEP 1: APPROVE
     const handleApprove = async () => {
         if (!amountToken) return;
-        setIsApproving(true);
+        setIsProcessing(true);
         try {
             await writeContractAsync({
                 address: tokenAddress,
@@ -106,129 +96,141 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                 args: [NPM_ADDRESS, maxUint256],
                 chainId: 137
             });
-            alert("Aprobado! Ahora puedes crear la liquidez.");
+            alert("✅ Aprobado. Ahora dale a 'Inicializar' (Paso 2).");
         } catch (e) {
             console.error(e);
-            alert("Error al aprobar: " + ((e as any).shortMessage || (e as any).message));
+            alert("❌ Error al aprobar: " + ((e as any).shortMessage || (e as any).message));
         } finally {
-            setIsApproving(false);
+            setIsProcessing(false);
         }
     };
 
-    const handleAddLiquidity = async () => {
-        if (!amountToken || !amountPOL || !address) return;
+    // STEP 2: CREATE POOL
+    const handleCreatePool = async () => {
+        if (!amountToken || !amountPOL) return;
+        setIsProcessing(true);
+        try {
+            const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
+            const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
+            const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
 
+            await writeContractAsync({
+                address: NPM_ADDRESS,
+                abi: CREATE_ABI,
+                functionName: 'createAndInitializePoolIfNecessary',
+                args: [token0, token1, 3000, sqrtPriceX96],
+                chainId: 137
+            });
+            alert("✅ Mercado Inicializado. Ahora dale a 'Añadir Liquidez' (Paso 3).");
+        } catch (e) {
+            console.error(e);
+            alert("⚠️ Info: Si el mercado ya existe, esto puede fallar o no hacer nada. Continúa al Paso 3.");
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    // STEP 3: MINT (ADD LIQUIDITY)
+    const handleMint = async () => {
+        if (!amountToken || !amountPOL || !address) return;
+        setIsProcessing(true);
         try {
             const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
             const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
 
-            const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
-
-            const calldatas: `0x${string}`[] = [];
-
-            calldatas.push(
-                encodeFunctionData({
-                    abi: NPM_ABI,
-                    functionName: 'createAndInitializePoolIfNecessary',
-                    args: [token0, token1, 3000, sqrtPriceX96]
-                })
-            );
-
             const tickLower = -887220;
             const tickUpper = 887220;
 
-            calldatas.push(
-                encodeFunctionData({
-                    abi: NPM_ABI,
-                    functionName: 'mint',
-                    args: [{
-                        token0,
-                        token1,
-                        fee: 3000,
-                        tickLower,
-                        tickUpper,
-                        amount0Desired: amount0,
-                        amount1Desired: amount1,
-                        amount0Min: BigInt(0),
-                        amount1Min: BigInt(0),
-                        recipient: address,
-                        deadline: BigInt(Math.floor(Date.now() / 1000) + 1200)
-                    }]
-                })
-            );
-
-            calldatas.push(
-                encodeFunctionData({
-                    abi: NPM_ABI,
-                    functionName: 'refundETH'
-                })
-            );
-
             await writeContractAsync({
                 address: NPM_ADDRESS,
-                abi: NPM_ABI,
-                functionName: 'multicall',
-                args: [calldatas],
+                abi: MINT_ABI,
+                functionName: 'mint',
+                args: [{
+                    token0,
+                    token1,
+                    fee: 3000,
+                    tickLower,
+                    tickUpper,
+                    amount0Desired: amount0,
+                    amount1Desired: amount1,
+                    // Use 0 min to allow flexible execution
+                    amount0Min: BigInt(0),
+                    amount1Min: BigInt(0),
+                    recipient: address,
+                    deadline: BigInt(Math.floor(Date.now() / 1000) + 1200)
+                }],
+                // Important: Provide Value for Mint
                 value: parseUnits(amountPOL, 18),
                 chainId: 137
             });
 
-            alert("¡Mercado Creado con Éxito! 🦄🚀");
+            alert("🎉 ¡ÉXITO! Liquidez Añadida. Refresca QuickSwap en unos minutos.");
         } catch (e) {
             console.error(e);
-            alert("Error: " + ((e as any).shortMessage || (e as any).message));
+            alert("❌ Error al añadir liquidez: " + ((e as any).shortMessage || (e as any).message));
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     return (
         <div className="bg-gradient-to-br from-blue-900 to-purple-900 p-6 rounded-xl border border-blue-500/30">
-            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez Auto-Launch</h3>
-            <p className="text-sm text-gray-300 mb-4">Crea tu mercado y establece el precio inicial automáticamente.</p>
+            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez (Modo Seguro 🛡️)</h3>
+            <p className="text-sm text-gray-300 mb-4">Sigue los pasos en orden para evitar errores.</p>
 
             <div className="space-y-4">
-                <div>
-                    <label className="text-xs text-gray-400">Cantidad de {tokenSymbol} a poner</label>
-                    <input
-                        type="number"
-                        value={amountToken}
-                        onChange={e => setAmountToken(e.target.value)}
-                        className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
-                        placeholder="Ej. 10000"
-                    />
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="text-xs text-gray-400">Tokens ({tokenSymbol})</label>
+                        <input
+                            type="number"
+                            value={amountToken}
+                            onChange={e => setAmountToken(e.target.value)}
+                            className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
+                            placeholder="Ej. 900000"
+                        />
+                    </div>
+                    <div>
+                        <label className="text-xs text-gray-400">POL (Matic)</label>
+                        <input
+                            type="number"
+                            value={amountPOL}
+                            onChange={e => setAmountPOL(e.target.value)}
+                            className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
+                            placeholder="Ej. 1"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <label className="text-xs text-gray-400">Cantidad de POL (Matic) a poner</label>
-                    <input
-                        type="number"
-                        value={amountPOL}
-                        onChange={e => setAmountPOL(e.target.value)}
-                        className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
-                        placeholder="Ej. 50"
-                    />
-                </div>
-
-                <div className="flex gap-2 pt-2">
+                <div className="space-y-2 pt-2">
                     <button
                         onClick={handleApprove}
-                        disabled={isApproving}
-                        className="flex-1 bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 rounded"
+                        disabled={isProcessing}
+                        className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 rounded flex justify-between px-4"
                     >
-                        1. Aprobar {tokenSymbol}
+                        <span>1. Aprobar {tokenSymbol}</span>
+                        <span>🔓</span>
                     </button>
+
                     <button
-                        onClick={handleAddLiquidity}
-                        className="flex-1 bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 rounded"
+                        onClick={handleCreatePool}
+                        disabled={isProcessing}
+                        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded flex justify-between px-4"
                     >
-                        2. Lanzar Mercado 🚀
+                        <span>2. Inicializar Mercado</span>
+                        <span>🏗️</span>
+                    </button>
+
+                    <button
+                        onClick={handleMint}
+                        disabled={isProcessing}
+                        className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded flex justify-between px-4"
+                    >
+                        <span>3. Añadir Liquidez</span>
+                        <span>🦄</span>
                     </button>
                 </div>
-                {chainId !== 137 && (
-                    <p className="text-xs text-red-400 text-center mt-2">
-                        ⚠️ Asegúrate de estar en Polygon Mainnet
-                    </p>
-                )}
-                <p className="text-xs text-gray-400 text-center mt-1">Fee: 0.3% | Rango: Full Range (Automático)</p>
+                <p className="text-xs text-gray-400 text-center">Si el paso 2 falla o no hace nada, es que ya está creado. Pasa al 3.</p>
             </div>
         </div>
     );
