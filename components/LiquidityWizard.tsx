@@ -119,8 +119,8 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
                     tickUpper,
                     amount0Desired: amount0,
                     amount1Desired: amount1,
-                    amount0Min: 0n, // High slippage allowed (User is first provider)
-                    amount1Min: 0n,
+                    amount0Min: BigInt(0), // High slippage allowed (User is first provider)
+                    amount1Min: BigInt(0),
                     recipient: address,
                     deadline: BigInt(Math.floor(Date.now() / 1000) + 1200) // 20 mins
                 }],
