@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useAccount, useWriteContract } from 'wagmi';
+import { useAccount, useWriteContract, useSwitchChain } from 'wagmi';
 import { parseUnits, encodeFunctionData, maxUint256 } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
