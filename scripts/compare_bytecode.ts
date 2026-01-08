@@ -1,10 +1,10 @@
 import { TOKEN_BYTECODE } from '../lib/tokenArtifacts';
 
-const URL = 'https://unpkg.com/@openzeppelin/contracts@4.9.3/build/contracts/ERC20PresetFixedSupply.json';
+const ARTIFACT_URL = 'https://unpkg.com/@openzeppelin/contracts@4.9.3/build/contracts/ERC20PresetFixedSupply.json';
 
 async function main() {
     console.log('Fetching artifact...');
-    const res = await fetch(URL);
+    const res = await fetch(ARTIFACT_URL);
     const json = await res.json();
 
     console.log('Artifact fetched.');

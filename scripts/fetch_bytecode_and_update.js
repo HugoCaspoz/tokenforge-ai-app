@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
-const URL = 'https://unpkg.com/@openzeppelin/contracts@4.8.0/build/contracts/ERC20PresetFixedSupply.json';
+const ARTIFACT_URL = 'https://unpkg.com/@openzeppelin/contracts@4.8.0/build/contracts/ERC20PresetFixedSupply.json';
 const TARGET_FILE = path.join('lib', 'tokenArtifacts.ts');
 
 async function main() {
-    console.log(`Fetching artifact from ${URL}...`);
-    const res = await fetch(URL);
+    console.log(`Fetching artifact from ${ARTIFACT_URL}...`);
+    const res = await fetch(ARTIFACT_URL);
     if (!res.ok) throw new Error(`Failed to fetch: ${res.statusText}`);
 
     const artifact = await res.json();
