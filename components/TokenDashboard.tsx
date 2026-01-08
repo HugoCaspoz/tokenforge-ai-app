@@ -211,14 +211,14 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     if (!input) return alert("Introduce direcciones");
 
                                     const lines = input.split('\n').filter(l => l.trim());
-                                    const recipients: string[] = [];
+                                    const recipients: `0x${string}`[] = [];
                                     const amounts: bigint[] = [];
 
                                     try {
                                         lines.forEach(line => {
                                             const [addr, amt] = line.split(',').map(s => s.trim());
                                             if (!addr.startsWith('0x')) throw new Error(`Direccion inválida: ${addr}`);
-                                            recipients.push(addr);
+                                            recipients.push(addr as `0x${string}`);
                                             // Assume amount is in tokens, convert to wei
                                             amounts.push(BigInt(Math.floor(Number(amt) * 10 ** 18)));
                                         });
