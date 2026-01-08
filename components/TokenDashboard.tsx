@@ -194,60 +194,127 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                         </div>
 
                         {/* Verification Section */}
-                        {!showVerifyModal ? (
-                            <div className="mt-8 border-t border-gray-700 pt-8">
-                                <h3 className="text-xl font-bold mb-4 text-yellow-400">✅ Verificación de Contrato</h3>
-                                <p className="text-gray-400 mb-4">Verificar tu contrato en el explorador es CRUCIAL para que los inversores confíen en ti. Aparecerá el check verde ✅.</p>
-                                <button
-                                    onClick={async () => {
-                                        setShowVerifyModal(true);
-                                        try {
-                                            const res = await fetch('/SimpleToken_flat.sol');
-                                            const text = await res.text();
-                                            setFlatCode(text);
-                                        } catch (e) {
-                                            alert("Error cargando código fuente.");
-                                        }
-                                    }}
-                                    className="px-6 py-3 bg-yellow-600 hover:bg-yellow-500 text-white font-bold rounded transition-colors"
-                                >
-                                    Abrir Guía de Verificación
-                                </button>
-                            </div>
-                        ) : (
-                            <div className="mt-8 bg-gray-900 p-6 rounded-xl border border-yellow-500/30">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-xl font-bold text-yellow-400">Guía de Verificación</h3>
-                                    <button onClick={() => setShowVerifyModal(false)} className="text-gray-400 hover:text-white">✕</button>
-                                </div>
+                        {/* Verification Section */}
+                        <div className="mt-8 border-t border-gray-700 pt-8">
+                            <h3 className="text-xl font-bold mb-6 text-yellow-400">✅ Verificación de Contrato</h3>
 
-                                <ol className="list-decimal list-inside space-y-3 text-gray-300 mb-6">
-                                    <li>Ve a <a href={`${explorerUrl}/verifyContract?a=${token.contract_address}`} target="_blank" className="text-blue-400 underline">PolygonScan Verify</a>.</li>
-                                    <li><strong>Compiler Type:</strong> Solidity (Single file).</li>
-                                    <li><strong>Compiler Version:</strong> v0.8.20+commit...</li>
-                                    <li><strong>License:</strong> MIT.</li>
-                                    <li><strong>Optimization:</strong> No (o Yes con 200 runs si falla).</li>
-                                    <li><strong>Source Code:</strong> Copia y pega TODO el siguiente código:</li>
-                                </ol>
-
-                                <div className="relative">
-                                    <textarea
-                                        readOnly
-                                        value={flatCode || "Cargando código..."}
-                                        className="w-full h-48 bg-black text-xs text-green-400 font-mono p-4 rounded border border-gray-700"
+                            {/* AUTO VERIFY (New) */}
+                            <div className="bg-blue-900/20 border border-blue-500/50 p-6 rounded-xl mb-8">
+                                <h4 className="font-bold text-lg text-blue-300 mb-2 flex items-center gap-2">
+                                    <span>🤖</span> Verificación Automática
+                                </h4>
+                                <p className="text-sm text-gray-400 mb-4">
+                                    Conecta con PolygonScan para verificar en 1 click. Necesitas una API Key gratuita.
+                                </p>
+                                <div className="flex gap-2">
+                                    <input
+                                        id="apiKeyInput"
+                                        type="text"
+                                        placeholder="PolygonScan API Key (ej. XJ9...)"
+                                        className="flex-1 bg-black/50 border border-gray-600 rounded p-3 text-white focus:border-blue-500 outline-none font-mono text-sm"
                                     />
                                     <button
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(flatCode);
-                                            alert("Código Copiado!");
+                                        onClick={async (e) => {
+                                            const btn = e.currentTarget;
+                                            const apiKey = (document.getElementById('apiKeyInput') as HTMLInputElement).value;
+                                            if (!apiKey) return alert("Falta la API Key");
+
+                                            btn.disabled = true;
+                                            const originalText = btn.innerText;
+                                            btn.innerText = "Verificando...";
+
+                                            try {
+                                                const res = await fetch('/api/verify', {
+                                                    method: 'POST',
+                                                    body: JSON.stringify({
+                                                        contractAddress: token.contract_address,
+                                                        name: token.name,
+                                                        symbol: token.ticker,
+                                                        initialSupply: totalSupply ? (Number(totalSupply) / 10 ** 18).toString() : "1000000",
+                                                        initialOwner: ownerAddress || userAddress,
+                                                        apiKey
+                                                    })
+                                                });
+                                                const data = await res.json();
+                                                if (data.success) {
+                                                    alert("✅ Solicitud Enviada\nGUID: " + data.guid + "\nEspera 30s y refresca PolygonScan.");
+                                                } else {
+                                                    alert("❌ Error: " + data.error);
+                                                }
+                                            } catch (err) {
+                                                console.error(err);
+                                                alert("Error de conexión");
+                                            } finally {
+                                                btn.disabled = false;
+                                                btn.innerText = originalText;
+                                            }
                                         }}
-                                        className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1 rounded"
+                                        className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded transition-colors disabled:opacity-50"
                                     >
-                                        Copiar
+                                        Verificar Ahora
                                     </button>
                                 </div>
+                                <div className="mt-2 text-right">
+                                    <a href="https://polygonscan.com/myapikey" target="_blank" className="text-xs text-blue-400 underline hover:text-white">Conseguir API Key (Gratis)</a>
+                                </div>
                             </div>
-                        )}
+
+                            <h4 className="font-bold text-gray-400 mb-4 border-b border-gray-700 pb-2">O método manual:</h4>
+
+                            {!showVerifyModal ? (
+                                <div>
+                                    <p className="text-gray-400 mb-4 text-sm">Si no tienes API Key, descarga el código y súbelo a mano.</p>
+                                    <button
+                                        onClick={async () => {
+                                            setShowVerifyModal(true);
+                                            try {
+                                                const res = await fetch('/SimpleToken_flat.sol');
+                                                const text = await res.text();
+                                                setFlatCode(text);
+                                            } catch (e) {
+                                                alert("Error cargando código fuente.");
+                                            }
+                                        }}
+                                        className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded transition-colors w-full"
+                                    >
+                                        Abrir Guía Manual (Flattened Code)
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-900 p-6 rounded-xl border border-yellow-500/30">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <h3 className="text-xl font-bold text-yellow-400">Guía de Verificación Manual</h3>
+                                        <button onClick={() => setShowVerifyModal(false)} className="text-gray-400 hover:text-white">✕</button>
+                                    </div>
+
+                                    <ol className="list-decimal list-inside space-y-3 text-gray-300 mb-6 text-sm">
+                                        <li>Ve a <a href={`${explorerUrl}/verifyContract?a=${token.contract_address}`} target="_blank" className="text-blue-400 underline">PolygonScan Verify</a>.</li>
+                                        <li><strong>Compiler Type:</strong> Solidity (Single file).</li>
+                                        <li><strong>Compiler Version:</strong> v0.8.33+commit...</li>
+                                        <li><strong>License:</strong> MIT.</li>
+                                        <li><strong>Optimization:</strong> Yes (200 runs).</li>
+                                        <li><strong>Source Code:</strong> Copia y pega TODO esto:</li>
+                                    </ol>
+
+                                    <div className="relative">
+                                        <textarea
+                                            readOnly
+                                            value={flatCode || "Cargando código..."}
+                                            className="w-full h-48 bg-black text-xs text-green-400 font-mono p-4 rounded border border-gray-700"
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(flatCode);
+                                                alert("Código Copiado!");
+                                            }}
+                                            className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1 rounded"
+                                        >
+                                            Copiar
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 
@@ -285,6 +352,22 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <p className="text-xs text-gray-300 mt-2">Crear Mercado (Pool)</p>
                                     <span className="absolute bottom-2 left-0 w-full text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
                                         (Click para abrir DEX)
+                                    </span>
+                                </a>
+
+                                {/* CHART LINK */}
+                                <a
+                                    href={`https://dexscreener.com/polygon/${token.contract_address}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer block border border-transparent hover:border-blue-500 group relative"
+                                    title="Ver Gráfica en DexScreener"
+                                >
+                                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">📈</div>
+                                    <h3 className="font-bold text-white">Ver Gráfica</h3>
+                                    <p className="text-xs text-gray-300 mt-2">DexScreener</p>
+                                    <span className="absolute bottom-2 left-0 w-full text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        (Precio y Velas)
                                     </span>
                                 </a>
 
