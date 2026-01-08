@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const URL = 'https://unpkg.com/@openzeppelin/contracts@4.9.3/build/contracts/ERC20PresetFixedSupply.json';
+const URL = 'https://unpkg.com/@openzeppelin/contracts@4.8.0/build/contracts/ERC20PresetFixedSupply.json';
 const TARGET_FILE = path.join('lib', 'tokenArtifacts.ts');
 
 async function main() {
