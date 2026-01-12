@@ -4,7 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider, createConfig, http } from 'wagmi';
 import { polygon } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
-import { useState } from 'react'; // <-- Importa useState
+import { useState } from 'react';
+import { I18nProvider } from '@/lib/i18n';
 
 // ID de tu proyecto de WalletConnect
 const projectId = '3a53e506a8d7e75fbd56f527f81870a9';
@@ -28,10 +29,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-      </QueryClientProvider>
-    </WagmiProvider>
+    <I18nProvider>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          {children}
+        </QueryClientProvider>
+      </WagmiProvider>
+    </I18nProvider>
   );
 }

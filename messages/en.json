@@ -1,0 +1,54 @@
+{
+    "common": {
+        "home": "Home",
+        "explore": "Explore",
+        "guide": "User Guide",
+        "dashboard": "Dashboard",
+        "loading": "Loading...",
+        "comingSoon": "Coming Soon",
+        "buyNow": "Buy Now",
+        "copyLink": "Copy Link",
+        "cancel": "Cancel",
+        "save": "Save",
+        "delete": "Delete",
+        "export": "Export",
+        "connect": "Connect",
+        "confirm": "Confirm"
+    },
+    "landing": {
+        "hero": {
+            "title": "Create Professional Tokens in Minutes",
+            "subtitle": "The fastest platform to deploy secure ERC20 tokens on Polygon",
+            "cta": "Start Creating",
+            "features": "No coding required. Verified contracts. Professional tools."
+        },
+        "howItWorks": {
+            "title": "How it Works",
+            "step1": {
+                "title": "Configure",
+                "description": "Define your token name, symbol, and initial supply with our intuitive interface"
+            },
+            "step2": {
+                "title": "Deploy",
+                "description": "Deploy your token to the blockchain in seconds with verified smart contracts"
+            },
+            "step3": {
+                "title": "Manage",
+                "description": "Use our professional dashboard to manage liquidity, airdrops, and community"
+            }
+        },
+        "networks": {
+            "title": "Multi-Chain Support",
+            "subtitle": "Deploy your tokens across multiple networks"
+        }
+    },
+    "header": {
+        "signIn": "Sign In",
+        "signOut": "Sign Out",
+        "myTokens": "My Tokens"
+    },
+    "footer": {
+        "start": "Start",
+        "allRightsReserved": "All rights reserved"
+    }
+}

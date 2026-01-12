@@ -1,10 +1,20 @@
 // En: frontend/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import createIntlMiddleware from 'next-intl/middleware';
+
+// i18n middleware
+const intlMiddleware = createIntlMiddleware({
+  locales: ['en', 'es'],
+  defaultLocale: 'en'
+});
 
 export async function middleware(request: NextRequest) {
+  // Apply i18n middleware first
+  const intlResponse = intlMiddleware(request);
+
   // Crea una respuesta inicial que se podrá modificar
-  let response = NextResponse.next({
+  let response = intlResponse || NextResponse.next({
     request: {
       headers: request.headers,
     },
@@ -51,7 +61,8 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
+     * - api (API routes)
      */
-    '/((?!_next/static|_next/image|favicon.ico).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api).*)',
   ],
 }
