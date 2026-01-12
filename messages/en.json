@@ -112,6 +112,10 @@
             "community": "Community"
         }
     },
+    "create": {
+        "title": "TokenCrafter",
+        "subtitle": "Create your own cryptocurrency in minutes. No coding required."
+    },
     "tokenDetail": {
         "viewOnly": "View Only (You are not the owner)",
         "youAreOwner": "You are the owner",
@@ -154,8 +158,8 @@
             "monitoring": "📊 Advanced Monitoring"
         },
         "community": {
-            "title": "Community",
-            "snapshot": "Snapshot your holders to reward early supporters with airdrops or exclusive content",
+            "title": "Community & Airdrops",
+            "snapshot": "Manage your community, view holders and reward them.",
             "lockedContent": "Token-Gated Content"
         }
     }

@@ -112,6 +112,10 @@
             "community": "Comunidad"
         }
     },
+    "create": {
+        "title": "TokenCrafter",
+        "subtitle": "Crea tu propia criptomoneda en minutos. Sin escribir código."
+    },
     "tokenDetail": {
         "viewOnly": "Solo Vista (No eres el owner)",
         "youAreOwner": "Eres el owner",

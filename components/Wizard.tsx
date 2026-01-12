@@ -51,14 +51,14 @@ export default function Wizard() {
       {step === 2 && <Step2_Design tokenData={tokenData} onDataChange={handleDataChange} onComplete={nextStep} />}
       {step === 3 && <Step3_Deploy tokenData={tokenData} />}
 
-      <div className="mt-6 p-4 bg-gray-900 rounded-md text-xs text-gray-300 overflow-auto">
+      {/* <div className="mt-6 p-4 bg-gray-900 rounded-md text-xs text-gray-300 overflow-auto">
         <div className='flex justify-between items-center'>
           <h3 className="font-bold text-gray-500">Estado Actual de Datos:</h3>
           {isSaving && <span className="text-blue-400 animate-pulse">Guardando...</span>}
           {saveError && <span className="text-red-400">{saveError}</span>}
         </div>
         <pre>{JSON.stringify(tokenData, null, 2)}</pre>
-      </div>
+      </div> */}
     </div>
   );
 }
