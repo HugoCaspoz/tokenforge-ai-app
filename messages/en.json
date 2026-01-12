@@ -15,7 +15,8 @@
         "connect": "Connect",
         "confirm": "Confirm",
         "yes": "Yes",
-        "no": "No"
+        "no": "No",
+        "all": "All"
     },
     "header": {
         "signIn": "Sign In",
@@ -63,26 +64,36 @@
     },
     "explore": {
         "title": "Explore Tokens",
+        "subtitle": "Discover hidden gems in TokenCrafter",
         "filters": {
-            "all": "100% Safe",
+            "all": "All",
+            "safe": "🛡️ 100% Safe",
             "renounced": "Ownership Renounced",
             "locked": "Liquidity Locked",
             "favorites": "❤️ Favorites"
         },
-        "sort": {
-            "newest": "Sort by",
-            "marketCap": "Market Cap",
-            "volume": "Volume (24h)",
-            "priceChange": "Price Change"
+        "sortBy": "Sort by",
+        "sortOptions": {
+            "newest": "Most Recent",
+            "volume": "Highest Volume (24h)",
+            "marketcap": "Market Cap",
+            "gainers": "Top Gainers (%)"
         },
-        "trustScore": "Trust Score",
+        "trustScore": "Score",
         "deployer": "Deployer",
         "loading": "Loading projects...",
         "noResults": "No projects found",
         "marketCap": "Market Cap",
         "volume24h": "Volume 24h",
-        "priceChange": "Price Change",
-        "expiresOn": "Expires on"
+        "liquidity": "Liquidity",
+        "change24h": "Change 24h",
+        "expiresOn": "Expires on",
+        "buy": "Buy",
+        "viewDetails": "View Details",
+        "badges": {
+            "renounced": "Renounced",
+            "locked": "Locked"
+        }
     },
     "guide": {
         "title": "User Guide",
@@ -95,10 +106,10 @@
         "createToken": "Create Token",
         "paymentSuccess": "Payment successful! You can now create tokens.",
         "tabs": {
-            "overview": "overview",
-            "admin": "admin",
-            "growth": "growth",
-            "community": "community"
+            "overview": "Overview",
+            "admin": "Admin",
+            "growth": "Growth",
+            "community": "Community"
         }
     }
 }

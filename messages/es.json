@@ -15,7 +15,8 @@
         "connect": "Conectar",
         "confirm": "Confirmar",
         "yes": "Sí",
-        "no": "No"
+        "no": "No",
+        "all": "Todos"
     },
     "header": {
         "signIn": "Iniciar Sesión",
@@ -63,26 +64,36 @@
     },
     "explore": {
         "title": "Explorar Tokens",
+        "subtitle": "Descubre las gemas ocultas en TokenCrafter",
         "filters": {
-            "all": "100% Seguros",
+            "all": "Todos",
+            "safe": "🛡️ 100% Seguros",
             "renounced": "Propiedad Renunciada",
             "locked": "Liquidez Bloqueada",
             "favorites": "❤️ Favoritos"
         },
-        "sort": {
-            "newest": "Ordenar por",
-            "marketCap": "Capitalización",
-            "volume": "Volumen (24h)",
-            "priceChange": "Cambio de Precio"
+        "sortBy": "Ordenar por",
+        "sortOptions": {
+            "newest": "Más Recientes",
+            "volume": "Mayor Volumen (24h)",
+            "marketcap": "Market Cap",
+            "gainers": "Top Gainers (%)"
         },
-        "trustScore": "Puntuación de Confianza",
+        "trustScore": "Score",
         "deployer": "Creador",
         "loading": "Cargando proyectos...",
         "noResults": "No se encontraron proyectos",
-        "marketCap": "Cap. de Mercado",
+        "marketCap": "Market Cap",
         "volume24h": "Volumen 24h",
-        "priceChange": "Cambio de Precio",
-        "expiresOn": "Expira el"
+        "liquidity": "Liquidez",
+        "change24h": "Cambio 24h",
+        "expiresOn": "Expira el",
+        "buy": "Comprar",
+        "viewDetails": "Ver Detalles",
+        "badges": {
+            "renounced": "Renunciado",
+            "locked": "Bloqueado"
+        }
     },
     "guide": {
         "title": "Guía de Uso",
@@ -95,10 +106,10 @@
         "createToken": "Crear Token",
         "paymentSuccess": "¡Pago exitoso! Ahora puedes crear tokens.",
         "tabs": {
-            "overview": "resumen",
-            "admin": "admin",
-            "growth": "crecimiento",
-            "community": "comunidad"
+            "overview": "Resumen",
+            "admin": "Admin",
+            "growth": "Crecimiento",
+            "community": "Comunidad"
         }
     }
 }

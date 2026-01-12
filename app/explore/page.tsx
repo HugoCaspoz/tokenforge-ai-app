@@ -132,8 +132,8 @@ export default function ExplorePage() {
         <div className="min-h-screen bg-gray-900 text-white pt-24 px-6">
             <div className="max-w-7xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold mb-4">Explorar Tokens</h1>
-                    <p className="text-gray-400">Descubre las gemas ocultas en TokenCrafter.</p>
+                    <h1 className="text-4xl font-bold mb-4">{t('explore.title')}</h1>
+                    <p className="text-gray-400">{t('explore.subtitle')}</p>
                 </div>
 
                 {/* Controls */}
@@ -144,13 +144,13 @@ export default function ExplorePage() {
                             onClick={() => toggleFilter('all')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.length === 0 ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
-                            Todos
+                            {t('common.all')}
                         </button>
                         <button
                             onClick={() => toggleFilter('safe')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('safe') ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
-                            🛡️ {t('explore.filters.all')}
+                            {t('explore.filters.safe')}
                         </button>
                         <button
                             onClick={() => toggleFilter('renounced')}
@@ -174,16 +174,16 @@ export default function ExplorePage() {
 
                     {/* Sort */}
                     <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
-                        <span className="text-gray-400 text-sm whitespace-nowrap">{t('explore.sort.newest')}:</span>
+                        <span className="text-gray-400 text-sm whitespace-nowrap">{t('explore.sortBy')}:</span>
                         <select
                             value={filter.sort}
                             onChange={(e) => setFilter({ ...filter, sort: e.target.value as any })}
                             className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 flex-1 md:flex-none"
                         >
-                            <option value="newest">Más Recientes</option>
-                            <option value="volume">Mayor Volumen (24h)</option>
-                            <option value="marketcap">Market Cap</option>
-                            <option value="gainers">Top Gainers (%)</option>
+                            <option value="newest">{t('explore.sortOptions.newest')}</option>
+                            <option value="volume">{t('explore.sortOptions.volume')}</option>
+                            <option value="marketcap">{t('explore.sortOptions.marketcap')}</option>
+                            <option value="gainers">{t('explore.sortOptions.gainers')}</option>
                         </select>
                     </div>
                 </div>
@@ -208,7 +208,7 @@ export default function ExplorePage() {
                                 >
                                     {/* Trust Score Badge */}
                                     <div className={`absolute top-14 right-4 px-2 py-1 rounded text-xs font-bold border ${trustScore >= 80 ? 'bg-green-900/80 text-green-400 border-green-500/50' : trustScore >= 50 ? 'bg-yellow-900/80 text-yellow-400 border-yellow-500/50' : 'bg-red-900/80 text-red-400 border-red-500/50'}`}>
-                                        Score: {trustScore}/100
+                                        {t('explore.trustScore')}: {trustScore}/100
                                     </div>
                                     <div className="absolute top-4 right-4 z-10">
                                         <FavoriteButton projectId={project.id} />
@@ -236,15 +236,15 @@ export default function ExplorePage() {
                                             <p className="font-mono text-sm font-semibold">${(project.market_cap || 0).toLocaleString()}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-gray-500">Volumen 24h</p>
+                                            <p className="text-xs text-gray-500">{t('explore.volume24h')}</p>
                                             <p className="font-mono text-sm font-semibold">${(project.volume_24h || 0).toLocaleString()}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-gray-500">Liquidez</p>
+                                            <p className="text-xs text-gray-500">{t('explore.liquidity')}</p>
                                             <p className="font-mono text-sm font-semibold">${(project.liquidity_usd || 0).toLocaleString()}</p>
                                         </div>
                                         <div>
-                                            <p className="text-xs text-gray-500">Cambio 24h</p>
+                                            <p className="text-xs text-gray-500">{t('explore.change24h')}</p>
                                             <p className={`font-mono text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                                                 {isPositive ? '▲' : '▼'} {(project.price_change_24h || 0).toFixed(2)}%
                                             </p>
@@ -255,7 +255,7 @@ export default function ExplorePage() {
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {project.is_renounced && (
                                             <span className="bg-green-900/30 text-green-400 border border-green-500/30 px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
-                                                ✅ Renunciado
+                                                ✅ {t('explore.badges.renounced')}
                                             </span>
                                         )}
                                         {project.locked_until && new Date(project.locked_until) > new Date() && (
@@ -278,13 +278,13 @@ export default function ExplorePage() {
                                             rel="noopener noreferrer"
                                             className="flex-1 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-2 rounded text-center transition-colors"
                                         >
-                                            Comprar
+                                            {t('explore.buy')}
                                         </a>
                                         <Link
                                             href={`/token/${project.contract_address}`}
                                             className="flex-1 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold py-2 rounded text-center transition-colors"
                                         >
-                                            Ver Detalles
+                                            {t('explore.viewDetails')}
                                         </Link>
                                     </div>
 
@@ -320,7 +320,7 @@ export default function ExplorePage() {
 
                 {!loading && filteredProjects.length === 0 && (
                     <div className="text-center py-20 text-gray-500">
-                        No se encontraron proyectos con estos filtros.
+                        {t('explore.noResults')}
                     </div>
                 )}
             </div>
