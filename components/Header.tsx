@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
 import { ConnectWallet } from './ConnectWallet';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export const Header = () => {
   const supabase = createClient();
@@ -68,6 +69,7 @@ export const Header = () => {
         </div>
 
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-x-6">
+          <LanguageSwitcher />
           {showWalletButton && <ConnectWallet />}
 
           {user ? (
@@ -109,6 +111,9 @@ export const Header = () => {
                   {/* Aquí irían los navItems si los tuvieras */}
                 </div>
                 <div className="py-6 space-y-4">
+                  <div className="mb-4">
+                    <LanguageSwitcher />
+                  </div>
                   {showWalletButton && <ConnectWallet />}
                   {user ? (
                     <>
