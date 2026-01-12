@@ -15,12 +15,25 @@
         "connect": "Conectar",
         "confirm": "Confirmar"
     },
+    "header": {
+        "signIn": "Iniciar Sesión",
+        "signOut": "Cerrar Sesión",
+        "myProfile": "Mi Perfil",
+        "explore": "Explorar",
+        "profile": "Perfil"
+    },
+    "footer": {
+        "home": "Inicio",
+        "explore": "Explorar",
+        "guide": "Guía de Uso",
+        "allRightsReserved": "Todos los derechos reservados"
+    },
     "landing": {
         "hero": {
             "title": "Crea Tokens Profesionales en Minutos",
-            "subtitle": "La plataforma más rápida para desplegar tokens ERC20 seguros en Polygon",
+            "subtitle": "La plataforma más rápida para desplegar tokens ERC20 seguros en Polygon. Sin programar.",
             "cta": "Empezar a Crear",
-            "features": "Sin programar. Contratos verificados. Herramientas profesionales."
+            "features": "Sin programar • Contratos verificados • Herramientas profesionales"
         },
         "howItWorks": {
             "title": "Cómo Funciona",
@@ -39,16 +52,10 @@
         },
         "networks": {
             "title": "Soporte Multi-Chain",
-            "subtitle": "Despliega tus tokens en múltiples redes"
+            "subtitle": "Despliega tus tokens en múltiples redes",
+            "polygon": "Disponible Ahora",
+            "bnb": "Próximamente",
+            "ethereum": "Próximamente"
         }
-    },
-    "header": {
-        "signIn": "Iniciar Sesión",
-        "signOut": "Cerrar Sesión",
-        "myTokens": "Mis Tokens"
-    },
-    "footer": {
-        "start": "Inicio",
-        "allRightsReserved": "Todos los derechos reservados"
     }
 }

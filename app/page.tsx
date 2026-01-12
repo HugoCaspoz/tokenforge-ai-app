@@ -4,8 +4,10 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ScrollAnimation } from '@/components/ScrollAnimation';
+import { useTranslation } from '@/lib/i18n';
 
 export default function LandingPage() {
+  const { t } = useTranslation();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -42,7 +44,7 @@ export default function LandingPage() {
             variants={itemVariants}
           >
             <span className="px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-sm font-medium">
-              🚀 La forma más fácil de lanzar tu token
+              🚀 {t('landing.hero.features')}
             </span>
           </motion.div>
 
@@ -50,9 +52,9 @@ export default function LandingPage() {
             className="text-5xl font-extrabold tracking-tight text-white sm:text-7xl mb-6 leading-tight"
             variants={itemVariants}
           >
-            Lanza, Gestiona y Crece <br />
+            {t('landing.hero.title')} <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">
-              en minutos.
+
             </span>
           </motion.h1>
 
@@ -60,7 +62,7 @@ export default function LandingPage() {
             className="mt-6 text-lg leading-8 text-gray-300 max-w-2xl mx-auto"
             variants={itemVariants}
           >
-            Crea tu token ERC-20, configura airdrops, bloquea liquidez y gestiona tu comunidad desde un panel de control profesional. Sin tocar código.
+            {t('landing.hero.subtitle')}
           </motion.p>
 
           <motion.div
@@ -71,10 +73,10 @@ export default function LandingPage() {
               href="/create"
               className="rounded-full bg-purple-600 px-8 py-4 text-lg font-bold text-white shadow-[0_0_30px_rgba(147,51,234,0.3)] hover:shadow-[0_0_50px_rgba(147,51,234,0.5)] hover:bg-purple-500 transition-all hover:scale-105"
             >
-              Empezar Gratis
+              {t('landing.hero.cta')}
             </Link>
             <Link href="/explore" className="text-sm font-semibold leading-6 text-white hover:text-purple-300 transition-colors">
-              Explorar Proyectos <span aria-hidden="true">→</span>
+              {t('header.explore')} <span aria-hidden="true">→</span>
             </Link>
           </motion.div>
         </motion.div>
@@ -84,9 +86,9 @@ export default function LandingPage() {
       <ScrollAnimation className="py-16 sm:py-24 relative z-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-2xl mx-auto lg:text-center">
-            <h2 className="text-base font-semibold leading-7 text-purple-400">Workflow Simplificado</h2>
+            <h2 className="text-base font-semibold leading-7 text-purple-400">{t('landing.howItWorks.title')}</h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              De la idea al mercado en 3 pasos
+              {t('landing.howItWorks.title')}
             </p>
           </div>
           <div className="mx-auto mt-12 max-w-2xl sm:mt-16 lg:mt-20 lg:max-w-none">
@@ -94,22 +96,22 @@ export default function LandingPage() {
               {/* Step 1 */}
               <div className="flex flex-col items-center text-center p-8 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 hover:border-purple-500/50 transition-all hover:bg-gray-800 hover:shadow-xl hover:shadow-purple-500/5 group">
                 <div className="mb-6 w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">⚙️</div>
-                <h3 className="text-xl font-bold text-white mb-3">1. Configura</h3>
-                <p className="text-gray-400 leading-relaxed">Define el nombre, ticker, supply y las tokenomics de tu proyecto en segundos.</p>
+                <h3 className="text-xl font-bold text-white mb-3">1. {t('landing.howItWorks.step1.title')}</h3>
+                <p className="text-gray-400 leading-relaxed">{t('landing.howItWorks.step1.description')}</p>
               </div>
 
               {/* Step 2 */}
               <div className="flex flex-col items-center text-center p-8 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 hover:border-purple-500/50 transition-all hover:bg-gray-800 hover:shadow-xl hover:shadow-purple-500/5 group">
                 <div className="mb-6 w-16 h-16 rounded-2xl bg-blue-500/10 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">🚀</div>
-                <h3 className="text-xl font-bold text-white mb-3">2. Despliega</h3>
-                <p className="text-gray-400 leading-relaxed">Lanza tu contrato inteligente verificado a la blockchain con un solo clic.</p>
+                <h3 className="text-xl font-bold text-white mb-3">2. {t('landing.howItWorks.step2.title')}</h3>
+                <p className="text-gray-400 leading-relaxed">{t('landing.howItWorks.step2.description')}</p>
               </div>
 
               {/* Step 3 */}
               <div className="flex flex-col items-center text-center p-8 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 hover:border-purple-500/50 transition-all hover:bg-gray-800 hover:shadow-xl hover:shadow-purple-500/5 group">
                 <div className="mb-6 w-16 h-16 rounded-2xl bg-green-500/10 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">📊</div>
-                <h3 className="text-xl font-bold text-white mb-3">3. Gestiona</h3>
-                <p className="text-gray-400 leading-relaxed">Administra tu token, bloquea liquidez, renuncia a la propiedad y haz crecer tu comunidad.</p>
+                <h3 className="text-xl font-bold text-white mb-3">3. {t('landing.howItWorks.step3.title')}</h3>
+                <p className="text-gray-400 leading-relaxed">{t('landing.howItWorks.step3.description')}</p>
               </div>
             </div>
           </div>
@@ -118,7 +120,7 @@ export default function LandingPage() {
           <div className="mt-24 border-t border-white/5 pt-16">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <h2 className="text-center text-lg font-semibold leading-8 text-gray-400 mb-12">
-                Compatible con las redes más potentes
+                {t('landing.networks.subtitle')}
               </h2>
               <div className="mx-auto grid max-w-lg grid-cols-1 sm:grid-cols-3 items-center gap-x-8 gap-y-12 sm:max-w-xl sm:gap-x-10 lg:mx-0 lg:max-w-none">
 

@@ -15,15 +15,28 @@
         "connect": "Connect",
         "confirm": "Confirm"
     },
+    "header": {
+        "signIn": "Sign In",
+        "signOut": "Sign Out",
+        "myProfile": "My Profile",
+        "explore": "Explore",
+        "profile": "Profile"
+    },
+    "footer": {
+        "home": "Home",
+        "explore": "Explore",
+        "guide": "User Guide",
+        "allRightsReserved": "All rights reserved"
+    },
     "landing": {
         "hero": {
             "title": "Create Professional Tokens in Minutes",
-            "subtitle": "The fastest platform to deploy secure ERC20 tokens on Polygon",
+            "subtitle": "The fastest platform to deploy secure ERC20 tokens on Polygon. No coding required.",
             "cta": "Start Creating",
-            "features": "No coding required. Verified contracts. Professional tools."
+            "features": "No coding required • Verified contracts • Professional tools"
         },
         "howItWorks": {
-            "title": "How it Works",
+            "title": "How It Works",
             "step1": {
                 "title": "Configure",
                 "description": "Define your token name, symbol, and initial supply with our intuitive interface"
@@ -39,16 +52,10 @@
         },
         "networks": {
             "title": "Multi-Chain Support",
-            "subtitle": "Deploy your tokens across multiple networks"
+            "subtitle": "Deploy your tokens across multiple networks",
+            "polygon": "Available Now",
+            "bnb": "Coming Soon",
+            "ethereum": "Coming Soon"
         }
-    },
-    "header": {
-        "signIn": "Sign In",
-        "signOut": "Sign Out",
-        "myTokens": "My Tokens"
-    },
-    "footer": {
-        "start": "Start",
-        "allRightsReserved": "All rights reserved"
     }
 }

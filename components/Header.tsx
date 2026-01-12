@@ -9,8 +9,10 @@ import { User } from '@supabase/supabase-js';
 import { createClient } from '@/utils/supabase/client';
 import { ConnectWallet } from './ConnectWallet';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useTranslation } from '@/lib/i18n';
 
 export const Header = () => {
+  const { t } = useTranslation();
   const supabase = createClient();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -78,22 +80,22 @@ export const Header = () => {
                 Dashboard
               </Link> */}
               <Link href="/explore" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
-                Explorar
+                {t('header.explore')}
               </Link>
               {/* ✅ ENLACE AÑADIDO */}
               <Link href="/profile" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
-                Perfil
+                {t('header.profile')}
               </Link>
               <button
                 onClick={handleSignOut}
                 className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400"
               >
-                Cerrar Sesión
+                {t('header.signOut')}
               </button>
             </>
           ) : (
             <Link href="/login" className="text-sm font-semibold leading-6 text-white bg-white/10 px-4 py-2 rounded-lg hover:bg-white/20 transition-colors">
-              Iniciar Sesión <span aria-hidden="true">&rarr;</span>
+              {t('header.signIn')} <span aria-hidden="true">&rarr;</span>
             </Link>
           )}
         </div>
