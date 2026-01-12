@@ -144,7 +144,7 @@ export default function LandingPage() {
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-base font-bold text-gray-500 group-hover:text-white transition-colors">BNB Chain</span>
-                    <span className="text-[10px] uppercase tracking-wider font-bold text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded mt-1">Próximamente</span>
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-yellow-500 bg-yellow-500/10 px-2 py-0.5 rounded mt-1">{t('landing.networks.bnb')}</span>
                   </div>
                 </div>
 
@@ -157,7 +157,7 @@ export default function LandingPage() {
                   </div>
                   <div className="flex flex-col items-center">
                     <span className="text-base font-bold text-gray-500 group-hover:text-white transition-colors">Ethereum</span>
-                    <span className="text-[10px] uppercase tracking-wider font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded mt-1">Próximamente</span>
+                    <span className="text-[10px] uppercase tracking-wider font-bold text-blue-500 bg-blue-500/10 px-2 py-0.5 rounded mt-1">{t('landing.networks.ethereum')}</span>
                   </div>
                 </div>
 
