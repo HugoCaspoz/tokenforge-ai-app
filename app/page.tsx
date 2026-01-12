@@ -125,8 +125,9 @@ export default function LandingPage() {
                 {/* Polygon */}
                 <div className="flex flex-col items-center gap-4 group">
                   <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors">
-                    <svg className="h-10 w-10 text-[#8247E5]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M16.586 11.838l-4.596 7.641-4.596-7.641 4.596-7.636 4.596 7.636zM12 19.479l4.596-7.641H7.404L12 19.479zm0-15.282L7.404 11.838h9.192L12 4.197z" />
+                    <svg className="h-10 w-10 text-[#8247E5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21.25 7.5V16.5L12 21.8L2.75 16.5V7.5L12 2.2L21.25 7.5Z" />
+                      <path d="M16 12L12 14.3L8 12M12 9.7L16 12M12 9.7L8 12" />
                     </svg>
                   </div>
                   <span className="text-base font-bold text-white">Polygon</span>
@@ -136,8 +137,7 @@ export default function LandingPage() {
                 <div className="flex flex-col items-center gap-4 group relative">
                   <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100">
                     <svg className="h-10 w-10 text-[#F0B90B]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#F0B90B" opacity="0.2" />
-                      <path d="M12 16.5l3-3-3-3-3 3 3 3zm0-9l-3 3 3 3 3-3-3-3zm-6 4.5l3 3-3 3-3-3 3-3zm12 0l3 3-3 3-3-3 3-3z" fill="#FFF" />
+                      <path d="M16.624 13.832l2.717-2.716-2.717-2.717-2.716 2.717 2.716 2.716zm-4.623-4.623l2.717-2.716-2.717-2.716-2.716 2.716 2.716 2.716zm-4.623 4.623l2.717-2.716-2.717-2.717-2.716 2.717 2.716 2.716zm4.623 4.623l2.717-2.716-2.717-2.716-2.716 2.716 2.716 2.716zM12 13.832l2.717-2.716L12 8.399l-2.717 2.717L12 13.832z" />
                     </svg>
                   </div>
                   <div className="flex flex-col items-center">
