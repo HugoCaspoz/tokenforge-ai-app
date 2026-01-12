@@ -157,16 +157,16 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
 
             {/* Header */}
-            <div className="flex items-center gap-6 mb-8 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg relative">
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-8 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg relative text-center md:text-left">
                 <div className="absolute top-4 right-4">
                     <FavoriteButton projectId={token.id} />
                 </div>
-                <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-600">
+                <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-600 shrink-0">
                     {token.logo_url ? <img src={token.logo_url} alt="Logo" className="w-full h-full object-cover" /> : <span className="text-4xl text-gray-400">{token.ticker[0]}</span>}
                 </div>
-                <div>
-                    <h1 className="text-4xl font-bold text-white flex items-center gap-3">
-                        {token.name} <span className="text-gray-400 text-2xl font-normal">${token.ticker}</span>
+                <div className="w-full">
+                    <h1 className="text-3xl md:text-4xl font-bold text-white flex flex-col md:flex-row items-center gap-2 md:gap-3 justify-center md:justify-start">
+                        {token.name} <span className="text-gray-400 text-xl md:text-2xl font-normal">${token.ticker}</span>
                     </h1>
                     <p className="text-blue-400 font-mono mt-1">{token.contract_address}</p>
                     <div className="flex gap-2 mt-3 flex-wrap">
@@ -222,12 +222,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
             {/* Tabs */}
             {/* Tabs - Only visible to Owner */}
             {isOwner && (
-                <div className="flex gap-4 border-b border-gray-700 mb-6">
+                <div className="flex gap-4 border-b border-gray-700 mb-6 overflow-x-auto pb-2 scrollbar-hide">
                     {['overview', 'admin', 'growth'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
-                            className={`px-6 py-3 font-semibold capitalize transition-colors ${activeTab === tab ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white'}`}
+                            className={`px-6 py-3 font-semibold capitalize transition-colors whitespace-nowrap ${activeTab === tab ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white'}`}
                         >
                             {tab}
                         </button>

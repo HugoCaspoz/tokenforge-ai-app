@@ -147,12 +147,12 @@ export default function ExplorePage() {
                     </div>
 
                     {/* Sort */}
-                    <div className="flex items-center gap-2">
-                        <span className="text-gray-400 text-sm">Ordenar por:</span>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
+                        <span className="text-gray-400 text-sm whitespace-nowrap">Ordenar por:</span>
                         <select
                             value={filter.sort}
                             onChange={(e) => setFilter({ ...filter, sort: e.target.value as any })}
-                            className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5"
+                            className="bg-gray-900 border border-gray-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5 flex-1 md:flex-none"
                         >
                             <option value="newest">Más Recientes</option>
                             <option value="volume">Mayor Volumen (24h)</option>

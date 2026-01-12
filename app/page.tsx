@@ -26,7 +26,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main className="relative isolate px-6 pt-14 lg:px-8">
         <motion.div
-          className="mx-auto max-w-3xl py-32 sm:py-48 lg:py-56 text-center"
+          className="mx-auto max-w-3xl py-20 sm:py-48 lg:py-56 text-center"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
