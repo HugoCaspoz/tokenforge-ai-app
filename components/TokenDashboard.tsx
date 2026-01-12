@@ -344,28 +344,24 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
 
                                 {/* CHART LINK */}
-                                <a
-                                    href={`https://dexscreener.com/polygon/${token.contract_address}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer block border border-transparent hover:border-blue-500 group relative"
-                                    title="Ver Gráfica en DexScreener"
-                                >
-                                    <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">📈</div>
-                                    <h3 className="font-bold text-white">Ver Gráfica</h3>
-                                    <p className="text-xs text-gray-300 mt-2">DexScreener</p>
-                                    <span className="absolute bottom-2 left-0 w-full text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        (Precio y Velas)
-                                    </span>
-                                </a>
-
-
-                                {/* <div className="bg-gray-700 p-6 rounded-lg text-center hover:bg-gray-600 transition-colors cursor-pointer">
-                                    <div className="text-4xl mb-3">📢</div>
-                                    <h3 className="font-bold">Compartir</h3>
-                                    <p className="text-xs text-gray-300 mt-2">Generar imagen para redes</p>
-                                </div> */}
+                                {/* CHART LINK - REMOVED, now embedded below */}
                             </div>
+
+                            {/* DEXSCREENER EMBED */}
+                            <div className="w-full h-[600px] bg-gray-900 rounded-xl overflow-hidden border border-gray-700 mb-8">
+                                <iframe
+                                    src={`https://dexscreener.com/${token.chain_id === '0x89' ? 'polygon' :
+                                        token.chain_id === '0x38' ? 'bsc' :
+                                            token.chain_id === '0x1' ? 'ethereum' : 'polygon'
+                                        }/${token.contract_address}?embed=1&theme=dark`}
+                                    width="100%"
+                                    height="100%"
+                                    frameBorder="0"
+                                ></iframe>
+                            </div>
+
+
+
 
                             {/* WHALE WATCHER & HOLDERS */}
                             <div className="mb-6 space-y-4">
@@ -445,6 +441,6 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }
