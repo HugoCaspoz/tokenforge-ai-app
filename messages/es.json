@@ -136,6 +136,29 @@
             "errorFields": "Por favor completa todos los campos.",
             "errorGeneration": "Error generando respuesta IA",
             "errorUnknown": "Error desconocido"
+        },
+        "step2": {
+            "title": "Paso 2: Diseño Automático",
+            "subtitle": "Basado en tu idea, hemos definido lo siguiente. Ahora, ¡vamos a crearle un logo!",
+            "designTab": "🎨 Diseño del Token",
+            "name": "Nombre:",
+            "ticker": "Ticker:",
+            "description": "Descripción:",
+            "logoSaved": "¡Logo guardado!",
+            "logoAlt": "Logo de",
+            "perfect": "¡Perfecto! Ir al último paso →",
+            "aiGenerate": "Generar con IA",
+            "aiGenerateDesc": "Deja que DALL-E cree un logo único basado en tu descripción.",
+            "generatingAI": "Generando logo con IA...",
+            "generateLogo": "Generar Logo",
+            "uploadOwn": "Subir mi Propio Logo",
+            "uploadDesc": "Sube una imagen (PNG, JPG) desde tu dispositivo.",
+            "uploading": "Subiendo...",
+            "selectFile": "Seleccionar Archivo",
+            "savingPermanent": "Guardando logo permanentemente...",
+            "uploadingImage": "Subiendo imagen...",
+            "errorUpload": "Error subiendo imagen",
+            "errorUnknown": "Ha ocurrido un error desconocido."
         }
     },
     "tokenDetail": {

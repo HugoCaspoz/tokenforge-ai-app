@@ -136,6 +136,29 @@
             "errorFields": "Please complete all fields.",
             "errorGeneration": "Error generating AI response",
             "errorUnknown": "Unknown error"
+        },
+        "step2": {
+            "title": "Step 2: Automatic Design",
+            "subtitle": "Based on your idea, we've defined the following. Now, let's create a logo!",
+            "designTab": "🎨 Token Design",
+            "name": "Name:",
+            "ticker": "Ticker:",
+            "description": "Description:",
+            "logoSaved": "Logo saved!",
+            "logoAlt": "Logo of",
+            "perfect": "Perfect! Go to last step →",
+            "aiGenerate": "Generate with AI",
+            "aiGenerateDesc": "Let DALL-E create a unique logo based on your description.",
+            "generatingAI": "Generating logo with AI...",
+            "generateLogo": "Generate Logo",
+            "uploadOwn": "Upload My Own Logo",
+            "uploadDesc": "Upload an image (PNG, JPG) from your device.",
+            "uploading": "Uploading...",
+            "selectFile": "Select File",
+            "savingPermanent": "Saving logo permanently...",
+            "uploadingImage": "Uploading image...",
+            "errorUpload": "Error uploading image",
+            "errorUnknown": "An unknown error occurred."
         }
     },
     "tokenDetail": {

@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import type { TokenData } from '../Wizard';
+import { useTranslation } from '@/lib/i18n';
 
 interface Step2Props {
   tokenData: TokenData;
@@ -12,6 +13,7 @@ interface Step2Props {
 }
 
 export default function Step2_Design({ tokenData, onDataChange, onComplete }: Step2Props) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
   const [error, setError] = useState('');
@@ -23,7 +25,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
 
     try {
       // --- PASO A: Generar el logo con DALL-E ---
-      setLoadingMessage('Generando logo con IA...');
+      setLoadingMessage(t('wizard.step2.generatingAI'));
       const dallEResponse = await fetch('/api/generate/logo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -35,7 +37,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
       const tempLogoUrl = dallEData.logoUrl;
 
       // --- PASO B: Subir el logo a nuestro almacenamiento ---
-      setLoadingMessage('Guardando logo permanentemente...');
+      setLoadingMessage(t('wizard.step2.savingPermanent'));
       const storageResponse = await fetch('/api/storage/upload-logo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,7 +57,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Ha ocurrido un error desconocido.');
+        setError(t('wizard.step2.errorUnknown'));
       }
     } finally {
       setIsLoading(false);
@@ -65,8 +67,8 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-2">Paso 2: Diseño Automático</h2>
-      <p className="text-gray-400 mb-6">Basado en tu idea, hemos definido lo siguiente. Ahora, ¡vamos a crearle un logo!</p>
+      <h2 className="text-2xl font-bold text-white mb-2">{t('wizard.step2.title')}</h2>
+      <p className="text-gray-400 mb-6">{t('wizard.step2.subtitle')}</p>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6 border-b border-gray-700">
@@ -74,22 +76,22 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
           onClick={() => { }} // Simple visual tab for now, logic switches automatically based on action
           className="pb-2 px-4 transition-colors border-b-2 border-purple-500 text-purple-400"
         >
-          🎨 Diseño del Token
+          {t('wizard.step2.designTab')}
         </button>
       </div>
 
       <div className="mb-6 p-4 bg-gray-900 rounded-md border border-gray-700">
-        <p><strong>Nombre:</strong> {tokenData.name}</p>
-        <p><strong>Ticker:</strong> ${tokenData.ticker.toUpperCase()}</p>
-        <p><strong>Descripción:</strong> {tokenData.description}</p>
+        <p><strong>{t('wizard.step2.name')}</strong> {tokenData.name}</p>
+        <p><strong>{t('wizard.step2.ticker')}</strong> ${tokenData.ticker.toUpperCase()}</p>
+        <p><strong>{t('wizard.step2.description')}</strong> {tokenData.description}</p>
       </div>
 
       {logoUrl ? (
         <div className="text-center">
-          <h3 className="text-lg font-semibold text-green-300 mb-4">¡Logo guardado!</h3>
+          <h3 className="text-lg font-semibold text-green-300 mb-4">{t('wizard.step2.logoSaved')}</h3>
           <Image
             src={logoUrl}
-            alt={`Logo de ${tokenData.name}`}
+            alt={`${t('wizard.step2.logoAlt')} ${tokenData.name}`}
             width={192}
             height={192}
             className="mx-auto rounded-full border-4 border-purple-500"
@@ -99,7 +101,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
             onClick={onComplete}
             className="w-full mt-6 px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition-colors"
           >
-            ¡Perfecto! Ir al último paso &rarr;
+            {t('wizard.step2.perfect')}
           </button>
         </div>
       ) : (
@@ -107,22 +109,22 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
           {/* Opcion IA */}
           <div className="bg-gray-800 p-6 rounded-lg text-center border border-gray-700 hover:border-purple-500 transition-all">
             <div className="text-4xl mb-4">🤖</div>
-            <h3 className="font-bold mb-2">Generar con IA</h3>
-            <p className="text-sm text-gray-400 mb-4">Deja que DALL-E cree un logo único basado en tu descripción.</p>
+            <h3 className="font-bold mb-2">{t('wizard.step2.aiGenerate')}</h3>
+            <p className="text-sm text-gray-400 mb-4">{t('wizard.step2.aiGenerateDesc')}</p>
             <button
               onClick={handleGenerateAndStoreLogo}
               className="w-full px-4 py-2 bg-purple-600 text-white font-semibold rounded hover:bg-purple-700 disabled:bg-gray-600"
               disabled={isLoading}
             >
-              {isLoading && loadingMessage.includes('IA') ? loadingMessage : 'Generar Logo'}
+              {isLoading && loadingMessage.includes('IA') ? loadingMessage : t('wizard.step2.generateLogo')}
             </button>
           </div>
 
           {/* Opcion Subir */}
           <div className="bg-gray-800 p-6 rounded-lg text-center border border-gray-700 hover:border-blue-500 transition-all">
             <div className="text-4xl mb-4">📂</div>
-            <h3 className="font-bold mb-2">Subir mi Propio Logo</h3>
-            <p className="text-sm text-gray-400 mb-4">Sube una imagen (PNG, JPG) desde tu dispositivo.</p>
+            <h3 className="font-bold mb-2">{t('wizard.step2.uploadOwn')}</h3>
+            <p className="text-sm text-gray-400 mb-4">{t('wizard.step2.uploadDesc')}</p>
             <label className="block w-full cursor-pointer">
               <input
                 type="file"
@@ -133,7 +135,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
                   if (!file) return;
 
                   setIsLoading(true);
-                  setLoadingMessage('Subiendo imagen...');
+                  setLoadingMessage(t('wizard.step2.uploadingImage'));
                   setError('');
 
                   try {
@@ -165,7 +167,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
                     onDataChange({ logoUrl: publicUrl });
 
                   } catch (err: any) {
-                    setError(err.message || 'Error subiendo imagen');
+                    setError(err.message || t('wizard.step2.errorUpload'));
                   } finally {
                     setIsLoading(false);
                   }
@@ -173,7 +175,7 @@ export default function Step2_Design({ tokenData, onDataChange, onComplete }: St
                 disabled={isLoading}
               />
               <span className="block w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 disabled:bg-gray-600">
-                {isLoading && loadingMessage.includes('Subiendo') ? 'Subiendo...' : 'Seleccionar Archivo'}
+                {isLoading && loadingMessage.includes('Subiendo') ? t('wizard.step2.uploading') : t('wizard.step2.selectFile')}
               </span>
             </label>
           </div>
