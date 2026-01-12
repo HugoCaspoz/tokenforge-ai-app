@@ -20,6 +20,9 @@ interface TokenDashboardProps {
         chain_id: string;
         contract_address: string;
         user_id: string;
+        twitter_url?: string | null;
+        telegram_url?: string | null;
+        website_url?: string | null;
     };
 }
 
@@ -31,6 +34,27 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const [flatCode, setFlatCode] = useState("");
     const [apiKey, setApiKey] = useState("");
     const [lpAddress, setLpAddress] = useState<string>("");
+
+    // Socials State
+    const [socials, setSocials] = useState({
+        twitter: token.twitter_url || '',
+        telegram: token.telegram_url || '',
+        website: token.website_url || ''
+    });
+    const [savingSocials, setSavingSocials] = useState(false);
+
+    const handleSaveSocials = async () => {
+        setSavingSocials(true);
+        const { error } = await supabase.from('projects').update({
+            twitter_url: socials.twitter,
+            telegram_url: socials.telegram,
+            website_url: socials.website
+        }).eq('contract_address', token.contract_address);
+
+        if (error) alert("Error guardando redes sociales");
+        else alert("Redes sociales actualizadas!");
+        setSavingSocials(false);
+    };
 
     useEffect(() => {
         const savedKey = localStorage.getItem('polygonScanApiKey');
@@ -120,13 +144,28 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                         {token.name} <span className="text-gray-400 text-2xl font-normal">${token.ticker}</span>
                     </h1>
                     <p className="text-blue-400 font-mono mt-1">{token.contract_address}</p>
-                    <div className="flex gap-2 mt-3">
+                    <div className="flex gap-2 mt-3 flex-wrap">
                         <span className="bg-gray-700 px-3 py-1 rounded text-sm text-gray-300">Network: {networkName}</span>
                         {isOwner ? (
                             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm border border-green-500/30">Eres el Owner</span>
                         ) : (
                             <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-sm border border-yellow-500/30">Solo Vista (No eres Owner)</span>
                         )}
+
+                        {/* Social Links Display */}
+                        {token.twitter_url && <a href={token.twitter_url} target="_blank" className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded text-sm hover:bg-blue-500/30">Twitter</a>}
+                        {token.telegram_url && <a href={token.telegram_url} target="_blank" className="bg-blue-400/20 text-blue-300 px-3 py-1 rounded text-sm hover:bg-blue-400/30">Telegram</a>}
+                        {token.website_url && <a href={token.website_url} target="_blank" className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded text-sm hover:bg-purple-500/30">Web</a>}
+
+                        {/* Buy Button */}
+                        <a
+                            href={`https://quickswap.exchange/#/swap?outputCurrency=${token.contract_address}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-1 rounded text-sm font-bold flex items-center gap-1 transition-colors"
+                        >
+                            🦄 Comprar Ahora
+                        </a>
                         {/* Error Debug Badge */}
                         {(ownerError || supplyError) && (
                             <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded text-sm border border-red-500/30" title={String(ownerError || supplyError)}>
@@ -365,6 +404,43 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                         <div>
                             <h2 className="text-2xl font-bold mb-4 text-green-400">Herramientas de Crecimiento</h2>
                             <p className="text-gray-400 mb-6">Utiliza estas herramientas para distribuir tu token y aumentar tu comunidad.</p>
+
+                            {/* Socials Editor */}
+                            {isOwner && (
+                                <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 mb-8">
+                                    <h3 className="text-lg font-bold text-white mb-4">📢 Redes Sociales del Proyecto</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <input
+                                            type="text"
+                                            placeholder="Twitter URL"
+                                            value={socials.twitter}
+                                            onChange={(e) => setSocials({ ...socials, twitter: e.target.value })}
+                                            className="bg-gray-800 border border-gray-600 rounded p-2 text-white"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Telegram URL"
+                                            value={socials.telegram}
+                                            onChange={(e) => setSocials({ ...socials, telegram: e.target.value })}
+                                            className="bg-gray-800 border border-gray-600 rounded p-2 text-white"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Website URL"
+                                            value={socials.website}
+                                            onChange={(e) => setSocials({ ...socials, website: e.target.value })}
+                                            className="bg-gray-800 border border-gray-600 rounded p-2 text-white"
+                                        />
+                                    </div>
+                                    <button
+                                        onClick={handleSaveSocials}
+                                        disabled={savingSocials}
+                                        className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-semibold"
+                                    >
+                                        {savingSocials ? 'Guardando...' : 'Guardar Redes'}
+                                    </button>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                                 <LiquidityWizard

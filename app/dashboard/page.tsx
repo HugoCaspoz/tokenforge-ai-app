@@ -20,7 +20,7 @@ export default async function DashboardPage({ searchParams }: Props) {
   // ✅ CORRECCIÓN: Se añaden 'contract_address' y 'chain_id' a la consulta.
   const { data: projects, error } = await supabase
     .from('projects')
-    .select('id, name, ticker, logo_url, contract_address, chain_id')
+    .select('id, name, ticker, logo_url, contract_address, chain_id, description, twitter_url, telegram_url, website_url')
     .eq('user_id', user.id)
     .not('contract_address', 'is', null)
     .order('created_at', { ascending: false });

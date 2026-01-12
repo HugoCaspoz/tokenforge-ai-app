@@ -69,9 +69,16 @@ export default function LiquidityLocker({ defaultTokenAddress }: { defaultTokenA
             args: [tokenAddress as `0x${string}`, parseUnits(amount, 18), BigInt(timestamp)],
         }, {
             onSuccess: async () => {
-                // Update DB to mark project as locked
+                // Update DB to mark project as locked with expiration date
                 const supabase = createClient();
-                await supabase.from('projects').update({ is_locked: true }).eq('contract_address', tokenAddress);
+                // Convert local datetime string to ISO string for DB
+                const isoDate = new Date(unlockDate).toISOString();
+
+                await supabase.from('projects').update({
+                    is_locked: true,
+                    locked_until: isoDate
+                }).eq('contract_address', tokenAddress);
+
                 alert("¡Liquidez Bloqueada con Éxito!");
             }
         });
