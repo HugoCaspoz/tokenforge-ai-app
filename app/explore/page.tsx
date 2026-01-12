@@ -202,7 +202,7 @@ export default function ExplorePage() {
                                     {/* Actions */}
                                     <div className="flex gap-2 mt-auto">
                                         <a
-                                            href={`https://quickswap.exchange/#/swap?outputCurrency=${project.contract_address}`}
+                                            href={`https://dapp.quickswap.exchange/swap/best/MATIC/${project.contract_address}?chainId=${parseInt(project.chain_id, 16)}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="flex-1 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold py-2 rounded text-center transition-colors"

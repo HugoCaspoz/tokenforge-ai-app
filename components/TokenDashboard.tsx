@@ -159,7 +159,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
                         {/* Buy Button */}
                         <a
-                            href={`https://quickswap.exchange/#/swap?outputCurrency=${token.contract_address}`}
+                            href={`https://dapp.quickswap.exchange/swap/best/MATIC/${token.contract_address}?chainId=${parseInt(token.chain_id, 16)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-1 rounded text-sm font-bold flex items-center gap-1 transition-colors"
