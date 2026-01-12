@@ -159,6 +159,33 @@
             "uploadingImage": "Uploading image...",
             "errorUpload": "Error uploading image",
             "errorUnknown": "An unknown error occurred."
+        },
+        "step3": {
+            "title": "Step 3: Configuration and Launch",
+            "subtitle": "Define the supply and select the network.",
+            "yourPlan": "Your Current Plan:",
+            "noSubscription": "You currently don't have an active subscription. Subscribe to deploy on Mainnet!",
+            "planLimits": "Limits of your plan:",
+            "unlimited": "Unlimited",
+            "manageSubscription": "Manage Subscription here",
+            "totalSupply": "Total Supply (Ex. 1,000,000)",
+            "chooseNetwork": "Choose your Main Network:",
+            "notAvailable": "Not available",
+            "available": "Available",
+            "requestDeploy": "🚀 Request Deployment on",
+            "freeGas": "(Free Gas)",
+            "deploying": "Deploying (We pay the gas)...",
+            "success": "Contract deployed successfully! 🎉",
+            "successDesc": "Your token is now live on the blockchain.",
+            "viewOn": "View on",
+            "errorNeedSubscription": "You need an active subscription to deploy on Mainnet.",
+            "errorLimit": "You have reached the token limit for this network with your current plan.",
+            "errorConnectWallet": "Please connect your wallet to verify your address (You won't pay gas).",
+            "errorNoAddress": "Could not detect your wallet address.",
+            "requestingDeploy": "Requesting deployment to server... (We pay the gas ⛽)",
+            "errorDeploy": "Error requesting deployment.",
+            "errorDeployUnknown": "An error occurred during deployment.",
+            "errorNeedLogin": "You need to sign in."
         }
     },
     "tokenDetail": {

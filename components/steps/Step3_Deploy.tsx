@@ -8,6 +8,7 @@ import { PLAN_DETAILS, NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 import { useWalletClient, usePublicClient } from 'wagmi';
 import { parseEther } from 'viem';
 import { TOKEN_ABI, TOKEN_BYTECODE } from '@/lib/tokenArtifacts';
+import { useTranslation } from '@/lib/i18n';
 
 const networkKeys = Object.keys(NETWORK_NAMES) as Array<keyof typeof NETWORK_NAMES>;
 
@@ -16,6 +17,7 @@ interface Step3Props {
 }
 
 export default function Step3_Deploy({ tokenData }: Step3Props) {
+  const { t } = useTranslation();
   const supabase = createClient();
   const [supply, setSupply] = useState(1000000);
   const [status, setStatus] = useState('');
@@ -67,7 +69,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
         setDeploymentsCount(counts);
 
       } else {
-        setError('Necesitas iniciar sesión.');
+        setError(t('wizard.step3.errorNeedLogin'));
       }
     };
 
@@ -91,13 +93,13 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
     setStatus('');
 
     if (!isSubscribed) {
-      setError('Necesitas una suscripción activa para desplegar en Mainnet.');
+      setError(t('wizard.step3.errorNeedSubscription'));
       return;
     }
 
     const available = getTokensAvailable(selectedChainId);
     if (available <= 0) {
-      setError(`Has alcanzado el límite de tokens para esta red con tu plan actual.`);
+      setError(t('wizard.step3.errorLimit'));
       return;
     }
 
@@ -110,18 +112,18 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       ownerAddress = addresses[0];
     } else {
       // If wallet not connected, we prompt them to connect just for the address
-      setError('Por favor conecta tu wallet para verificar tu dirección (No pagarás gas).');
+      setError(t('wizard.step3.errorConnectWallet'));
       return;
     }
 
     if (!ownerAddress) {
-      setError('No se pudo detectar tu dirección de wallet.');
+      setError(t('wizard.step3.errorNoAddress'));
       return;
     }
 
     setLoadingDeploy(true);
     try {
-      setStatus('Solicitando despliegue al servidor... (Nosotros pagamos el gas ⛽)');
+      setStatus(t('wizard.step3.requestingDeploy'));
 
       // Call API for Server-Side Deployment
       const response = await fetch('/api/deploy-mainnet-token', {
@@ -138,7 +140,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Error al solicitar el despliegue.');
+        throw new Error(data.error || t('wizard.step3.errorDeploy'));
       }
 
       const newContractAddress = data.contractAddress;
@@ -147,7 +149,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
 
     } catch (err: any) {
       console.error(err);
-      setError(err.message || 'Ha ocurrido un error durante el despliegue.');
+      setError(err.message || t('wizard.step3.errorDeployUnknown'));
     } finally {
       setLoadingDeploy(false);
     }
@@ -157,22 +159,22 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-2">Paso 3: Configuración y Lanzamiento</h2>
-      <p className="text-gray-400 mb-6">Define el suministro y selecciona la red.</p>
+      <h2 className="text-2xl font-bold text-white mb-2">{t('wizard.step3.title')}</h2>
+      <p className="text-gray-400 mb-6">{t('wizard.step3.subtitle')}</p>
 
       {/* Estado Suscripción */}
       <div className="bg-gray-800 p-4 rounded-md mb-6 border border-purple-600">
-        <h3 className="text-lg font-semibold text-white mb-2">Tu Plan Actual: <span className="text-purple-400">{currentPlanName}</span></h3>
+        <h3 className="text-lg font-semibold text-white mb-2">{t('wizard.step3.yourPlan')} <span className="text-purple-400">{currentPlanName}</span></h3>
         {!isSubscribed && (
-          <p className="text-red-400 mb-2">Actualmente no tienes una suscripción activa. ¡Suscríbete para desplegar en Mainnet!</p>
+          <p className="text-red-400 mb-2">{t('wizard.step3.noSubscription')}</p>
         )}
 
-        <p className="text-gray-300 text-sm mt-2">Límites de tu plan:</p>
+        <p className="text-gray-300 text-sm mt-2">{t('wizard.step3.planLimits')}</p>
         <ul className="text-gray-400 text-sm list-disc pl-5">
           {networkKeys.map(chainId => {
             const plan = PLAN_DETAILS[activePlanKey];
             const limit = (plan ? plan.limits[chainId] : 0) as number;
-            const label = limit === -1 ? "Ilimitados" : `${getTokensAvailable(chainId)} de ${limit}`;
+            const label = limit === -1 ? t('wizard.step3.unlimited') : `${getTokensAvailable(chainId)} de ${limit}`;
             const name = NETWORK_NAMES[chainId] || chainId;
             return <li key={chainId}>{name}: {label}</li>
           })}
@@ -180,7 +182,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
 
         {!isSubscribed && (
           <p className="mt-3">
-            <Link href="/subscription" className="text-purple-300 hover:underline">Gestionar Suscripción aquí</Link>
+            <Link href="/subscription" className="text-purple-300 hover:underline">{t('wizard.step3.manageSubscription')}</Link>
           </p>
         )}
       </div>
@@ -188,7 +190,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       {/* Suministro */}
       <div className="mb-6">
         <label htmlFor="supply" className="block text-sm font-medium text-gray-300 mb-2">
-          Suministro Total (Ej. 1,000,000)
+          {t('wizard.step3.totalSupply')}
         </label>
         <input
           type="number"
@@ -203,7 +205,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       {/* Selector de Red */}
       <div className="space-y-4">
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-white mb-3">Elige tu Red Principal:</h3>
+          <h3 className="text-lg font-semibold text-white mb-3">{t('wizard.step3.chooseNetwork')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {networkKeys.map((chainId) => {
               const available = getTokensAvailable(chainId);
@@ -224,7 +226,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
                 >
                   <p className="font-bold text-white">{name}</p>
                   <p className="text-sm mt-2">
-                    {isDisabled ? <span className="text-red-400">No disponible</span> : <span className="text-green-400">Disponible</span>}
+                    {isDisabled ? <span className="text-red-400">{t('wizard.step3.notAvailable')}</span> : <span className="text-green-400">{t('wizard.step3.available')}</span>}
                   </p>
                 </button>
               );
@@ -237,7 +239,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
           disabled={loadingDeploy || !isSubscribed || getTokensAvailable(selectedChainId) <= 0}
           className="w-full px-6 py-4 bg-green-600 text-white font-bold text-lg rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-500"
         >
-          {loadingDeploy ? 'Desplegando (Nosotros pagamos el gas)...' : `🚀 Solicitar Despliegue en ${NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES]} (Gas Gratis)`}
+          {loadingDeploy ? t('wizard.step3.deploying') : `${t('wizard.step3.requestDeploy')} ${NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES]} ${t('wizard.step3.freeGas')}`}
         </button>
       </div>
 
@@ -246,8 +248,8 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
 
       {contractAddress && (
         <div className="mt-6 text-center text-white bg-green-500/20 p-4 rounded border border-green-500">
-          <p className="font-semibold text-lg mb-2">¡Contrato desplegado con éxito! 🎉</p>
-          <p className="text-sm text-gray-300 mb-4">Tu token ya vive en la blockchain.</p>
+          <p className="font-semibold text-lg mb-2">{t('wizard.step3.success')}</p>
+          <p className="text-sm text-gray-300 mb-4">{t('wizard.step3.successDesc')}</p>
 
           <a
             href={`${NETWORK_EXPLORERS[selectedChainId as keyof typeof NETWORK_EXPLORERS] || 'https://etherscan.io'}/address/${contractAddress}`}
@@ -255,7 +257,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
             rel="noopener noreferrer"
             className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-bold transition-colors"
           >
-            Ver en {NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES] || 'Explorer'}
+            {t('wizard.step3.viewOn')} {NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES] || 'Explorer'}
           </a>
 
           <p className="font-mono text-xs text-gray-500 break-all mt-4">{contractAddress}</p>

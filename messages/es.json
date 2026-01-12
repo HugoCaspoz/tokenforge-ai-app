@@ -159,6 +159,33 @@
             "uploadingImage": "Subiendo imagen...",
             "errorUpload": "Error subiendo imagen",
             "errorUnknown": "Ha ocurrido un error desconocido."
+        },
+        "step3": {
+            "title": "Paso 3: Configuración y Lanzamiento",
+            "subtitle": "Define el suministro y selecciona la red.",
+            "yourPlan": "Tu Plan Actual:",
+            "noSubscription": "Actualmente no tienes una suscripción activa. ¡Suscríbete para desplegar en Mainnet!",
+            "planLimits": "Límites de tu plan:",
+            "unlimited": "Ilimitados",
+            "manageSubscription": "Gestionar Suscripción aquí",
+            "totalSupply": "Suministro Total (Ej. 1,000,000)",
+            "chooseNetwork": "Elige tu Red Principal:",
+            "notAvailable": "No disponible",
+            "available": "Disponible",
+            "requestDeploy": "🚀 Solicitar Despliegue en",
+            "freeGas": "(Gas Gratis)",
+            "deploying": "Desplegando (Nosotros pagamos el gas)...",
+            "success": "¡Contrato desplegado con éxito! 🎉",
+            "successDesc": "Tu token ya vive en la blockchain.",
+            "viewOn": "Ver en",
+            "errorNeedSubscription": "Necesitas una suscripción activa para desplegar en Mainnet.",
+            "errorLimit": "Has alcanzado el límite de tokens para esta red con tu plan actual.",
+            "errorConnectWallet": "Por favor conecta tu wallet para verificar tu dirección (No pagarás gas).",
+            "errorNoAddress": "No se pudo detectar tu dirección de wallet.",
+            "requestingDeploy": "Solicitando despliegue al servidor... (Nosotros pagamos el gas ⛽)",
+            "errorDeploy": "Error al solicitar el despliegue.",
+            "errorDeployUnknown": "Ha ocurrido un error durante el despliegue.",
+            "errorNeedLogin": "Necesitas iniciar sesión."
         }
     },
     "tokenDetail": {
