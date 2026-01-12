@@ -7,7 +7,7 @@ import { LOCKER_ABI } from '@/lib/lockerArtifacts';
 import { TOKEN_ABI } from '@/lib/tokenArtifacts'; // Using standard ERC20 ABI
 
 // TODO: Replace with deployed contract address
-const LOCKER_ADDRESS = "0x0000000000000000000000000000000000000000";
+const LOCKER_ADDRESS = "0x60fD775038d1b64986F38f0e02942B59245084ea";
 
 export default function LiquidityLocker() {
     const { address } = useAccount();
@@ -29,7 +29,7 @@ export default function LiquidityLocker() {
         functionName: 'getLocksByOwner',
         args: [address as `0x${string}`],
         query: {
-            enabled: !!address && LOCKER_ADDRESS !== "0x0000000000000000000000000000000000000000",
+            enabled: !!address,
         }
     });
 
@@ -75,11 +75,7 @@ export default function LiquidityLocker() {
         <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
             <h2 className="text-2xl font-bold mb-6 text-purple-400">🔒 Liquidity Locker</h2>
 
-            {LOCKER_ADDRESS === "0x0000000000000000000000000000000000000000" && (
-                <div className="bg-yellow-500/20 text-yellow-200 p-4 rounded mb-6 border border-yellow-500/50">
-                    ⚠️ Contract not deployed. Please deploy LiquidityLocker.sol and update the address in components/LiquidityLocker.tsx
-                </div>
-            )}
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Create Lock Form */}

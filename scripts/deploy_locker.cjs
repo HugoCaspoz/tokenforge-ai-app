@@ -1,7 +1,7 @@
 const { ethers } = require("ethers");
 const fs = require("fs");
 const path = require("path");
-const { LOCKER_ABI, LOCKER_BYTECODE } = require("../lib/lockerArtifacts"); // This might fail if ts file is not compiled or handled by node. 
+
 // Actually, lib/lockerArtifacts.ts is TS. Node cannot require it directly without ts-node or compilation.
 // I should read the artifacts from the compilation output directly or make the artifacts JS.
 // But I already made them TS.
@@ -22,7 +22,7 @@ async function main() {
         process.exit(1);
     }
 
-    const rpcUrl = process.env.RPC_URL || "https://polygon-rpc.com";
+    const rpcUrl = process.env.RPC_URL || "https://polygon-bor.publicnode.com";
     const provider = new ethers.JsonRpcProvider(rpcUrl);
     const wallet = new ethers.Wallet(privateKey, provider);
 
