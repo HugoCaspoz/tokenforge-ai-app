@@ -13,14 +13,17 @@
         "delete": "Eliminar",
         "export": "Exportar",
         "connect": "Conectar",
-        "confirm": "Confirmar"
+        "confirm": "Confirmar",
+        "yes": "Sí",
+        "no": "No"
     },
     "header": {
         "signIn": "Iniciar Sesión",
         "signOut": "Cerrar Sesión",
         "myProfile": "Mi Perfil",
         "explore": "Explorar",
-        "profile": "Perfil"
+        "profile": "Perfil",
+        "dashboard": "Dashboard"
     },
     "footer": {
         "home": "Inicio",
@@ -56,6 +59,44 @@
             "polygon": "Disponible Ahora",
             "bnb": "Próximamente",
             "ethereum": "Próximamente"
+        }
+    },
+    "explore": {
+        "title": "Explorar Tokens",
+        "filters": {
+            "all": "Todos",
+            "renounced": "Propiedad Renunciada",
+            "locked": "Liquidez Bloqueada",
+            "favorites": "❤️ Favoritos"
+        },
+        "sort": {
+            "newest": "Más Recientes",
+            "marketCap": "Capitalización",
+            "volume": "Volumen (24h)",
+            "priceChange": "Cambio de Precio"
+        },
+        "trustScore": "Puntuación de Confianza",
+        "deployer": "Creador",
+        "loading": "Cargando proyectos...",
+        "noResults": "No se encontraron proyectos",
+        "marketCap": "Cap. de Mercado",
+        "volume24h": "Volumen 24h",
+        "priceChange": "Cambio de Precio",
+        "expiresOn": "Expira el"
+    },
+    "guide": {
+        "title": "Guía de Uso",
+        "subtitle": "Todo lo que necesitas saber para crear y gestionar tu token",
+        "prerequisites": {
+            "title": "Requisitos Previos",
+            "wallet": "Wallet Web3 (MetaMask, WalletConnect)",
+            "gas": "Tokens de gas (MATIC para Polygon)",
+            "account": "Cuenta en TokenForge"
+        },
+        "steps": {
+            "create": "Paso 1: Crea Tu Token",
+            "liquidity": "Paso 2: Añade Liquidez",
+            "manage": "Paso 3: Gestiona Tu Token"
         }
     }
 }

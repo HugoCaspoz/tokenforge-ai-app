@@ -13,14 +13,17 @@
         "delete": "Delete",
         "export": "Export",
         "connect": "Connect",
-        "confirm": "Confirm"
+        "confirm": "Confirm",
+        "yes": "Yes",
+        "no": "No"
     },
     "header": {
         "signIn": "Sign In",
         "signOut": "Sign Out",
         "myProfile": "My Profile",
         "explore": "Explore",
-        "profile": "Profile"
+        "profile": "Profile",
+        "dashboard": "Dashboard"
     },
     "footer": {
         "home": "Home",
@@ -56,6 +59,44 @@
             "polygon": "Available Now",
             "bnb": "Coming Soon",
             "ethereum": "Coming Soon"
+        }
+    },
+    "explore": {
+        "title": "Explore Tokens",
+        "filters": {
+            "all": "All",
+            "renounced": "Ownership Renounced",
+            "locked": "Liquidity Locked",
+            "favorites": "❤️ Favorites"
+        },
+        "sort": {
+            "newest": "Newest",
+            "marketCap": "Market Cap",
+            "volume": "Volume (24h)",
+            "priceChange": "Price Change"
+        },
+        "trustScore": "Trust Score",
+        "deployer": "Deployer",
+        "loading": "Loading projects...",
+        "noResults": "No projects found",
+        "marketCap": "Market Cap",
+        "volume24h": "Volume 24h",
+        "priceChange": "Price Change",
+        "expiresOn": "Expires on"
+    },
+    "guide": {
+        "title": "User Guide",
+        "subtitle": "Everything you need to know to create and manage your token",
+        "prerequisites": {
+            "title": "Prerequisites",
+            "wallet": "Web3 Wallet (MetaMask, WalletConnect)",
+            "gas": "Gas tokens (MATIC for Polygon)",
+            "account": "TokenForge account"
+        },
+        "steps": {
+            "create": "Step 1: Create Your Token",
+            "liquidity": "Step 2: Add Liquidity",
+            "manage": "Step 3: Manage Your Token"
         }
     }
 }

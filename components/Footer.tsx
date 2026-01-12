@@ -1,6 +1,10 @@
+'use client';
+
 import Link from 'next/link';
+import { useTranslation } from '@/lib/i18n';
 
 export const Footer = () => {
+    const { t } = useTranslation();
     return (
         <footer className="bg-gray-900 border-t border-gray-800">
             <div className="mx-auto max-w-7xl px-6 py-12 md:flex md:items-center md:justify-between lg:px-8">
@@ -20,12 +24,12 @@ export const Footer = () => {
                 </div> */}
                 <div className="mt-8 md:order-1 md:mt-0">
                     <div className="flex justify-center space-x-6 md:justify-start mb-4">
-                        <Link href="/" className="text-sm leading-6 text-gray-400 hover:text-white">Inicio</Link>
-                        <Link href="/explore" className="text-sm leading-6 text-gray-400 hover:text-white">Explorar</Link>
-                        <Link href="/guide" className="text-sm leading-6 text-gray-400 hover:text-white">Guía de Uso</Link>
+                        <Link href="/" className="text-sm leading-6 text-gray-400 hover:text-white">{t('footer.home')}</Link>
+                        <Link href="/explore" className="text-sm leading-6 text-gray-400 hover:text-white">{t('footer.explore')}</Link>
+                        <Link href="/guide" className="text-sm leading-6 text-gray-400 hover:text-white">{t('footer.guide')}</Link>
                     </div>
                     <p className="text-center text-xs leading-5 text-gray-500 md:text-left">
-                        &copy; {new Date().getFullYear()} TokenCrafter. Todos los derechos reservados.
+                        &copy; {new Date().getFullYear()} TokenCrafter. {t('footer.allRightsReserved')}.
                     </p>
                 </div>
             </div>
