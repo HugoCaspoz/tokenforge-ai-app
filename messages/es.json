@@ -122,6 +122,28 @@
         "totalSupply": "Total Supply",
         "yourBalance": "Tu Balance",
         "viewOnPolygon": "Ver en Polygon",
-        "downloadLogo": "Descargar Logo"
+        "downloadLogo": "Descargar Logo",
+        "admin": {
+            "title": "Zona de Peligro / Admin",
+            "transferOwnership": "Transferir Propiedad",
+            "transferDesc": "Transfiere el control del contrato a otra wallet. Irreversible si te equivocas de dirección.",
+            "renounceOwnership": "Renunciar Propiedad",
+            "renounceDesc": "Nadie podrá controlar el contrato nunca más. Es necesario para 'tokens comunitarios'.",
+            "communityNote": "Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).",
+            "verification": "✅ Verificación de Contrato",
+            "autoVerification": "🤖 Verificación Automática",
+            "autoVerificationDesc": "Conecta con PolygonScan para verificar en 1 click. Necesitas una API Key gratuita.",
+            "getApiKey": "Conseguir API Key (Gratis)",
+            "orManual": "O método manual:",
+            "manualGuide": "Guía de Verificación Manual",
+            "manualSteps": {
+                "step1": "Ve a PolygonScan Verify.",
+                "step2": "Compiler Type: Solidity (Single file).",
+                "step3": "Compiler Version: v0.8.33+commit...",
+                "step4": "License: MIT.",
+                "step5": "Optimization: Yes (200 runs).",
+                "step6": "Source Code: Copia y pega TODO esto:"
+            }
+        }
     }
 }
