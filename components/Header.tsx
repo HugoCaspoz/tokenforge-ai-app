@@ -75,6 +75,9 @@ export const Header = () => {
               <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
                 Dashboard
               </Link>
+              <Link href="/explore" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
+                Explorar
+              </Link>
               {/* ✅ ENLACE AÑADIDO */}
               <Link href="/profile" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
                 Mi Perfil
@@ -108,6 +111,7 @@ export const Header = () => {
                   {user ? (
                     <>
                       <Link href="/dashboard" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Dashboard</Link>
+                      <Link href="/explore" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Explorar</Link>
                       {/* ✅ ENLACE AÑADIDO EN EL MENÚ MÓVIL */}
                       <Link href="/profile" onClick={() => setMobileMenuOpen(false)} className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold leading-7 text-white hover:bg-gray-800">Mi Perfil</Link>
                       <button

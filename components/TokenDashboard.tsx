@@ -95,6 +95,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                 address: token.contract_address as `0x${string}`,
                 abi: TOKEN_ABI,
                 functionName: 'renounceOwnership',
+            }, {
+                onSuccess: async () => {
+                    await supabase.from('projects').update({ is_renounced: true }).eq('contract_address', token.contract_address);
+                    alert("¡Propiedad Renunciada con Éxito!");
+                    window.location.reload();
+                }
             });
         } catch (e) {
             console.error(e);

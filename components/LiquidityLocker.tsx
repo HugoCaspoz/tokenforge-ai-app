@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { parseUnits, formatUnits } from 'viem';
 import { LOCKER_ABI } from '@/lib/lockerArtifacts';
 import { TOKEN_ABI } from '@/lib/tokenArtifacts'; // Using standard ERC20 ABI
+import { createClient } from '@/utils/supabase/client';
 
 // TODO: Replace with deployed contract address
 const LOCKER_ADDRESS = "0x60fD775038d1b64986F38f0e02942B59245084ea";
@@ -66,6 +67,13 @@ export default function LiquidityLocker({ defaultTokenAddress }: { defaultTokenA
             abi: LOCKER_ABI,
             functionName: 'lock',
             args: [tokenAddress as `0x${string}`, parseUnits(amount, 18), BigInt(timestamp)],
+        }, {
+            onSuccess: async () => {
+                // Update DB to mark project as locked
+                const supabase = createClient();
+                await supabase.from('projects').update({ is_locked: true }).eq('contract_address', tokenAddress);
+                alert("¡Liquidez Bloqueada con Éxito!");
+            }
         });
     };
 
