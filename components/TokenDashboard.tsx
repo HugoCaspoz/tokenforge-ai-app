@@ -38,6 +38,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     }, []);
 
     const { writeContract, isPending: isAirdropPending, error: airdropError } = useWriteContract();
+    const { writeContract: renounceOwnership, isPending: isRenouncing } = useWriteContract();
 
     // ... (inside handleAirdrop)
 
@@ -79,6 +80,27 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const isOwner = userAddress && ownerAddress && userAddress.toLowerCase() === ownerAddress.toLowerCase();
     const networkName = NETWORK_NAMES[token.chain_id as keyof typeof NETWORK_NAMES] || 'Unknown Network';
     const explorerUrl = NETWORK_EXPLORERS[token.chain_id as keyof typeof NETWORK_EXPLORERS];
+
+    const handleRenounceOwnership = async () => {
+        if (!isOwner) return;
+
+        const confirm1 = window.confirm("⚠️ ¿ESTÁS SEGURO? \n\nRenunciar a la propiedad es IRREVERSIBLE. Perderás el control total del contrato para siempre.\n\n¿Quieres continuar?");
+        if (!confirm1) return;
+
+        const confirm2 = window.confirm("⚠️ ULTIMA ADVERTENCIA \n\nNo podrás pausar, acuñar más tokens ni cambiar nada nunca más. \n\n¿Estás 100% seguro?");
+        if (!confirm2) return;
+
+        try {
+            renounceOwnership({
+                address: token.contract_address as `0x${string}`,
+                abi: TOKEN_ABI,
+                functionName: 'renounceOwnership',
+            });
+        } catch (e) {
+            console.error(e);
+            alert("Error al renunciar.");
+        }
+    };
 
     return (
         <div className="w-full max-w-6xl mx-auto p-6">
@@ -194,10 +216,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <h3 className="font-bold text-lg mb-2">Comunidad</h3>
                                 <p className="text-sm text-gray-400 mb-4">Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).</p>
                                 <button
-                                    onClick={() => alert("Función de renuncia no implementada en UI por seguridad. Usar Remix si es necesario.")}
-                                    className="px-4 py-2 bg-red-600 hover:bg-red-500 rounded text-white font-semibold w-full opacity-50 cursor-not-allowed"
+                                    onClick={handleRenounceOwnership}
+                                    disabled={!isOwner || isRenouncing}
+                                    className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full"
                                 >
-                                    Renunciar (Próximamente)
+                                    {isRenouncing ? "Renunciando..." : "Renunciar (IRREVERSIBLE)"}
                                 </button>
                             </div>
                         </div>
