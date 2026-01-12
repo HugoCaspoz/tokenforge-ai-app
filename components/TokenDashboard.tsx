@@ -15,6 +15,7 @@ import SnapshotView from './SnapshotView';
 import AirdropTool from './AirdropTool';
 import { useHolders } from '@/hooks/useHolders';
 import LockedContentManager from './LockedContentManager';
+import { useTranslation } from '@/lib/i18n';
 
 interface TokenDashboardProps {
     token: {
