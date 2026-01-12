@@ -9,6 +9,7 @@ import { TOKEN_ABI } from '@/lib/tokenArtifacts';
 import LiquidityWizard from './LiquidityWizard';
 import LiquidityLocker from './LiquidityLocker';
 import WhaleWatcher from './WhaleWatcher';
+import FavoriteButton from './FavoriteButton';
 
 interface TokenDashboardProps {
     token: {
@@ -153,8 +154,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
     return (
         <div className="w-full max-w-6xl mx-auto p-6">
+
+
             {/* Header */}
-            <div className="flex items-center gap-6 mb-8 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <div className="flex items-center gap-6 mb-8 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg relative">
+                <div className="absolute top-4 right-4">
+                    <FavoriteButton projectId={token.id} />
+                </div>
                 <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-600">
                     {token.logo_url ? <img src={token.logo_url} alt="Logo" className="w-full h-full object-cover" /> : <span className="text-4xl text-gray-400">{token.ticker[0]}</span>}
                 </div>
@@ -171,7 +177,6 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-sm border border-yellow-500/30">Solo Vista (No eres Owner)</span>
                         )}
 
-                        {/* Social Links Display */}
                         {/* Social Links Display */}
                         {token.twitter_url && (
                             <a href={token.twitter_url} target="_blank" className="bg-black/40 hover:bg-black/60 p-2 rounded-full transition-colors border border-gray-700 hover:border-white group">
@@ -272,15 +277,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     </a>
 
                                     {/* Download Logo Button */}
-                                    {isOwner && (
-                                        <button
-                                            onClick={handleDownloadLogo}
-                                            disabled={!token.logo_url}
-                                            className="mt-3 block w-full text-center py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded transition-colors text-gray-300 text-sm flex items-center justify-center gap-2"
-                                        >
-                                            <span>⬇️</span> Descargar Logo
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={handleDownloadLogo}
+                                        disabled={!token.logo_url}
+                                        className="mt-3 block w-full text-center py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded transition-colors text-gray-300 text-sm flex items-center justify-center gap-2"
+                                    >
+                                        <span>⬇️</span> Descargar Logo
+                                    </button>
                                 </div>
                             </div>
                         </div>

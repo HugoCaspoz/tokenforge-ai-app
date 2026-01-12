@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import FavoriteButton from '@/components/FavoriteButton';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -146,6 +147,9 @@ export default function ExplorePage() {
                                     {/* Trust Score Badge */}
                                     <div className={`absolute top-4 right-4 px-2 py-1 rounded text-xs font-bold border ${trustScore >= 80 ? 'bg-green-900/80 text-green-400 border-green-500/50' : trustScore >= 50 ? 'bg-yellow-900/80 text-yellow-400 border-yellow-500/50' : 'bg-red-900/80 text-red-400 border-red-500/50'}`}>
                                         Score: {trustScore}/100
+                                    </div>
+                                    <div className="absolute top-4 right-28 z-10">
+                                        <FavoriteButton projectId={project.id} />
                                     </div>
 
                                     {/* Header */}
