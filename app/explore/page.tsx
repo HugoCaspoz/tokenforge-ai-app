@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client';
 import FavoriteButton from '@/components/FavoriteButton';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n';
 
 interface Project {
     id: number;
@@ -28,6 +29,7 @@ interface Project {
 }
 
 export default function ExplorePage() {
+    const { t } = useTranslation();
     const supabase = createClient();
     const [projects, setProjects] = useState<Project[]>([]);
     const [favorites, setFavorites] = useState<Set<number>>(new Set());
@@ -148,31 +150,31 @@ export default function ExplorePage() {
                             onClick={() => toggleFilter('safe')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('safe') ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
-                            🛡️ 100% Seguros
+                            🛡️ {t('explore.filters.all')}
                         </button>
                         <button
                             onClick={() => toggleFilter('renounced')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('renounced') ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
-                            Renunciados
+                            {t('explore.filters.renounced')}
                         </button>
                         <button
                             onClick={() => toggleFilter('locked')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('locked') ? 'bg-yellow-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
-                            Liquidez Bloqueada
+                            {t('explore.filters.locked')}
                         </button>
                         <button
                             onClick={() => toggleFilter('favorites')}
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('favorites') ? 'bg-pink-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
-                            ❤️ Favoritos
+                            {t('explore.filters.favorites')}
                         </button>
                     </div>
 
                     {/* Sort */}
                     <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-start">
-                        <span className="text-gray-400 text-sm whitespace-nowrap">Ordenar por:</span>
+                        <span className="text-gray-400 text-sm whitespace-nowrap">{t('explore.sort.newest')}:</span>
                         <select
                             value={filter.sort}
                             onChange={(e) => setFilter({ ...filter, sort: e.target.value as any })}
