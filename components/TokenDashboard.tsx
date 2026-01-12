@@ -250,9 +250,8 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                         frameBorder="0"
                     ></iframe>
                 </div>
+            )}
             </div>
-            )
-}
 
             {
                 activeTab === 'admin' && (
