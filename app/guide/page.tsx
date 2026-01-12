@@ -75,11 +75,11 @@ export default function UserGuide() {
                                 <p className="text-gray-400 text-sm">
                                     Debes tener saldo en la moneda nativa de la red para pagar las comisiones (Gas):
                                     <br />
-                                    • <strong>Polygon:</strong> POL (antes MATIC)
+                                    • <strong>Polygon:</strong> POL
                                     <br />
-                                    • <strong>BNB Chain:</strong> BNB
+                                    • <strong>BNB Chain:</strong> BNB (Próximamente)
                                     <br />
-                                    • <strong>Ethereum:</strong> ETH
+                                    • <strong>Ethereum:</strong> ETH (Próximamente)
                                 </p>
                             </div>
                         </div>
