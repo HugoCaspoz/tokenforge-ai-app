@@ -6,10 +6,14 @@ import { createClient } from '@/utils/supabase/client';
 import { NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
+import { NETWORK_RPCS } from '@/lib/plans';
 import LiquidityWizard from './LiquidityWizard';
 import LiquidityLocker from './LiquidityLocker';
 import WhaleWatcher from './WhaleWatcher';
 import FavoriteButton from './FavoriteButton';
+import SnapshotView from './SnapshotView';
+import AirdropTool from './AirdropTool';
+import { useHolders } from '@/hooks/useHolders';
 
 interface TokenDashboardProps {
     token: {
@@ -30,11 +34,16 @@ interface TokenDashboardProps {
 export default function TokenDashboard({ token }: TokenDashboardProps) {
     const supabase = createClient();
     const { address: userAddress, isConnected } = useAccount();
-    const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth'>('overview');
+    const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth' | 'community'>('overview');
     const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [flatCode, setFlatCode] = useState("");
     const [apiKey, setApiKey] = useState("");
     const [lpAddress, setLpAddress] = useState<string>("");
+    const [selectedForAirdrop, setSelectedForAirdrop] = useState<string[]>([]);
+
+    // Holders Data
+    const rpcUrl = NETWORK_RPCS[token.chain_id as keyof typeof NETWORK_RPCS];
+    const { holders, loading: loadingHolders } = useHolders(token.contract_address, rpcUrl);
 
     // Socials State
     const [socials, setSocials] = useState({
@@ -223,7 +232,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
             {/* Tabs - Only visible to Owner */}
             {isOwner && (
                 <div className="flex gap-4 border-b border-gray-700 mb-6 overflow-x-auto pb-2 scrollbar-hide">
-                    {['overview', 'admin', 'growth'].map((tab) => (
+                    {['overview', 'admin', 'growth', 'community'].map((tab) => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
@@ -560,59 +569,49 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 </div>
                             </div>
 
-                            {/* Airdrop Tool */}
-                            <div className="bg-gray-900 p-6 rounded-xl border border-gray-700">
-                                <h3 className="text-xl font-bold text-white mb-4">🎁 Super Airdrop Tool</h3>
-                                <p className="text-sm text-gray-400 mb-4">
-                                    Envía tokens a hasta 100 direcciones simultáneamente. El contrato optimizado ahorra hasta un 40% de gas.
-                                    <br />
-                                    Formato: <code>Direccion,Cantidad</code> (una por línea).
-                                </p>
+                        </div>
+                    )
+                }
 
-                                <textarea
-                                    className="w-full h-40 bg-gray-800 text-white p-4 rounded font-mono text-sm border border-gray-600 focus:ring-green-500 focus:border-green-500"
-                                    placeholder={`0x123...abc, 100\n0x456...def, 500`}
-                                    id="airdropInput"
-                                />
+                {
+                    activeTab === 'community' && (
+                        <div className="space-y-8">
+                            <div>
+                                <h2 className="text-2xl font-bold mb-4 text-pink-400">Comunidad & Airdrops</h2>
+                                <p className="text-gray-400 mb-6">Gestiona tu comunidad, visualiza holders y recompénsales.</p>
 
-                                <button
-                                    onClick={async () => {
-                                        const input = (document.getElementById('airdropInput') as HTMLTextAreaElement).value;
-                                        if (!input) return alert("Introduce direcciones");
+                                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                                    {/* Left Column: Snapshot */}
+                                    <div className="lg:col-span-2">
+                                        <h3 className="text-xl font-bold text-white mb-4">📸 Snapshot de Holders</h3>
+                                        <SnapshotView
+                                            holders={holders}
+                                            loading={loadingHolders}
+                                            onSelectForAirdrop={setSelectedForAirdrop}
+                                        />
+                                    </div>
 
-                                        const lines = input.split('\n').filter(l => l.trim());
-                                        const recipients: `0x${string}`[] = [];
-                                        const amounts: bigint[] = [];
+                                    {/* Right Column: Airdrop Tool */}
+                                    <div>
+                                        <h3 className="text-xl font-bold text-white mb-4">🎁 Airdrop Pro</h3>
+                                        <AirdropTool
+                                            tokenAddress={token.contract_address}
+                                            selectedAddresses={selectedForAirdrop}
+                                        />
 
-                                        try {
-                                            lines.forEach(line => {
-                                                const [addr, amt] = line.split(',').map(s => s.trim());
-                                                if (!addr.startsWith('0x')) throw new Error(`Direccion inválida: ${addr}`);
-                                                recipients.push(addr as `0x${string}`);
-                                                // Assume amount is in tokens, convert to wei
-                                                amounts.push(BigInt(Math.floor(Number(amt) * 10 ** 18)));
-                                            });
-
-                                            // Trigger Write
-                                            writeContract({
-                                                address: token.contract_address as `0x${string}`,
-                                                abi: TOKEN_ABI,
-                                                functionName: 'multisend',
-                                                args: [recipients, amounts],
-                                            });
-
-                                        } catch (e: any) {
-                                            alert("Error en formato: " + e.message);
-                                        }
-                                    }}
-                                    className="mt-4 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded w-full transition-transform active:scale-95"
-                                >
-                                    🚀 Ejecutar Airdrop
-                                </button>
+                                        <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl mt-6">
+                                            <h4 className="font-bold text-blue-300 mb-2">💡 Pro Tip</h4>
+                                            <p className="text-sm text-gray-400">
+                                                Selecciona múltiples usuarios en la tabla de la izquierda para añadirlos automáticamente al Airdrop.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    )}
+                    )
+                }
             </div>
-        </div >
+        </div>
     );
 }

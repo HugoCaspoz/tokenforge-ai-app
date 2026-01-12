@@ -30,6 +30,7 @@ interface Project {
 export default function ExplorePage() {
     const supabase = createClient();
     const [projects, setProjects] = useState<Project[]>([]);
+    const [favorites, setFavorites] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({
         security: [] as string[], // Changed to array for multi-select
@@ -43,17 +44,33 @@ export default function ExplorePage() {
             // 1. Trigger background market data update (fire and forget)
             fetch('/api/market-data').catch(console.error);
 
-            // 2. Fetch from DB
-            let query = supabase
+            // 2. Fetch Projects
+            const projectsQuery = supabase
                 .from('projects')
                 .select('*')
                 .not('contract_address', 'is', null);
 
-            const { data, error } = await query;
+            // 3. Fetch Favorites (if user is logged in)
+            const { data: { user } } = await supabase.auth.getUser();
+            let userFavorites = new Set<number>();
+
+            if (user) {
+                const { data: favs } = await supabase
+                    .from('favorites')
+                    .select('project_id')
+                    .eq('user_id', user.id);
+
+                if (favs) {
+                    userFavorites = new Set(favs.map(f => f.project_id));
+                }
+            }
+
+            const { data, error } = await projectsQuery;
             if (error) {
                 console.error(error);
             } else {
                 setProjects(data || []);
+                setFavorites(userFavorites);
             }
             setLoading(false);
         };
@@ -65,6 +82,7 @@ export default function ExplorePage() {
     const filteredProjects = projects.filter(p => {
         // Multi-select AND logic
         if (filter.security.length > 0) {
+            if (filter.security.includes('favorites') && !favorites.has(p.id)) return false;
             if (filter.security.includes('renounced') && !p.is_renounced) return false;
             if (filter.security.includes('locked')) {
                 if (!p.locked_until) return false;
@@ -143,6 +161,12 @@ export default function ExplorePage() {
                             className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('locked') ? 'bg-yellow-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
                         >
                             Liquidez Bloqueada
+                        </button>
+                        <button
+                            onClick={() => toggleFilter('favorites')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('favorites') ? 'bg-pink-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
+                        >
+                            ❤️ Favoritos
                         </button>
                     </div>
 
