@@ -270,6 +270,17 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     >
                                         Ver en {networkName} Explorer ↗
                                     </a>
+
+                                    {/* Download Logo Button */}
+                                    {isOwner && (
+                                        <button
+                                            onClick={handleDownloadLogo}
+                                            disabled={!token.logo_url}
+                                            className="mt-3 block w-full text-center py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded transition-colors text-gray-300 text-sm flex items-center justify-center gap-2"
+                                        >
+                                            <span>⬇️</span> Descargar Logo
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -304,18 +315,6 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <p className="text-sm text-gray-400 mb-4">Transfiere el control del contrato a otra wallet. Irreversible si te equivocas de dirección.</p>
                                     <input type="text" placeholder="0x..." className="w-full bg-gray-900 border border-gray-600 rounded p-2 mb-3 text-white" disabled={!isOwner} />
                                     <button disabled={!isOwner} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">Transferir</button>
-                                </div>
-
-                                <div className="border border-gray-600 p-6 rounded-lg opacity-75">
-                                    <h3 className="font-bold text-lg mb-2">Recursos</h3>
-                                    <p className="text-sm text-gray-400 mb-4">Descarga el logo oficial para usarlo en listings (PolygonScan, etc).</p>
-                                    <button
-                                        onClick={handleDownloadLogo}
-                                        disabled={!token.logo_url}
-                                        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded text-white font-semibold w-full flex items-center justify-center gap-2"
-                                    >
-                                        <span>⬇️</span> Descargar Logo
-                                    </button>
                                 </div>
 
                                 <div className="border border-red-600/50 p-6 rounded-lg bg-red-900/10">
