@@ -7,6 +7,7 @@ import { NETWORK_NAMES, NETWORK_EXPLORERS } from '@/lib/plans';
 
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
 import LiquidityWizard from './LiquidityWizard';
+import LiquidityLocker from './LiquidityLocker';
 import WhaleWatcher from './WhaleWatcher';
 
 interface TokenDashboardProps {
@@ -345,6 +346,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
                                 {/* CHART LINK */}
                                 {/* CHART LINK - REMOVED, now embedded below */}
+                            </div>
+
+                            {/* LIQUIDITY LOCKER */}
+                            <div className="mb-8">
+                                <LiquidityLocker />
                             </div>
 
                             {/* DEXSCREENER EMBED */}
