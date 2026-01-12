@@ -116,6 +116,28 @@
         "title": "TokenCrafter",
         "subtitle": "Create your own cryptocurrency in minutes. No coding required."
     },
+    "wizard": {
+        "step1": {
+            "title": "Step 1: Define Your Token",
+            "aiTab": "✨ Generate with AI",
+            "manualTab": "✍️ Manual",
+            "aiSubtitle": "Describe your idea and let AI create the name, ticker, and description for you.",
+            "aiPlaceholder": "Ex: A token to reward members of my Discord community...",
+            "generating": "Generating...",
+            "generateIdeas": "Generate Ideas",
+            "tokenName": "Token Name",
+            "ticker": "Ticker (Symbol)",
+            "description": "Description",
+            "namePlaceholder": "Ex: Bitcoin",
+            "tickerPlaceholder": "Ex: BTC",
+            "descriptionPlaceholder": "Project description...",
+            "continue": "Continue to Design →",
+            "errorPurpose": "Please describe the purpose of your token.",
+            "errorFields": "Please complete all fields.",
+            "errorGeneration": "Error generating AI response",
+            "errorUnknown": "Unknown error"
+        }
+    },
     "tokenDetail": {
         "viewOnly": "View Only (You are not the owner)",
         "youAreOwner": "You are the owner",

@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import type { TokenData } from '../Wizard';
+import { useTranslation } from '@/lib/i18n';
 
 interface Step1Props {
   onDataChange: (data: Partial<TokenData>) => void;
@@ -10,6 +11,7 @@ interface Step1Props {
 }
 
 export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'ai' | 'manual'>('ai');
 
   // AI State
@@ -25,7 +27,7 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
   const handleAiGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!purpose) {
-      setError('Por favor, describe el propósito de tu token.');
+      setError(t('wizard.step1.errorPurpose'));
       return;
     }
 
@@ -39,7 +41,7 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
         body: JSON.stringify({ purpose }),
       });
 
-      if (!response.ok) throw new Error('Error generando respuesta IA');
+      if (!response.ok) throw new Error(t('wizard.step1.errorGeneration'));
 
       const data = await response.json();
 
@@ -52,7 +54,7 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
       setMode('manual');
 
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
+      setError(err instanceof Error ? err.message : t('wizard.step1.errorUnknown'));
     } finally {
       setIsLoading(false);
     }
@@ -60,7 +62,7 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
 
   const handleManualSubmit = () => {
     if (!name || !ticker || !description) {
-      setError('Por favor completa todos los campos.');
+      setError(t('wizard.step1.errorFields'));
       return;
     }
     onDataChange({ name, ticker, description });
@@ -69,7 +71,7 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-white mb-4">Paso 1: Define tu Token</h2>
+      <h2 className="text-2xl font-bold text-white mb-4">{t('wizard.step1.title')}</h2>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-6 border-b border-gray-700">
@@ -77,24 +79,24 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
           onClick={() => setMode('ai')}
           className={`pb-2 px-4 transition-colors ${mode === 'ai' ? 'border-b-2 border-purple-500 text-purple-400' : 'text-gray-400 hover:text-white'}`}
         >
-          ✨ Generar con IA
+          {t('wizard.step1.aiTab')}
         </button>
         <button
           onClick={() => setMode('manual')}
           className={`pb-2 px-4 transition-colors ${mode === 'manual' ? 'border-b-2 border-purple-500 text-purple-400' : 'text-gray-400 hover:text-white'}`}
         >
-          ✍️ Manual
+          {t('wizard.step1.manualTab')}
         </button>
       </div>
 
       {mode === 'ai' ? (
         <div>
-          <p className="text-gray-400 mb-4">Describe tu idea y deja que la IA cree el nombre, ticker y descripción por ti.</p>
+          <p className="text-gray-400 mb-4">{t('wizard.step1.aiSubtitle')}</p>
           <form onSubmit={handleAiGenerate}>
             <textarea
               value={purpose}
               onChange={(e) => setPurpose(e.target.value)}
-              placeholder="Ej: Un token para recompensar a los miembros de mi comunidad de Discord..."
+              placeholder={t('wizard.step1.aiPlaceholder')}
               className="w-full p-3 bg-gray-700 text-white rounded-md border border-gray-600 focus:ring-2 focus:ring-purple-500 h-32"
               disabled={isLoading}
             />
@@ -103,40 +105,40 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
               className="w-full mt-4 px-6 py-3 bg-purple-600 text-white font-semibold rounded-md hover:bg-purple-700 disabled:bg-gray-600"
               disabled={isLoading}
             >
-              {isLoading ? 'Generando...' : 'Generar Ideas'}
+              {isLoading ? t('wizard.step1.generating') : t('wizard.step1.generateIdeas')}
             </button>
           </form>
         </div>
       ) : (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Nombre del Token</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('wizard.step1.tokenName')}</label>
             <input
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
               className="w-full p-2 bg-gray-700 rounded border border-gray-600 text-white"
-              placeholder="Ej: Bitcoin"
+              placeholder={t('wizard.step1.namePlaceholder')}
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Ticker (Símbolo)</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('wizard.step1.ticker')}</label>
             <input
               type="text"
               value={ticker}
               onChange={e => setTicker(e.target.value)}
               className="w-full p-2 bg-gray-700 rounded border border-gray-600 text-white uppercase"
-              placeholder="Ej: BTC"
+              placeholder={t('wizard.step1.tickerPlaceholder')}
               maxLength={6}
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-1">Descripción</label>
+            <label className="block text-sm text-gray-400 mb-1">{t('wizard.step1.description')}</label>
             <textarea
               value={description}
               onChange={e => setDescription(e.target.value)}
               className="w-full p-2 bg-gray-700 rounded border border-gray-600 text-white h-24"
-              placeholder="Descripción del proyecto..."
+              placeholder={t('wizard.step1.descriptionPlaceholder')}
             />
           </div>
 
@@ -144,7 +146,7 @@ export default function Step1_Define({ onDataChange, onComplete }: Step1Props) {
             onClick={handleManualSubmit}
             className="w-full mt-4 px-6 py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700"
           >
-            Continuar al Diseño &rarr;
+            {t('wizard.step1.continue')}
           </button>
         </div>
       )}
