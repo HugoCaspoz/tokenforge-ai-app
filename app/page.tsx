@@ -81,7 +81,7 @@ export default function LandingPage() {
       </main>
 
       {/* Features Section con Bento Grid */}
-      <ScrollAnimation className="py-24 sm:py-32 relative z-10">
+      <ScrollAnimation className="py-16 sm:py-24 relative z-10">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="max-w-2xl mx-auto lg:text-center">
             <h2 className="text-base font-semibold leading-7 text-purple-400">Workflow Simplificado</h2>
@@ -89,7 +89,7 @@ export default function LandingPage() {
               De la idea al mercado en 3 pasos
             </p>
           </div>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
+          <div className="mx-auto mt-12 max-w-2xl sm:mt-16 lg:mt-20 lg:max-w-none">
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
               {/* Step 1 */}
               <div className="flex flex-col items-center text-center p-8 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 hover:border-purple-500/50 transition-all hover:bg-gray-800 hover:shadow-xl hover:shadow-purple-500/5 group">
@@ -115,7 +115,7 @@ export default function LandingPage() {
           </div>
 
           {/* Networks Section */}
-          <div className="mt-32 border-t border-white/5 pt-16">
+          <div className="mt-24 border-t border-white/5 pt-16">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <h2 className="text-center text-lg font-semibold leading-8 text-gray-400 mb-12">
                 Compatible con las redes más potentes
@@ -136,7 +136,8 @@ export default function LandingPage() {
                 <div className="flex flex-col items-center gap-4 group relative">
                   <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 transition-colors opacity-50 grayscale group-hover:grayscale-0 group-hover:opacity-100">
                     <svg className="h-10 w-10 text-[#F0B90B]" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 16.5l3-3-3-3-3 3 3 3zm0-9l-3 3 3 3 3-3-3-3zm-6 4.5l3 3-3 3-3-3 3-3zm12 0l3 3-3 3-3-3 3-3z" />
+                      <path d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12z" fill="#F0B90B" opacity="0.2" />
+                      <path d="M12 16.5l3-3-3-3-3 3 3 3zm0-9l-3 3 3 3 3-3-3-3zm-6 4.5l3 3-3 3-3-3 3-3zm12 0l3 3-3 3-3-3 3-3z" fill="#FFF" />
                     </svg>
                   </div>
                   <div className="flex flex-col items-center">

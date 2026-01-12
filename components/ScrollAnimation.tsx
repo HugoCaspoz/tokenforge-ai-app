@@ -14,10 +14,10 @@ export const ScrollAnimation = ({ children, className }: ScrollAnimationProps) =
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.6 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: 0.5 }}
       variants={{
-        hidden: { opacity: 0, y: 50 },
+        hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 },
       }}
       className={className}
