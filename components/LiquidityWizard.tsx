@@ -82,7 +82,7 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
     return y;
 }
 
-export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean }) {
+export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, onPoolFound }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean, onPoolFound?: (addr: string) => void }) {
     const { address, chainId } = useAccount();
     const publicClient = usePublicClient();
 
@@ -103,6 +103,12 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled }
     });
 
     const poolExists = poolAddress && poolAddress !== '0x0000000000000000000000000000000000000000';
+
+    useEffect(() => {
+        if (poolExists && onPoolFound) {
+            onPoolFound(poolAddress);
+        }
+    }, [poolExists, poolAddress, onPoolFound]);
 
     const { writeContractAsync } = useWriteContract();
 

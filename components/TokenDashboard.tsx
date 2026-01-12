@@ -30,6 +30,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const [showVerifyModal, setShowVerifyModal] = useState(false);
     const [flatCode, setFlatCode] = useState("");
     const [apiKey, setApiKey] = useState("");
+    const [lpAddress, setLpAddress] = useState<string>("");
 
     useEffect(() => {
         const savedKey = localStorage.getItem('polygonScanApiKey');
@@ -340,6 +341,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <LiquidityWizard
                                     tokenAddress={token.contract_address as `0x${string}`}
                                     tokenSymbol={token.ticker}
+                                    onPoolFound={setLpAddress}
                                 />
 
 
@@ -350,7 +352,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
                             {/* LIQUIDITY LOCKER */}
                             <div className="mb-8">
-                                <LiquidityLocker />
+                                <LiquidityLocker defaultTokenAddress={lpAddress} />
                             </div>
 
                             {/* DEXSCREENER EMBED */}

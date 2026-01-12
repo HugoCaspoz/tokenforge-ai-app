@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 import { LOCKER_ABI } from '@/lib/lockerArtifacts';
@@ -9,12 +9,19 @@ import { TOKEN_ABI } from '@/lib/tokenArtifacts'; // Using standard ERC20 ABI
 // TODO: Replace with deployed contract address
 const LOCKER_ADDRESS = "0x60fD775038d1b64986F38f0e02942B59245084ea";
 
-export default function LiquidityLocker() {
+export default function LiquidityLocker({ defaultTokenAddress }: { defaultTokenAddress?: string }) {
     const { address } = useAccount();
     const [tokenAddress, setTokenAddress] = useState('');
     const [amount, setAmount] = useState('');
     const [unlockDate, setUnlockDate] = useState('');
     const [isApproving, setIsApproving] = useState(false);
+
+    // Auto-fill from prop
+    useEffect(() => {
+        if (defaultTokenAddress) {
+            setTokenAddress(defaultTokenAddress);
+        }
+    }, [defaultTokenAddress]);
 
     const { writeContract, data: hash, error: writeError, isPending } = useWriteContract();
 
