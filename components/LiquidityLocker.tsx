@@ -105,14 +105,24 @@ export default function LiquidityLocker({ defaultTokenAddress }: { defaultTokenA
                     <h3 className="text-lg font-semibold text-white">Create New Lock</h3>
 
                     <div>
-                        <label className="block text-sm text-gray-400 mb-1">LP Token Address</label>
-                        <input
-                            type="text"
-                            value={tokenAddress}
-                            onChange={(e) => setTokenAddress(e.target.value)}
-                            placeholder="0x..."
-                            className="w-full bg-gray-900 border border-gray-600 rounded p-3 text-white focus:border-purple-500 outline-none"
-                        />
+                        <label className="block text-sm text-gray-400 mb-1">
+                            LP Token Address
+                            {defaultTokenAddress && <span className="ml-2 text-green-400 text-xs font-bold">✅ Detectado Automáticamente</span>}
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                value={tokenAddress}
+                                onChange={(e) => setTokenAddress(e.target.value)}
+                                placeholder="0x..."
+                                readOnly={!!defaultTokenAddress}
+                                className={`w-full border border-gray-600 rounded p-3 text-white focus:border-purple-500 outline-none ${defaultTokenAddress ? 'bg-gray-800 text-gray-400 cursor-not-allowed' : 'bg-gray-900'}`}
+                            />
+                            {defaultTokenAddress && (
+                                <span className="absolute right-3 top-3 text-lg">🔒</span>
+                            )}
+                        </div>
+                        {defaultTokenAddress && <p className="text-xs text-gray-500 mt-1">Dirección del par detectada y bloqueada por seguridad.</p>}
                     </div>
 
                     <div>
