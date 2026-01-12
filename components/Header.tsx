@@ -72,9 +72,9 @@ export const Header = () => {
 
           {user ? (
             <>
-              <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
+              {/* <Link href="/dashboard" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
                 Dashboard
-              </Link>
+              </Link> */}
               <Link href="/explore" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
                 Explorar
               </Link>
