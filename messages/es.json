@@ -111,5 +111,17 @@
             "growth": "Crecimiento",
             "community": "Comunidad"
         }
+    },
+    "tokenDetail": {
+        "viewOnly": "Solo Vista (No eres el owner)",
+        "youAreOwner": "Eres el owner",
+        "projectSummary": "Resumen del Proyecto",
+        "description": "Descripción",
+        "noDescription": "Sin descripción.",
+        "onChainStats": "Estadísticas On-Chain",
+        "totalSupply": "Total Supply",
+        "yourBalance": "Tu Balance",
+        "viewOnPolygon": "Ver en Polygon",
+        "downloadLogo": "Descargar Logo"
     }
 }

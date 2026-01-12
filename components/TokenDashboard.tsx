@@ -182,9 +182,9 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                     <div className="flex gap-2 mt-3 flex-wrap">
                         <span className="bg-gray-700 px-3 py-1 rounded text-sm text-gray-300">Network: {networkName}</span>
                         {isOwner ? (
-                            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm border border-green-500/30">Eres el Owner</span>
+                            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm border border-green-500/30">{t('tokenDetail.youAreOwner')}</span>
                         ) : (
-                            <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-sm border border-yellow-500/30">Solo Vista (No eres Owner)</span>
+                            <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-sm border border-yellow-500/30">{t('tokenDetail.viewOnly')}</span>
                         )}
 
                         {/* Social Links Display */}
@@ -249,14 +249,14 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 min-h-[400px]">
                 {activeTab === 'overview' && (
                     <div>
-                        <h2 className="text-2xl font-bold mb-4">Resumen del Proyecto</h2>
+                        <h2 className="text-2xl font-bold mb-4">{t('tokenDetail.projectSummary')}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div>
-                                <h3 className="text-gray-400 text-sm uppercase tracking-wider mb-2">Descripción (Base de Datos)</h3>
-                                <p className="text-gray-200 bg-gray-900 p-4 rounded text-sm leading-relaxed">{token.description || "Sin descripción."}</p>
+                                <h3 className="text-gray-400 text-sm uppercase tracking-wider mb-2">{t('tokenDetail.description')}</h3>
+                                <p className="text-gray-200 bg-gray-900 p-4 rounded text-sm leading-relaxed">{token.description || t('tokenDetail.noDescription')}</p>
                             </div>
                             <div>
-                                <h3 className="text-gray-400 text-sm uppercase tracking-wider mb-2">Estadísticas On-Chain</h3>
+                                <h3 className="text-gray-400 text-sm uppercase tracking-wider mb-2">{t('tokenDetail.onChainStats')}</h3>
                                 <div className="bg-gray-900 p-4 rounded space-y-3">
                                     <div className="flex justify-between">
                                         <span className="text-gray-400">Total Supply:</span>

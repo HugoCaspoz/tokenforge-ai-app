@@ -111,5 +111,17 @@
             "growth": "Growth",
             "community": "Community"
         }
+    },
+    "tokenDetail": {
+        "viewOnly": "View Only (You are not the owner)",
+        "youAreOwner": "You are the owner",
+        "projectSummary": "Project Summary",
+        "description": "Description",
+        "noDescription": "No description.",
+        "onChainStats": "On-Chain Statistics",
+        "totalSupply": "Total Supply",
+        "yourBalance": "Your Balance",
+        "viewOnPolygon": "View on Polygon",
+        "downloadLogo": "Download Logo"
     }
 }
