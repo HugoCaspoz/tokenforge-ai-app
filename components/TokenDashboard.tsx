@@ -14,6 +14,7 @@ import FavoriteButton from './FavoriteButton';
 import SnapshotView from './SnapshotView';
 import AirdropTool from './AirdropTool';
 import { useHolders } from '@/hooks/useHolders';
+import LockedContentManager from './LockedContentManager';
 
 interface TokenDashboardProps {
     token: {
@@ -606,6 +607,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             </p>
                                         </div>
                                     </div>
+                                </div>
+
+                                {/* Locked Content Section */}
+                                <div className="mt-8">
+                                    <LockedContentManager projectId={token.id} />
                                 </div>
                             </div>
                         </div>
