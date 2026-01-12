@@ -32,7 +32,7 @@ export default function ExplorePage() {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({
-        security: 'all' as 'all' | 'renounced' | 'locked' | 'safe',
+        security: [] as string[], // Changed to array for multi-select
         sort: 'newest' as 'newest' | 'volume' | 'marketcap' | 'gainers'
     });
 
@@ -63,16 +63,19 @@ export default function ExplorePage() {
 
     // Filter and Sort Logic
     const filteredProjects = projects.filter(p => {
-        if (filter.security === 'renounced' && !p.is_renounced) return false;
-        if (filter.security === 'locked') {
-            if (!p.locked_until) return false;
-            return new Date(p.locked_until) > new Date();
-        }
-        if (filter.security === 'safe') {
-            // Trust Score > 80 logic (Renounced + Locked)
-            const isRenounced = p.is_renounced;
-            const isLocked = p.locked_until && new Date(p.locked_until) > new Date();
-            return isRenounced && isLocked;
+        // Multi-select AND logic
+        if (filter.security.length > 0) {
+            if (filter.security.includes('renounced') && !p.is_renounced) return false;
+            if (filter.security.includes('locked')) {
+                if (!p.locked_until) return false;
+                if (new Date(p.locked_until) <= new Date()) return false;
+            }
+            if (filter.security.includes('safe')) {
+                // Safe = Renounced + Locked
+                const isRenounced = p.is_renounced;
+                const isLocked = p.locked_until && new Date(p.locked_until) > new Date();
+                if (!isRenounced || !isLocked) return false;
+            }
         }
         return true;
     }).sort((a, b) => {
@@ -83,6 +86,19 @@ export default function ExplorePage() {
             default: return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime(); // Newest
         }
     });
+
+    const toggleFilter = (type: string) => {
+        if (type === 'all') {
+            setFilter({ ...filter, security: [] });
+            return;
+        }
+
+        const newSecurity = filter.security.includes(type)
+            ? filter.security.filter(t => t !== type)
+            : [...filter.security, type];
+
+        setFilter({ ...filter, security: newSecurity });
+    };
 
     const getTrustScore = (p: Project) => {
         let score = 0;
@@ -104,10 +120,30 @@ export default function ExplorePage() {
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8 bg-gray-800 p-4 rounded-xl border border-gray-700">
                     {/* Security Filters */}
                     <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto">
-                        <button onClick={() => setFilter({ ...filter, security: 'all' })} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap ${filter.security === 'all' ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}>Todos</button>
-                        <button onClick={() => setFilter({ ...filter, security: 'safe' })} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap ${filter.security === 'safe' ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}>🛡️ 100% Seguros</button>
-                        <button onClick={() => setFilter({ ...filter, security: 'renounced' })} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap ${filter.security === 'renounced' ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}>Renunciados</button>
-                        <button onClick={() => setFilter({ ...filter, security: 'locked' })} className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap ${filter.security === 'locked' ? 'bg-yellow-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}>Liquidez Bloqueada</button>
+                        <button
+                            onClick={() => toggleFilter('all')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.length === 0 ? 'bg-purple-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
+                        >
+                            Todos
+                        </button>
+                        <button
+                            onClick={() => toggleFilter('safe')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('safe') ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
+                        >
+                            🛡️ 100% Seguros
+                        </button>
+                        <button
+                            onClick={() => toggleFilter('renounced')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('renounced') ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
+                        >
+                            Renunciados
+                        </button>
+                        <button
+                            onClick={() => toggleFilter('locked')}
+                            className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-colors ${filter.security.includes('locked') ? 'bg-yellow-600 text-white' : 'bg-gray-700 text-gray-400 hover:bg-gray-600'}`}
+                        >
+                            Liquidez Bloqueada
+                        </button>
                     </div>
 
                     {/* Sort */}
