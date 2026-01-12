@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from '@/lib/i18n';
 
 interface Project {
   id: number;
@@ -25,21 +26,21 @@ const explorers = {
 };
 
 export function DashboardClient({ projects, paymentSuccess }: DashboardClientProps) {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gray-900 text-white pt-32">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {paymentSuccess && (
           <div className="bg-green-500/20 border border-green-500 text-green-300 px-4 py-3 rounded-lg relative mb-8" role="alert">
-            <strong className="font-bold">¡Pago completado!</strong>
-            <span className="block sm:inline"> Tu subscripción ha sido activada.</span>
+            <strong className="font-bold">{t('dashboard.paymentSuccess')}</strong>
           </div>
         )}
 
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Mis Proyectos</h1>
+          <h1 className="text-3xl font-bold">{t('dashboard.title')}</h1>
           <Link href="/create" className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-transform hover:scale-105">
-            + Crear Nuevo Token
+            + {t('dashboard.createToken')}
           </Link>
         </div>
 
@@ -100,8 +101,8 @@ export function DashboardClient({ projects, paymentSuccess }: DashboardClientPro
             ))
           ) : (
             <div className="col-span-full text-center py-12 bg-gray-800 rounded-lg">
-              <h2 className="text-xl font-semibold">No tienes proyectos todavía</h2>
-              <p className="text-gray-400 mt-2">¡Empieza a crear tu primer token ahora!</p>
+              <h2 className="text-xl font-semibold">{t('dashboard.noTokens')}</h2>
+              <p className="text-gray-400 mt-2">{t('dashboard.createFirst')}</p>
             </div>
           )}
         </div>

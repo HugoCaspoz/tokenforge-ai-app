@@ -64,13 +64,13 @@
     "explore": {
         "title": "Explore Tokens",
         "filters": {
-            "all": "All",
+            "all": "100% Safe",
             "renounced": "Ownership Renounced",
             "locked": "Liquidity Locked",
             "favorites": "❤️ Favorites"
         },
         "sort": {
-            "newest": "Newest",
+            "newest": "Sort by",
             "marketCap": "Market Cap",
             "volume": "Volume (24h)",
             "priceChange": "Price Change"
@@ -86,17 +86,19 @@
     },
     "guide": {
         "title": "User Guide",
-        "subtitle": "Everything you need to know to create and manage your token",
-        "prerequisites": {
-            "title": "Prerequisites",
-            "wallet": "Web3 Wallet (MetaMask, WalletConnect)",
-            "gas": "Gas tokens (MATIC for Polygon)",
-            "account": "TokenForge account"
-        },
-        "steps": {
-            "create": "Step 1: Create Your Token",
-            "liquidity": "Step 2: Add Liquidity",
-            "manage": "Step 3: Manage Your Token"
+        "subtitle": "Learn to launch and manage your token in minutes with our platform"
+    },
+    "dashboard": {
+        "title": "My Tokens",
+        "noTokens": "You haven't created any tokens yet",
+        "createFirst": "Create your first token to get started",
+        "createToken": "Create Token",
+        "paymentSuccess": "Payment successful! You can now create tokens.",
+        "tabs": {
+            "overview": "overview",
+            "admin": "admin",
+            "growth": "growth",
+            "community": "community"
         }
     }
 }
