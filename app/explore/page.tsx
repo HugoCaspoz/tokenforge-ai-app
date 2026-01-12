@@ -181,10 +181,10 @@ export default function ExplorePage() {
                                     className="bg-gray-800 rounded-xl p-5 border border-gray-700 hover:border-purple-500/50 transition-all hover:shadow-lg hover:shadow-purple-500/10 group relative"
                                 >
                                     {/* Trust Score Badge */}
-                                    <div className={`absolute top-4 right-4 px-2 py-1 rounded text-xs font-bold border ${trustScore >= 80 ? 'bg-green-900/80 text-green-400 border-green-500/50' : trustScore >= 50 ? 'bg-yellow-900/80 text-yellow-400 border-yellow-500/50' : 'bg-red-900/80 text-red-400 border-red-500/50'}`}>
+                                    <div className={`absolute top-14 right-4 px-2 py-1 rounded text-xs font-bold border ${trustScore >= 80 ? 'bg-green-900/80 text-green-400 border-green-500/50' : trustScore >= 50 ? 'bg-yellow-900/80 text-yellow-400 border-yellow-500/50' : 'bg-red-900/80 text-red-400 border-red-500/50'}`}>
                                         Score: {trustScore}/100
                                     </div>
-                                    <div className="absolute top-4 right-28 z-10">
+                                    <div className="absolute top-4 right-4 z-10">
                                         <FavoriteButton projectId={project.id} />
                                     </div>
 
@@ -241,27 +241,7 @@ export default function ExplorePage() {
 
                                     {/* Social Icons */}
                                     <div className="flex gap-2 mb-3 justify-end">
-                                        {project.twitter_url && (
-                                            <a href={project.twitter_url} target="_blank" className="text-gray-500 hover:text-white transition-colors" title="Twitter / X">
-                                                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
-                                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                                                </svg>
-                                            </a>
-                                        )}
-                                        {project.telegram_url && (
-                                            <a href={project.telegram_url} target="_blank" className="text-gray-500 hover:text-blue-400 transition-colors" title="Telegram">
-                                                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
-                                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
-                                                </svg>
-                                            </a>
-                                        )}
-                                        {project.website_url && (
-                                            <a href={project.website_url} target="_blank" className="text-gray-500 hover:text-purple-400 transition-colors" title="Website">
-                                                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
-                                                </svg>
-                                            </a>
-                                        )}
+                                        {/* Removed top social icons to avoid duplication and clutter, keeping only the footer ones with SVGs */}
                                     </div>
 
                                     {/* Actions */}
@@ -284,9 +264,27 @@ export default function ExplorePage() {
 
                                     {/* Socials */}
                                     <div className="flex justify-center gap-3 mt-4 border-t border-gray-700/50 pt-3">
-                                        {project.twitter_url && <a href={project.twitter_url} target="_blank" className="text-gray-400 hover:text-blue-400 transition-colors">🐦</a>}
-                                        {project.telegram_url && <a href={project.telegram_url} target="_blank" className="text-gray-400 hover:text-blue-300 transition-colors">✈️</a>}
-                                        {project.website_url && <a href={project.website_url} target="_blank" className="text-gray-400 hover:text-purple-400 transition-colors">🌐</a>}
+                                        {project.twitter_url && (
+                                            <a href={project.twitter_url} target="_blank" className="text-gray-400 hover:text-white transition-colors" title="Twitter / X">
+                                                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+                                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                                                </svg>
+                                            </a>
+                                        )}
+                                        {project.telegram_url && (
+                                            <a href={project.telegram_url} target="_blank" className="text-gray-400 hover:text-blue-400 transition-colors" title="Telegram">
+                                                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+                                                    <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 11.944 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z" />
+                                                </svg>
+                                            </a>
+                                        )}
+                                        {project.website_url && (
+                                            <a href={project.website_url} target="_blank" className="text-gray-400 hover:text-purple-400 transition-colors" title="Website">
+                                                <svg fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                                                </svg>
+                                            </a>
+                                        )}
                                     </div>
                                 </motion.div>
                             );
