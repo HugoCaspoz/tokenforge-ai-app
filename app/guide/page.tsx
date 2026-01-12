@@ -43,6 +43,49 @@ export default function UserGuide() {
                     </p>
                 </motion.div>
 
+                {/* Prerequisites Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5 }}
+                    className="mb-16 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-8"
+                >
+                    <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
+                        <span className="text-3xl">🎒</span> Antes de empezar
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="flex gap-4">
+                            <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-2xl flex-shrink-0">
+                                🦊
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-white mb-1">Billetera Web3</h3>
+                                <p className="text-gray-400 text-sm">
+                                    Necesitas una billetera como <a href="https://metamask.io/" target="_blank" className="text-purple-400 hover:underline">MetaMask</a> o <a href="https://rabby.io/" target="_blank" className="text-purple-400 hover:underline">Rabby</a> instalada en tu navegador para interactuar con la blockchain.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-2xl flex-shrink-0">
+                                ⛽
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-white mb-1">Tokens para Gas</h3>
+                                <p className="text-gray-400 text-sm">
+                                    Debes tener saldo en la moneda nativa de la red para pagar las comisiones (Gas):
+                                    <br />
+                                    • <strong>Polygon:</strong> POL (antes MATIC)
+                                    <br />
+                                    • <strong>BNB Chain:</strong> BNB
+                                    <br />
+                                    • <strong>Ethereum:</strong> ETH
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+
                 <div className="grid grid-cols-1 gap-12">
                     {steps.map((step, index) => (
                         <motion.div
