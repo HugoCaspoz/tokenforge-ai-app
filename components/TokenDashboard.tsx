@@ -236,8 +236,6 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             </div>
                         </div>
                     </div>
-                )}
-
                 {/* DEXSCREENER EMBED - Moved to Overview */}
                 <div className="mt-8 w-full h-[500px] bg-gray-900 rounded-xl overflow-hidden border border-gray-700">
                     <iframe
@@ -250,8 +248,8 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                         frameBorder="0"
                     ></iframe>
                 </div>
-            )}
             </div>
+        )}
 
             {
                 activeTab === 'admin' && (
