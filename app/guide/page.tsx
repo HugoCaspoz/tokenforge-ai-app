@@ -1,8 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslation } from '@/lib/i18n';
 
 export default function UserGuide() {
+    const { t } = useTranslation();
     const steps = [
         {
             title: '1. Configuración',
@@ -36,10 +38,10 @@ export default function UserGuide() {
                     className="text-center mb-16"
                 >
                     <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl mb-6">
-                        Guía de Uso
+                        {t('guide.title')}
                     </h1>
                     <p className="text-lg leading-8 text-gray-300">
-                        Aprende a lanzar y gestionar tu token en minutos con nuestra plataforma.
+                        {t('guide.subtitle')}
                     </p>
                 </motion.div>
 
