@@ -80,7 +80,7 @@ export const Header = () => {
               </Link>
               {/* ✅ ENLACE AÑADIDO */}
               <Link href="/profile" className="text-sm font-semibold leading-6 text-gray-300 hover:text-purple-400">
-                Mi Perfil
+                Perfil
               </Link>
               <button
                 onClick={handleSignOut}
