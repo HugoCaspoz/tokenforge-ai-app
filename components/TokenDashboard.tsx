@@ -34,6 +34,7 @@ interface TokenDashboardProps {
 }
 
 export default function TokenDashboard({ token }: TokenDashboardProps) {
+    const { t } = useTranslation();
     const supabase = createClient();
     const { address: userAddress, isConnected } = useAccount();
     const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth' | 'community'>('overview');
