@@ -1,20 +1,10 @@
 // En: frontend/middleware.ts
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import createIntlMiddleware from 'next-intl/middleware';
-
-// i18n middleware
-const intlMiddleware = createIntlMiddleware({
-  locales: ['en', 'es'],
-  defaultLocale: 'en'
-});
 
 export async function middleware(request: NextRequest) {
-  // Apply i18n middleware first
-  const intlResponse = intlMiddleware(request);
-
   // Crea una respuesta inicial que se podrá modificar
-  let response = intlResponse || NextResponse.next({
+  let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
