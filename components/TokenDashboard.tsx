@@ -315,7 +315,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                 {
                     activeTab === 'admin' && (
                         <div>
-                            <h2 className="text-2xl font-bold mb-4 text-red-400">Zona de Peligro / Admin</h2>
+                            <h2 className="text-2xl font-bold mb-4 text-red-400">{t('tokenDetail.admin.title')}</h2>
                             {!isOwner && (
                                 <div className="bg-red-500/20 border border-red-500 text-red-200 p-4 rounded mb-6">
                                     ⚠️ No estás conectado con la cuenta propietaria del contrato. No podrás ejecutar estas acciones.
@@ -324,20 +324,20 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="border border-gray-600 p-6 rounded-lg opacity-75">
-                                    <h3 className="font-bold text-lg mb-2">Transferir Propiedad</h3>
-                                    <p className="text-sm text-gray-400 mb-4">Transfiere el control del contrato a otra wallet. Irreversible si te equivocas de dirección.</p>
+                                    <h3 className="font-bold text-lg mb-2">{t('tokenDetail.admin.transferOwnership')}</h3>
+                                    <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.transferDesc')}</p>
                                     <input type="text" placeholder="0x..." className="w-full bg-gray-900 border border-gray-600 rounded p-2 mb-3 text-white" disabled={!isOwner} />
                                     <button disabled={!isOwner} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">Transferir</button>
                                 </div>
 
                                 <div className="border border-red-600/50 p-6 rounded-lg bg-red-900/10">
-                                    <h3 className="font-bold text-lg mb-2 text-red-400">Renunciar Propiedad</h3>
-                                    <p className="text-sm text-gray-400 mb-4">Nadie podrá controlar el contrato nunca más. Es necesario para "tokens comunitarios".</p>
+                                    <h3 className="font-bold text-lg mb-2 text-red-400">{t('tokenDetail.admin.renounceOwnership')}</h3>
+                                    <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.renounceDesc')}</p>
                                     <button disabled={!isOwner} className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">Renunciar</button>
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-lg mb-2">Comunidad</h3>
-                                    <p className="text-sm text-gray-400 mb-4">Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).</p>
+                                    <h3 className="font-bold text-lg mb-2">{t('dashboard.tabs.community')}</h3>
+                                    <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.communityNote')}</p>
                                     <button
                                         onClick={handleRenounceOwnership}
                                         disabled={!isOwner || isRenouncing}
@@ -351,15 +351,15 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             {/* Verification Section */}
                             {/* Verification Section */}
                             <div className="mt-8 border-t border-gray-700 pt-8">
-                                <h3 className="text-xl font-bold mb-6 text-yellow-400">✅ Verificación de Contrato</h3>
+                                <h3 className="text-xl font-bold mb-6 text-yellow-400">{t('tokenDetail.admin.verification')}</h3>
 
                                 {/* AUTO VERIFY (New) */}
                                 <div className="bg-blue-900/20 border border-blue-500/50 p-6 rounded-xl mb-8">
                                     <h4 className="font-bold text-lg text-blue-300 mb-2 flex items-center gap-2">
-                                        <span>🤖</span> Verificación Automática
+                                        <span>🤖</span> {t('tokenDetail.admin.autoVerification')}
                                     </h4>
                                     <p className="text-sm text-gray-400 mb-4">
-                                        Conecta con PolygonScan para verificar en 1 click. Necesitas una API Key gratuita.
+                                        {t('tokenDetail.admin.autoVerificationDesc')}
                                     </p>
                                     <div className="flex gap-2">
                                         <input
