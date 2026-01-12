@@ -177,17 +177,20 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-4 border-b border-gray-700 mb-6">
-                {['overview', 'admin', 'growth'].map((tab) => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab as any)}
-                        className={`px-6 py-3 font-semibold capitalize transition-colors ${activeTab === tab ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white'}`}
-                    >
-                        {tab}
-                    </button>
-                ))}
-            </div>
+            {/* Tabs - Only visible to Owner */}
+            {isOwner && (
+                <div className="flex gap-4 border-b border-gray-700 mb-6">
+                    {['overview', 'admin', 'growth'].map((tab) => (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab as any)}
+                            className={`px-6 py-3 font-semibold capitalize transition-colors ${activeTab === tab ? 'text-purple-400 border-b-2 border-purple-400' : 'text-gray-400 hover:text-white'}`}
+                        >
+                            {tab}
+                        </button>
+                    ))}
+                </div>
+            )}
 
             {/* Content */}
             <div className="bg-gray-800 rounded-xl p-6 border border-gray-700 min-h-[400px]">
@@ -235,7 +238,24 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                     </div>
                 )}
 
-                {activeTab === 'admin' && (
+                {/* DEXSCREENER EMBED - Moved to Overview */}
+                <div className="mt-8 w-full h-[500px] bg-gray-900 rounded-xl overflow-hidden border border-gray-700">
+                    <iframe
+                        src={`https://dexscreener.com/${token.chain_id === '0x89' ? 'polygon' :
+                            token.chain_id === '0x38' ? 'bsc' :
+                                token.chain_id === '0x1' ? 'ethereum' : 'polygon'
+                            }/${token.contract_address}?embed=1&theme=dark`}
+                        width="100%"
+                        height="100%"
+                        frameBorder="0"
+                    ></iframe>
+                </div>
+            </div>
+            )
+}
+
+            {
+                activeTab === 'admin' && (
                     <div>
                         <h2 className="text-2xl font-bold mb-4 text-red-400">Zona de Peligro / Admin</h2>
                         {!isOwner && (
@@ -397,9 +417,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             )}
                         </div>
                     </div>
-                )}
+                )
+            }
 
-                {activeTab === 'growth' && (
+            {
+                activeTab === 'growth' && (
                     <div className="space-y-8">
                         <div>
                             <h2 className="text-2xl font-bold mb-4 text-green-400">Herramientas de Crecimiento</h2>
@@ -460,18 +482,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <LiquidityLocker defaultTokenAddress={lpAddress} />
                             </div>
 
-                            {/* DEXSCREENER EMBED */}
-                            <div className="w-full h-[600px] bg-gray-900 rounded-xl overflow-hidden border border-gray-700 mb-8">
-                                <iframe
-                                    src={`https://dexscreener.com/${token.chain_id === '0x89' ? 'polygon' :
-                                        token.chain_id === '0x38' ? 'bsc' :
-                                            token.chain_id === '0x1' ? 'ethereum' : 'polygon'
-                                        }/${token.contract_address}?embed=1&theme=dark`}
-                                    width="100%"
-                                    height="100%"
-                                    frameBorder="0"
-                                ></iframe>
-                            </div>
+                            {/* DEXSCREENER EMBED - REMOVED FROM HERE */}
 
 
 
@@ -553,7 +564,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                         </div>
                     </div>
                 )}
-            </div>
+        </div>
         </div >
     );
 }
