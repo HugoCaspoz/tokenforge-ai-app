@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 import { Providers } from "./providers"; // <-- 1. IMPORTA EL PROVEEDOR
 import { Toaster } from 'sonner';
 
@@ -23,6 +24,7 @@ export default function RootLayout({
         <Providers> {/* <-- 2. ENVUELVE TODO CON PROVIDERS */}
           <Header />
           {children}
+          <Footer />
           <Toaster richColors position="top-right" />
         </Providers>
       </body>
