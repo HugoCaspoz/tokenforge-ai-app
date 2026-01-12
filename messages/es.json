@@ -144,6 +144,19 @@
                 "step5": "Optimization: Yes (200 runs).",
                 "step6": "Source Code: Copia y pega TODO esto:"
             }
+        },
+        "growth": {
+            "title": "Herramientas de Crecimiento",
+            "subtitle": "Utiliza estas herramientas para distribuir tu token y aumentar tu comunidad.",
+            "socials": "📢 Redes Sociales del Proyecto",
+            "saving": "Guardando...",
+            "saveNetworks": "Guardar Redes",
+            "monitoring": "📊 Monitorización Avanzada"
+        },
+        "community": {
+            "title": "Comunidad & Airdrops",
+            "snapshot": "Gestiona tu comunidad, visualiza holders y recompénsales.",
+            "lockedContent": "Contenido Bloqueado por Token"
         }
     }
 }

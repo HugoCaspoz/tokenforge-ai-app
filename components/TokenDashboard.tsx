@@ -482,13 +482,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                     activeTab === 'growth' && (
                         <div className="space-y-8">
                             <div>
-                                <h2 className="text-2xl font-bold mb-4 text-green-400">Herramientas de Crecimiento</h2>
-                                <p className="text-gray-400 mb-6">Utiliza estas herramientas para distribuir tu token y aumentar tu comunidad.</p>
+                                <h2 className="text-2xl font-bold mb-4 text-green-400">{t('tokenDetail.growth.title')}</h2>
+                                <p className="text-gray-400 mb-6">{t('tokenDetail.growth.subtitle')}</p>
 
                                 {/* Socials Editor */}
                                 {isOwner && (
                                     <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 mb-8">
-                                        <h3 className="text-lg font-bold text-white mb-4">📢 Redes Sociales del Proyecto</h3>
+                                        <h3 className="text-lg font-bold text-white mb-4">{t('tokenDetail.growth.socials')}</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <input
                                                 type="text"
@@ -517,7 +517,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             disabled={savingSocials}
                                             className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-semibold"
                                         >
-                                            {savingSocials ? 'Guardando...' : 'Guardar Redes'}
+                                            {savingSocials ? t('tokenDetail.growth.saving') : t('tokenDetail.growth.saveNetworks')}
                                         </button>
                                     </div>
                                 )}
@@ -547,7 +547,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
                                 {/* WHALE WATCHER & HOLDERS */}
                                 <div className="mb-6 space-y-4">
-                                    <h3 className="text-xl font-bold mb-4 text-blue-400">📊 Monitorización Avanzada</h3>
+                                    <h3 className="text-xl font-bold mb-4 text-blue-400">{t('tokenDetail.growth.monitoring')}</h3>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <a
@@ -578,8 +578,8 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                     activeTab === 'community' && (
                         <div className="space-y-8">
                             <div>
-                                <h2 className="text-2xl font-bold mb-4 text-pink-400">Comunidad & Airdrops</h2>
-                                <p className="text-gray-400 mb-6">Gestiona tu comunidad, visualiza holders y recompénsales.</p>
+                                <h2 className="text-2xl font-bold mb-4 text-pink-400">{t('tokenDetail.community.title')}</h2>
+                                <p className="text-gray-400 mb-6">{t('tokenDetail.community.snapshot')}</p>
 
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     {/* Left Column: Snapshot */}
