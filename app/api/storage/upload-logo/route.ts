@@ -20,14 +20,23 @@ export async function POST(request: Request) {
     }
     const imageBlob = await response.blob();
 
-    // 2. Subir la imagen a Supabase Storage
+    // 2. Subir la imagen a Supabase Storage usando ADMIN CLIENT (Service Role)
+    // Esto evita errores de RLS (Row Level Security) ya que el servidor tiene permisos completos.
+    const { createClient: createAdminClient } = await import('@supabase/supabase-js');
+
+    const supabaseAdmin = createAdminClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
     // Si no hay projectId, usamos 'temp' como prefijo
     const filenameId = projectId || 'temp';
     const filePath = `public/${filenameId}-${Date.now()}.png`;
 
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
       .from('logos')
       .upload(filePath, imageBlob, {
+        contentType: 'image/png',
         cacheControl: '3600',
         upsert: false,
       });
