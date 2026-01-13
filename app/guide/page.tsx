@@ -7,23 +7,23 @@ export default function UserGuide() {
     const { t } = useTranslation();
     const steps = [
         {
-            title: '1. Configuración',
-            description: 'Define la identidad de tu token. Elige un nombre memorable, un símbolo (ticker) único y establece el suministro total. También puedes configurar una imagen personalizada.',
+            title: t('guide.steps.1.title'),
+            description: t('guide.steps.1.description'),
             icon: '⚙️'
         },
         {
-            title: '2. Despliegue',
-            description: 'Una vez configurado, conecta tu wallet y despliega el contrato inteligente en la blockchain de tu elección (Polygon, BNB Chain, Ethereum). El proceso es automático y seguro.',
+            title: t('guide.steps.2.title'),
+            description: t('guide.steps.2.description'),
             icon: '🚀'
         },
         {
-            title: '3. Gestión',
-            description: 'Accede a tu panel de control para gestionar tu token. Aquí podrás bloquear liquidez para dar confianza a los inversores, renunciar a la propiedad del contrato y ver estadísticas en tiempo real.',
+            title: t('guide.steps.3.title'),
+            description: t('guide.steps.3.description'),
             icon: '📊'
         },
         {
-            title: '4. Crecimiento',
-            description: 'Utiliza las herramientas de marketing integradas. Descarga el logo de tu token, comparte tu proyecto en redes sociales y aparece en nuestra página de "Explorar" para ganar visibilidad.',
+            title: t('guide.steps.4.title'),
+            description: t('guide.steps.4.description'),
             icon: '📈'
         }
     ];
@@ -54,7 +54,7 @@ export default function UserGuide() {
                     className="mb-16 bg-purple-500/10 border border-purple-500/20 rounded-2xl p-8"
                 >
                     <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-3">
-                        <span className="text-3xl">🎒</span> Antes de empezar
+                        {t('guide.prerequisites.title')}
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div className="flex gap-4">
@@ -62,9 +62,13 @@ export default function UserGuide() {
                                 🦊
                             </div>
                             <div>
-                                <h3 className="font-bold text-white mb-1">Billetera Web3</h3>
+                                <h3 className="font-bold text-white mb-1">{t('guide.prerequisites.wallet.title')}</h3>
                                 <p className="text-gray-400 text-sm">
-                                    Necesitas una billetera como <a href="https://metamask.io/" target="_blank" className="text-purple-400 hover:underline">MetaMask</a> o <a href="https://rabby.io/" target="_blank" className="text-purple-400 hover:underline">Rabby</a> instalada en tu navegador para interactuar con la blockchain.
+                                    {t('guide.prerequisites.wallet.description_1')}
+                                    <a href="https://metamask.io/" target="_blank" className="text-purple-400 hover:underline">MetaMask</a>
+                                    {t('guide.prerequisites.wallet.description_2')}
+                                    <a href="https://rabby.io/" target="_blank" className="text-purple-400 hover:underline">Rabby</a>
+                                    {t('guide.prerequisites.wallet.description_3')}
                                 </p>
                             </div>
                         </div>
@@ -73,15 +77,15 @@ export default function UserGuide() {
                                 ⛽
                             </div>
                             <div>
-                                <h3 className="font-bold text-white mb-1">Tokens para Gas</h3>
+                                <h3 className="font-bold text-white mb-1">{t('guide.prerequisites.gas.title')}</h3>
                                 <p className="text-gray-400 text-sm">
-                                    Debes tener saldo en la moneda nativa de la red para pagar las comisiones (Gas):
+                                    {t('guide.prerequisites.gas.description')}
                                     <br />
                                     • <strong>Polygon:</strong> POL
                                     <br />
-                                    • <strong>BNB Chain:</strong> BNB (Próximamente)
+                                    • <strong>BNB Chain:</strong> BNB ({t('common.comingSoon')})
                                     <br />
-                                    • <strong>Ethereum:</strong> ETH (Próximamente)
+                                    • <strong>Ethereum:</strong> ETH ({t('common.comingSoon')})
                                 </p>
                             </div>
                         </div>
@@ -120,15 +124,15 @@ export default function UserGuide() {
                     transition={{ delay: 0.5 }}
                     className="mt-20 text-center"
                 >
-                    <h2 className="text-2xl font-bold text-white mb-6">¿Preguntas Frecuentes?</h2>
+                    <h2 className="text-2xl font-bold text-white mb-6">{t('guide.faq.title')}</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
                         <div className="bg-gray-800/30 p-6 rounded-xl">
-                            <h4 className="font-bold text-purple-400 mb-2">¿Es seguro?</h4>
-                            <p className="text-gray-400">Sí, nuestros contratos están auditados y verificados automáticamente en la blockchain.</p>
+                            <h4 className="font-bold text-purple-400 mb-2">{t('guide.faq.safe.question')}</h4>
+                            <p className="text-gray-400">{t('guide.faq.safe.answer')}</p>
                         </div>
                         <div className="bg-gray-800/30 p-6 rounded-xl">
-                            <h4 className="font-bold text-purple-400 mb-2">¿Cuánto cuesta?</h4>
-                            <p className="text-gray-400">El despliegue tiene un coste mínimo de gas de la red, más una pequeña tarifa de servicio de la plataforma.</p>
+                            <h4 className="font-bold text-purple-400 mb-2">{t('guide.faq.cost.question')}</h4>
+                            <p className="text-gray-400">{t('guide.faq.cost.answer')}</p>
                         </div>
                     </div>
                 </motion.div>
