@@ -17,6 +17,13 @@ export function useHolders(tokenAddress: string, rpcUrl: string) {
     useEffect(() => {
         if (!tokenAddress || !rpcUrl) return;
 
+        // TEMPORARILY DISABLED: Public Polygon RPC nodes reject even 100-block queries
+        // This causes the entire dashboard to crash. Re-enable when using a private RPC endpoint.
+        setLoading(false);
+        setHolders([]);
+        return;
+
+        /* DISABLED CODE - Uncomment when using private RPC
         const fetchHolders = async () => {
             setLoading(true);
             setError(null);
@@ -89,6 +96,7 @@ export function useHolders(tokenAddress: string, rpcUrl: string) {
         };
 
         fetchHolders();
+        */
     }, [tokenAddress, rpcUrl]);
 
     return { holders, loading, error };
