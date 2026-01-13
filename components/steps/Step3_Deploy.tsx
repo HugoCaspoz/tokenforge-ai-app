@@ -19,7 +19,7 @@ interface Step3Props {
 
 export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props) {
   const { t } = useTranslation();
-  const supabase = createClient();
+  // const supabase = createClient(); // REMOVED
   const [supply, setSupply] = useState(1000000);
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
@@ -50,6 +50,9 @@ export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props)
 
   useEffect(() => {
     const fetchUserProfile = async () => {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         // 1. Obtener Perfil
@@ -85,7 +88,7 @@ export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props)
     };
 
     fetchUserProfile();
-  }, [supabase]);
+  }, []);
 
   const getTokensAvailable = (chainId: string) => {
     const plan = PLAN_DETAILS[activePlanKey];

@@ -17,7 +17,7 @@ export interface TokenData {
 }
 
 export default function Wizard() {
-  const supabase = createClient();
+  // const supabase = createClient(); // REMOVED
   const [step, setStep] = useState(1);
   const [tokenData, setTokenData] = useState<TokenData>({
     purpose: '',
@@ -33,6 +33,9 @@ export default function Wizard() {
   // 1. Load State on Mount
   useEffect(() => {
     const initializeWizard = async () => {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+
       const { data: { user } } = await supabase.auth.getUser();
       const currentUserId = user?.id || null;
       setUserId(currentUserId);

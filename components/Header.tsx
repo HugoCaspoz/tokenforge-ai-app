@@ -13,7 +13,7 @@ import { useTranslation } from '@/lib/i18n';
 
 export const Header = () => {
   const { t } = useTranslation();
-  const supabase = createClient();
+  // const supabase = createClient(); // REMOVED to prevent SSR crash
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
@@ -23,22 +23,31 @@ export const Header = () => {
   const showWalletButton = pathname === '/' || pathname.startsWith('/profile') || pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token') || pathname.startsWith('/manage');
 
   useEffect(() => {
-    const getSession = async () => {
+    let subscription: any = null;
+
+    const initAuth = async () => {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
-    };
-    getSession();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null);
-    });
+      const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+        setUser(session?.user ?? null);
+      });
+      subscription = authListener.subscription;
+    };
+
+    initAuth();
 
     return () => {
-      authListener.subscription.unsubscribe();
+      if (subscription) subscription.unsubscribe();
     };
-  }, [supabase.auth]);
+  }, []);
 
   const handleSignOut = async () => {
+    const { createClient } = await import('@/utils/supabase/client');
+    const supabase = createClient();
     await supabase.auth.signOut();
     router.push('/');
   };

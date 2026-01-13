@@ -20,7 +20,7 @@ interface LockedContentManagerProps {
 
 export default function LockedContentManager({ projectId }: LockedContentManagerProps) {
     const { t } = useTranslation();
-    const supabase = createClient();
+    // const supabase = createClient(); // REMOVED
     const [contents, setContents] = useState<LockedContent[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -40,6 +40,9 @@ export default function LockedContentManager({ projectId }: LockedContentManager
 
     const fetchContents = async () => {
         setLoading(true);
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
+
         const { data, error } = await supabase
             .from('locked_content')
             .select('*')
@@ -66,6 +69,9 @@ export default function LockedContentManager({ projectId }: LockedContentManager
 
         const slug = generateSlug(formData.title);
 
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
+
         const { error } = await supabase.from('locked_content').insert({
             project_id: projectId,
             title: formData.title,
@@ -87,6 +93,9 @@ export default function LockedContentManager({ projectId }: LockedContentManager
 
     const handleDelete = async (id: string) => {
         if (!confirm(t('tokenDetail.community.lockedContentManager.deleteConfirm'))) return;
+
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
 
         const { error } = await supabase.from('locked_content').delete().eq('id', id);
 
