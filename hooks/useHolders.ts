@@ -28,11 +28,10 @@ export function useHolders(tokenAddress: string, rpcUrl: string) {
                 const totalSupply = await contract.totalSupply();
 
                 // 2. Get All Transfer Events (Restricted Range to avoid RPC overload)
-                // Polygon block time ~2s. 40,000 blocks ~ 22 hours.
-                // For a dashboard, we ideally need an INDEXER. 
-                // Fallback: Query last 10,000 blocks to prevent crashing.
+                // Polygon block time ~2s. 
+                // Reduced to 3,000 blocks (~1.5 hours) to satisfy strict RPC limits on free tier.
                 const currentBlock = await provider.getBlockNumber();
-                const fromBlock = Math.max(0, currentBlock - 20000); // Check last ~12 hours
+                const fromBlock = Math.max(0, currentBlock - 3000);
 
                 const filter = contract.filters.Transfer();
                 const logs = await contract.queryFilter(filter, fromBlock, 'latest');
