@@ -2,7 +2,8 @@ import { ethers } from 'ethers';
 
 const RPC_URL = "https://polygon.drpc.org";
 const ADDRESSES = [
-    "0x1950BBEBA9429d6086d9cf3edA5EF4D9D208a281", // Latest attempt
+    "0x504C08B9c3Fe894Be4c879e1506506aA347cE5a0", // Latest
+    "0x1950BBEBA9429d6086d9cf3edA5EF4D9D208a281",
     "0x5b45988222Ac2e72b1dba6B316cb5e7B77b60680",
     "0xEFa8eE26F692Ae620488bD369285923E6Ea41d3B"
 ];

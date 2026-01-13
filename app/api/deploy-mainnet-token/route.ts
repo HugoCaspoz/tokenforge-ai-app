@@ -122,6 +122,7 @@ export async function POST(req: NextRequest) {
         const supplyWei = ethers.parseEther(initialSupply.toString());
 
         console.log(`Deploying with args: ${tokenData.name}, ${tokenData.ticker}, ${supplyWei.toString()}, ${ownerAddress}`);
+        console.log(`🔥 VERCEL CODE VERSION: 2026-01-13-v2 🔥`); // FORCE REBUILD
 
         const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress);
 
