@@ -7,8 +7,10 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { SupabaseClient } from '@supabase/supabase-js';
+
 export default function LoginPage() {
-  const supabase = createClient();
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const router = useRouter();
   const [redirectUrl, setRedirectUrl] = useState('');
 
@@ -16,17 +18,28 @@ export default function LoginPage() {
     // Set the redirect URL safely on the client side
     setRedirectUrl(`${window.location.origin}/auth/callback`);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === 'SIGNED_IN') {
-        router.push('/dashboard');
-        router.refresh();
-      }
-    });
+    let subscription: any = null;
+
+    const initClient = async () => {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabaseInstance = createClient();
+      setSupabase(supabaseInstance);
+
+      const { data } = supabaseInstance.auth.onAuthStateChange((event) => {
+        if (event === 'SIGNED_IN') {
+          router.push('/dashboard');
+          router.refresh();
+        }
+      });
+      subscription = data.subscription;
+    };
+
+    initClient();
 
     return () => {
-      subscription?.unsubscribe();
+      if (subscription) subscription.unsubscribe();
     };
-  }, [router, supabase]);
+  }, [router]);
 
   if (!redirectUrl) {
     return null; // Or a loading spinner
@@ -38,14 +51,16 @@ export default function LoginPage() {
         <h1 className="text-3xl font-bold text-center text-white mb-6">
           Accede a Token<span className="text-purple-400">Crafter</span>
         </h1>
-        <Auth
-          supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
-          theme="dark"
-          providers={['github', 'google']}
-          socialLayout="horizontal"
-          redirectTo={redirectUrl}
-        />
+        {supabase && (
+          <Auth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="dark"
+            providers={['github', 'google']}
+            socialLayout="horizontal"
+            redirectTo={redirectUrl}
+          />
+        )}
       </div>
     </div>
   );
