@@ -20,7 +20,7 @@ interface AirdropClientProps {
 // ✅ PASO 3: Actualizamos la firma del componente para desestructurar 'token'
 export function AirdropClient({ token }: AirdropClientProps) {
   const { address: userWalletAddress, isConnected } = useAccount();
-  const supabase = createClient();
+  // const supabase = createClient(); // REMOVED
 
   const [recipientsInput, setRecipientsInput] = useState<string>('');
   const [amountPerRecipient, setAmountPerRecipient] = useState<string>('');
@@ -37,12 +37,12 @@ export function AirdropClient({ token }: AirdropClientProps) {
       }
       // ✅ Usamos la propiedad del objeto token
       console.log("Verificando permisos para el token:", token.contract_address);
-      setUserHasPermission(true); 
+      setUserHasPermission(true);
     };
 
     verifyPermission();
     // ✅ Usamos la propiedad del objeto token
-  }, [isConnected, userWalletAddress, token.contract_address, supabase]);
+  }, [isConnected, userWalletAddress, token.contract_address]);
 
 
   const parseRecipients = (input: string): string[] => {
@@ -61,8 +61,8 @@ export function AirdropClient({ token }: AirdropClientProps) {
       return;
     }
     if (!userHasPermission) {
-        setError('No tienes permiso para realizar un airdrop para este token.');
-        return;
+      setError('No tienes permiso para realizar un airdrop para este token.');
+      return;
     }
 
     const recipients = parseRecipients(recipientsInput);

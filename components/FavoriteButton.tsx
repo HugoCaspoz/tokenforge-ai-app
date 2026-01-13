@@ -10,7 +10,7 @@ interface FavoriteButtonProps {
 }
 
 export default function FavoriteButton({ projectId, className = "" }: FavoriteButtonProps) {
-    const supabase = createClient();
+    // const supabase = createClient(); // REMOVED
     const { address } = useAccount();
     const [isFavorite, setIsFavorite] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -18,6 +18,9 @@ export default function FavoriteButton({ projectId, className = "" }: FavoriteBu
     useEffect(() => {
         const checkFavorite = async () => {
             if (!address) return;
+
+            const { createClient } = await import('@/utils/supabase/client');
+            const supabase = createClient();
 
             // Get user ID from auth
             const { data: { user } } = await supabase.auth.getUser();
@@ -34,7 +37,7 @@ export default function FavoriteButton({ projectId, className = "" }: FavoriteBu
         };
 
         checkFavorite();
-    }, [address, projectId, supabase]);
+    }, [address, projectId]);
 
     const toggleFavorite = async (e: React.MouseEvent) => {
         e.preventDefault();
@@ -46,6 +49,9 @@ export default function FavoriteButton({ projectId, className = "" }: FavoriteBu
         }
 
         setLoading(true);
+
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {

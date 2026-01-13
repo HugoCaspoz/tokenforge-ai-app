@@ -412,13 +412,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <div className="flex justify-between">
                                         <span className="text-gray-400">Total Supply:</span>
                                         <span className="font-mono text-white">
-                                            {totalSupply ? (Number(totalSupply) / 10 ** 18).toLocaleString() : 'Cargando...'}
+                                            {totalSupply ? (Number(totalSupply) / 10 ** 18).toLocaleString('en-US') : 'Cargando...'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-t border-gray-800 pt-2 mt-2">
                                         <span className="text-gray-400">Tu Balance:</span>
                                         <span className="font-mono text-green-400 font-bold">
-                                            {balanceOf ? (Number(balanceOf) / 10 ** 18).toLocaleString() : '0'}
+                                            {balanceOf ? (Number(balanceOf) / 10 ** 18).toLocaleString('en-US') : '0'}
                                         </span>
                                     </div>
                                     <div className="flex justify-between border-t border-gray-800 pt-2 mt-2">

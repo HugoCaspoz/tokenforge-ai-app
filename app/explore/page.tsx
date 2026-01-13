@@ -30,7 +30,7 @@ interface Project {
 
 export default function ExplorePage() {
     const { t } = useTranslation();
-    const supabase = createClient();
+    // const supabase = createClient(); // REMOVED
     const [projects, setProjects] = useState<Project[]>([]);
     const [favorites, setFavorites] = useState<Set<number>>(new Set());
     const [loading, setLoading] = useState(true);
@@ -45,6 +45,9 @@ export default function ExplorePage() {
 
             // 1. Trigger background market data update (fire and forget)
             fetch('/api/market-data').catch(console.error);
+
+            const { createClient } = await import('@/utils/supabase/client');
+            const supabase = createClient();
 
             // 2. Fetch Projects
             const projectsQuery = supabase

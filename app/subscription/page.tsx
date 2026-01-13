@@ -35,7 +35,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 
 export default function SubscriptionPage() {
   const { t } = useTranslation();
-  const supabase = createClient();
+  // const supabase = createClient(); // REMOVED
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -44,6 +44,9 @@ export default function SubscriptionPage() {
 
   useEffect(() => {
     const fetchSubscriptionStatus = async () => {
+      const { createClient } = await import('@/utils/supabase/client');
+      const supabase = createClient();
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         // Redirigir a login si no está autenticado
@@ -68,11 +71,14 @@ export default function SubscriptionPage() {
     };
 
     fetchSubscriptionStatus();
-  }, [router, supabase, t]); // Dependencias para el useEffect
+  }, [router, t]); // Dependencias para el useEffect
 
   const handleSubscribe = async (priceId: string) => {
     setLoadingCheckout(true);
     setError('');
+
+    const { createClient } = await import('@/utils/supabase/client');
+    const supabase = createClient();
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {

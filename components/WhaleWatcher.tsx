@@ -35,7 +35,7 @@ export default function WhaleWatcher({ tokenAddress, decimals = 18, threshold = 
                     const info = {
                         from: from as string,
                         to: to as string,
-                        amount: formattedValue.toLocaleString(),
+                        amount: formattedValue.toLocaleString('en-US'),
                         hash: log.transactionHash,
                     };
                     setLastWhaleTx(info);
