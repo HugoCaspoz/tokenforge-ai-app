@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
 
         // FALLBACK RPC for Polygon to avoid "balance 0" sync errors
         if (chainId === '0x89') {
-            rpcUrl = "https://rpc.ankr.com/polygon";
+            rpcUrl = "https://polygon.drpc.org";
         }
 
         if (!rpcUrl) throw new Error(`RPC not configured for chain ${chainId}`);
