@@ -168,7 +168,16 @@ export async function POST(req: NextRequest) {
 
         console.log(`Gas Boost: MaxFee ${ethers.formatUnits(gasOverrides.maxFeePerGas, 'gwei')} Gwei`);
 
-        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress, gasOverrides);
+        // NONCE FIX: Force using the next CONFIRMED nonce, ignoring stuck pending txs
+        const currentNonce = await provider.getTransactionCount(wallet.address, 'latest');
+        console.log(`🔥 VERCEL CODE VERSION: 2026-01-13-v4 (NONCE FIX) 🔥 | Forcing Nonce: ${currentNonce}`);
+
+        const deployOptions = {
+            ...gasOverrides,
+            nonce: currentNonce
+        };
+
+        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress, deployOptions);
 
         // Get deployment transaction
         const deployTx = contract.deploymentTransaction();
