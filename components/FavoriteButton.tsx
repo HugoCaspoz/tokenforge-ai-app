@@ -14,6 +14,11 @@ export default function FavoriteButton({ projectId, className = "" }: FavoriteBu
     const { address } = useAccount();
     const [isFavorite, setIsFavorite] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     useEffect(() => {
         const checkFavorite = async () => {
@@ -38,6 +43,8 @@ export default function FavoriteButton({ projectId, className = "" }: FavoriteBu
 
         checkFavorite();
     }, [address, projectId]);
+
+    if (!mounted) return null;
 
     const toggleFavorite = async (e: React.MouseEvent) => {
         e.preventDefault();
