@@ -28,37 +28,85 @@ export default function Wizard() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [isLoaded, setIsLoaded] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  // Load state from localStorage on mount
+  // 1. Load User and State on Mount
   useEffect(() => {
-    const savedData = localStorage.getItem('wizard_tokenData');
-    const savedStep = localStorage.getItem('wizard_step');
+    const initializeWizard = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      const currentUserId = user?.id || null;
+      setUserId(currentUserId);
 
-    if (savedData) {
-      try {
-        setTokenData(JSON.parse(savedData));
-      } catch (e) {
-        console.error('Error parsing saved token data', e);
+      // Define keys
+      const guestDataKey = 'wizard_tokenData_guest';
+      const guestStepKey = 'wizard_step_guest';
+      const userDataKey = currentUserId ? `wizard_tokenData_${currentUserId}` : null;
+      const userStepKey = currentUserId ? `wizard_step_${currentUserId}` : null;
+
+      let dataToLoad: string | null = null;
+      let stepToLoad: string | null = null;
+
+      // Migration Logic: Guest -> User
+      if (currentUserId && userDataKey && userStepKey) {
+        const hasUserData = localStorage.getItem(userDataKey);
+        const hasGuestData = localStorage.getItem(guestDataKey);
+
+        if (!hasUserData && hasGuestData) {
+          // Migrate!
+          dataToLoad = hasGuestData;
+          stepToLoad = localStorage.getItem(guestStepKey);
+
+          // Save to user slot immediately (optional, but good for consistency)
+          // The save effect will handle it, but we can clean up guest data here
+          localStorage.removeItem(guestDataKey);
+          localStorage.removeItem(guestStepKey);
+        } else {
+          // Load User Data
+          dataToLoad = localStorage.getItem(userDataKey);
+          stepToLoad = localStorage.getItem(userStepKey);
+        }
+      } else {
+        // Guest Mode
+        dataToLoad = localStorage.getItem(guestDataKey);
+        stepToLoad = localStorage.getItem(guestStepKey);
       }
-    }
 
-    if (savedStep) {
-      setStep(parseInt(savedStep, 10));
-    }
-    setIsLoaded(true);
+      // Apply Data
+      if (dataToLoad) {
+        try {
+          setTokenData(JSON.parse(dataToLoad));
+        } catch (e) {
+          console.error('Error parsing saved token data', e);
+        }
+      }
+      if (stepToLoad) {
+        setStep(parseInt(stepToLoad, 10));
+      }
+
+      setIsLoaded(true);
+    };
+
+    initializeWizard();
   }, []);
 
-  // Save state to localStorage whenever it changes
+  // 2. Save State whenever it changes
   useEffect(() => {
     if (isLoaded) {
-      localStorage.setItem('wizard_tokenData', JSON.stringify(tokenData));
-      localStorage.setItem('wizard_step', step.toString());
+      const storageKeyData = userId ? `wizard_tokenData_${userId}` : 'wizard_tokenData_guest';
+      const storageKeyStep = userId ? `wizard_step_${userId}` : 'wizard_step_guest';
+
+      localStorage.setItem(storageKeyData, JSON.stringify(tokenData));
+      localStorage.setItem(storageKeyStep, step.toString());
     }
-  }, [tokenData, step, isLoaded]);
+  }, [tokenData, step, isLoaded, userId]);
 
   const clearWizardState = () => {
-    localStorage.removeItem('wizard_tokenData');
-    localStorage.removeItem('wizard_step');
+    const storageKeyData = userId ? `wizard_tokenData_${userId}` : 'wizard_tokenData_guest';
+    const storageKeyStep = userId ? `wizard_step_${userId}` : 'wizard_step_guest';
+
+    localStorage.removeItem(storageKeyData);
+    localStorage.removeItem(storageKeyStep);
+
     // Reset state to defaults
     setStep(1);
     setTokenData({
