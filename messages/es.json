@@ -199,18 +199,28 @@
         "yourBalance": "Tu Balance",
         "viewOnPolygon": "Ver en Polygon",
         "downloadLogo": "Descargar Logo",
+        "buyNow": "🦄 Comprar Ahora",
+        "readError": "Error de Lectura (Hover)",
         "admin": {
             "title": "Zona de Peligro / Admin",
+            "notOwnerWarning": "⚠️ No estás conectado con la cuenta propietaria del contrato. No podrás ejecutar estas acciones.",
             "transferOwnership": "Transferir Propiedad",
             "transferDesc": "Transfiere el control del contrato a otra wallet. Irreversible si te equivocas de dirección.",
+            "transfer": "Transferir",
             "renounceOwnership": "Renunciar Propiedad",
             "renounceDesc": "Nadie podrá controlar el contrato nunca más. Es necesario para 'tokens comunitarios'.",
+            "renounce": "Renunciar",
+            "renouncing": "Renunciando...",
+            "renounceIrreversible": "Renunciar (IRREVERSIBLE)",
             "communityNote": "Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).",
             "verification": "✅ Verificación de Contrato",
             "autoVerification": "🤖 Verificación Automática",
             "autoVerificationDesc": "Conecta con PolygonScan para verificar en 1 click. Necesitas una API Key gratuita.",
             "getApiKey": "Conseguir API Key (Gratis)",
+            "verifyNow": "Verificar Ahora",
             "orManual": "O método manual:",
+            "manualNoApiKey": "Si no tienes API Key, descarga el código y súbelo a mano.",
+            "openManualGuide": "Abrir Guía Manual (Flattened Code)",
             "manualGuide": "Guía de Verificación Manual",
             "manualSteps": {
                 "step1": "Ve a PolygonScan Verify.",
@@ -219,7 +229,9 @@
                 "step4": "License: MIT.",
                 "step5": "Optimization: Yes (200 runs).",
                 "step6": "Source Code: Copia y pega TODO esto:"
-            }
+            },
+            "copy": "Copiar",
+            "codeCopied": "¡Código Copiado!"
         },
         "growth": {
             "title": "Herramientas de Crecimiento",
@@ -227,11 +239,18 @@
             "socials": "📢 Redes Sociales del Proyecto",
             "saving": "Guardando...",
             "saveNetworks": "Guardar Redes",
-            "monitoring": "📊 Monitorización Avanzada"
+            "monitoring": "📊 Monitorización Avanzada",
+            "topHolders": "Top Holders",
+            "viewOnExplorer": "Ver lista oficial en Explorador",
+            "whaleAlerts": "🐋 Alertas de Ballenas"
         },
         "community": {
             "title": "Comunidad & Airdrops",
             "snapshot": "Gestiona tu comunidad, visualiza holders y recompénsales.",
+            "snapshotTitle": "📸 Snapshot de Holders",
+            "airdropTitle": "🎁 Airdrop Pro",
+            "proTipTitle": "💡 Pro Tip",
+            "proTipDesc": "Selecciona múltiples usuarios en la tabla de la izquierda para añadirlos automáticamente al Airdrop.",
             "lockedContent": "Contenido Bloqueado por Token"
         }
     },

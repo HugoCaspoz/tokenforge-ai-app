@@ -219,12 +219,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             rel="noopener noreferrer"
                             className="bg-purple-600 hover:bg-purple-500 text-white px-4 py-1 rounded text-sm font-bold flex items-center gap-1 transition-colors"
                         >
-                            🦄 Comprar Ahora
+                            {t('tokenDetail.buyNow')}
                         </a>
                         {/* Error Debug Badge */}
                         {(ownerError || supplyError) && (
                             <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded text-sm border border-red-500/30" title={String(ownerError || supplyError)}>
-                                Error de Lectura (Hover)
+                                {t('tokenDetail.readError')}
                             </span>
                         )}
                     </div>
@@ -285,7 +285,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                         rel="noopener noreferrer"
                                         className="block w-full text-center py-2 bg-gray-700 hover:bg-gray-600 rounded transition-colors text-white"
                                     >
-                                        Ver en {networkName} Explorer ↗
+                                        {t('tokenDetail.viewOnPolygon').replace('Polygon', networkName)} ↗
                                     </a>
 
                                     {/* Download Logo Button */}
@@ -294,7 +294,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                         disabled={!token.logo_url}
                                         className="mt-3 block w-full text-center py-2 bg-gray-800 hover:bg-gray-700 border border-gray-600 rounded transition-colors text-gray-300 text-sm flex items-center justify-center gap-2"
                                     >
-                                        <span>⬇️</span> Descargar Logo
+                                        <span>⬇️</span> {t('tokenDetail.downloadLogo')}
                                     </button>
                                 </div>
                             </div>
@@ -320,7 +320,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                             <h2 className="text-2xl font-bold mb-4 text-red-400">{t('tokenDetail.admin.title')}</h2>
                             {!isOwner && (
                                 <div className="bg-red-500/20 border border-red-500 text-red-200 p-4 rounded mb-6">
-                                    ⚠️ No estás conectado con la cuenta propietaria del contrato. No podrás ejecutar estas acciones.
+                                    {t('tokenDetail.admin.notOwnerWarning')}
                                 </div>
                             )}
 
@@ -329,13 +329,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <h3 className="font-bold text-lg mb-2">{t('tokenDetail.admin.transferOwnership')}</h3>
                                     <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.transferDesc')}</p>
                                     <input type="text" placeholder="0x..." className="w-full bg-gray-900 border border-gray-600 rounded p-2 mb-3 text-white" disabled={!isOwner} />
-                                    <button disabled={!isOwner} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">Transferir</button>
+                                    <button disabled={!isOwner} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">{t('tokenDetail.admin.transfer')}</button>
                                 </div>
 
                                 <div className="border border-red-600/50 p-6 rounded-lg bg-red-900/10">
                                     <h3 className="font-bold text-lg mb-2 text-red-400">{t('tokenDetail.admin.renounceOwnership')}</h3>
                                     <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.renounceDesc')}</p>
-                                    <button disabled={!isOwner} className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">Renunciar</button>
+                                    <button disabled={!isOwner} className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">{t('tokenDetail.admin.renounce')}</button>
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-lg mb-2">{t('dashboard.tabs.community')}</h3>
@@ -345,7 +345,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                         disabled={!isOwner || isRenouncing}
                                         className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full"
                                     >
-                                        {isRenouncing ? "Renunciando..." : "Renunciar (IRREVERSIBLE)"}
+                                        {isRenouncing ? t('tokenDetail.admin.renouncing') : t('tokenDetail.admin.renounceIrreversible')}
                                     </button>
                                 </div>
                             </div>
@@ -412,7 +412,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             }}
                                             className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded transition-colors disabled:opacity-50"
                                         >
-                                            Verificar Ahora
+                                            {t('tokenDetail.admin.verifyNow')}
                                         </button>
                                     </div>
                                     <div className="mt-2 text-right">
@@ -420,11 +420,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     </div>
                                 </div>
 
-                                <h4 className="font-bold text-gray-400 mb-4 border-b border-gray-700 pb-2">O método manual:</h4>
+                                <h4 className="font-bold text-gray-400 mb-4 border-b border-gray-700 pb-2">{t('tokenDetail.admin.orManual')}</h4>
 
                                 {!showVerifyModal ? (
                                     <div>
-                                        <p className="text-gray-400 mb-4 text-sm">Si no tienes API Key, descarga el código y súbelo a mano.</p>
+                                        <p className="text-gray-400 mb-4 text-sm">{t('tokenDetail.admin.manualNoApiKey')}</p>
                                         <button
                                             onClick={async () => {
                                                 setShowVerifyModal(true);
@@ -438,23 +438,23 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             }}
                                             className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-bold rounded transition-colors w-full"
                                         >
-                                            Abrir Guía Manual (Flattened Code)
+                                            {t('tokenDetail.admin.openManualGuide')}
                                         </button>
                                     </div>
                                 ) : (
                                     <div className="bg-gray-900 p-6 rounded-xl border border-yellow-500/30">
                                         <div className="flex justify-between items-start mb-4">
-                                            <h3 className="text-xl font-bold text-yellow-400">Guía de Verificación Manual</h3>
+                                            <h3 className="text-xl font-bold text-yellow-400">{t('tokenDetail.admin.manualGuide')}</h3>
                                             <button onClick={() => setShowVerifyModal(false)} className="text-gray-400 hover:text-white">✕</button>
                                         </div>
 
                                         <ol className="list-decimal list-inside space-y-3 text-gray-300 mb-6 text-sm">
                                             <li>Ve a <a href={`${explorerUrl}/verifyContract?a=${token.contract_address}`} target="_blank" className="text-blue-400 underline">PolygonScan Verify</a>.</li>
-                                            <li><strong>Compiler Type:</strong> Solidity (Single file).</li>
-                                            <li><strong>Compiler Version:</strong> v0.8.33+commit...</li>
-                                            <li><strong>License:</strong> MIT.</li>
-                                            <li><strong>Optimization:</strong> Yes (200 runs).</li>
-                                            <li><strong>Source Code:</strong> Copia y pega TODO esto:</li>
+                                            <li><strong>Compiler Type:</strong> {t('tokenDetail.admin.manualSteps.step2')}</li>
+                                            <li><strong>Compiler Version:</strong> {t('tokenDetail.admin.manualSteps.step3')}</li>
+                                            <li><strong>License:</strong> {t('tokenDetail.admin.manualSteps.step4')}</li>
+                                            <li><strong>Optimization:</strong> {t('tokenDetail.admin.manualSteps.step5')}</li>
+                                            <li><strong>Source Code:</strong> {t('tokenDetail.admin.manualSteps.step6')}</li>
                                         </ol>
 
                                         <div className="relative">
@@ -466,11 +466,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             <button
                                                 onClick={() => {
                                                     navigator.clipboard.writeText(flatCode);
-                                                    alert("Código Copiado!");
+                                                    alert(t('tokenDetail.admin.codeCopied'));
                                                 }}
                                                 className="absolute top-2 right-2 bg-gray-700 hover:bg-gray-600 text-white text-xs px-3 py-1 rounded"
                                             >
-                                                Copiar
+                                                {t('tokenDetail.admin.copy')}
                                             </button>
                                         </div>
                                     </div>
@@ -560,12 +560,12 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                         >
                                             <div className="text-2xl">👥</div>
                                             <div>
-                                                <h4 className="font-bold text-white">Top Holders</h4>
-                                                <p className="text-xs text-gray-400">Ver lista oficial en Explorador</p>
+                                                <h4 className="font-bold text-white">{t('tokenDetail.growth.topHolders')}</h4>
+                                                <p className="text-xs text-gray-400">{t('tokenDetail.growth.viewOnExplorer')}</p>
                                             </div>
                                         </a>
                                         <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                            <h4 className="font-bold text-white mb-2 flex items-center gap-2">🐋 Alertas de Ballenas</h4>
+                                            <h4 className="font-bold text-white mb-2 flex items-center gap-2">{t('tokenDetail.growth.whaleAlerts')}</h4>
                                             <WhaleWatcher tokenAddress={token.contract_address as `0x${string}`} />
                                         </div>
                                     </div>
@@ -586,7 +586,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     {/* Left Column: Snapshot */}
                                     <div className="lg:col-span-2">
-                                        <h3 className="text-xl font-bold text-white mb-4">📸 Snapshot de Holders</h3>
+                                        <h3 className="text-xl font-bold text-white mb-4">{t('tokenDetail.community.snapshotTitle')}</h3>
                                         <SnapshotView
                                             holders={holders}
                                             loading={loadingHolders}
@@ -596,16 +596,16 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
                                     {/* Right Column: Airdrop Tool */}
                                     <div>
-                                        <h3 className="text-xl font-bold text-white mb-4">🎁 Airdrop Pro</h3>
+                                        <h3 className="text-xl font-bold text-white mb-4">{t('tokenDetail.community.airdropTitle')}</h3>
                                         <AirdropTool
                                             tokenAddress={token.contract_address}
                                             selectedAddresses={selectedForAirdrop}
                                         />
 
                                         <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-xl mt-6">
-                                            <h4 className="font-bold text-blue-300 mb-2">💡 Pro Tip</h4>
+                                            <h4 className="font-bold text-blue-300 mb-2">{t('tokenDetail.community.proTipTitle')}</h4>
                                             <p className="text-sm text-gray-400">
-                                                Selecciona múltiples usuarios en la tabla de la izquierda para añadirlos automáticamente al Airdrop.
+                                                {t('tokenDetail.community.proTipDesc')}
                                             </p>
                                         </div>
                                     </div>

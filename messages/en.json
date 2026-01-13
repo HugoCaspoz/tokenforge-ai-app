@@ -199,18 +199,28 @@
         "yourBalance": "Your Balance",
         "viewOnPolygon": "View on Polygon",
         "downloadLogo": "Download Logo",
+        "buyNow": "🦄 Buy Now",
+        "readError": "Read Error (Hover)",
         "admin": {
             "title": "Danger Zone / Admin",
+            "notOwnerWarning": "⚠️ You are not connected with the contract owner account. You cannot execute these actions.",
             "transferOwnership": "Transfer Ownership",
             "transferDesc": "Transfer contract control to another wallet. Irreversible if you make a mistake.",
+            "transfer": "Transfer",
             "renounceOwnership": "Renounce Ownership",
             "renounceDesc": "No one will be able to control the contract ever again. Required for 'community tokens'.",
+            "renounce": "Renounce",
+            "renouncing": "Renouncing...",
+            "renounceIrreversible": "Renounce (IRREVERSIBLE)",
             "communityNote": "If you abandon ownership, the token will be governed by the community (or no one).",
             "verification": "✅ Contract Verification",
             "autoVerification": "🤖 Automatic Verification",
             "autoVerificationDesc": "Connect with PolygonScan to verify in 1 click. You need a free API Key.",
             "getApiKey": "Get API Key (Free)",
+            "verifyNow": "Verify Now",
             "orManual": "Or manual method:",
+            "manualNoApiKey": "If you don't have an API Key, download the code and upload it manually.",
+            "openManualGuide": "Open Manual Guide (Flattened Code)",
             "manualGuide": "Manual Verification Guide",
             "manualSteps": {
                 "step1": "Go to PolygonScan Verify.",
@@ -219,7 +229,9 @@
                 "step4": "License: MIT.",
                 "step5": "Optimization: Yes (200 runs).",
                 "step6": "Source Code: Copy and paste ALL of this:"
-            }
+            },
+            "copy": "Copy",
+            "codeCopied": "Code Copied!"
         },
         "growth": {
             "title": "Growth Tools",
@@ -227,11 +239,18 @@
             "socials": "📢 Project Social Media",
             "saving": "Saving...",
             "saveNetworks": "Save Networks",
-            "monitoring": "📊 Advanced Monitoring"
+            "monitoring": "📊 Advanced Monitoring",
+            "topHolders": "Top Holders",
+            "viewOnExplorer": "View official list on Explorer",
+            "whaleAlerts": "🐋 Whale Alerts"
         },
         "community": {
             "title": "Community & Airdrops",
             "snapshot": "Manage your community, view holders and reward them.",
+            "snapshotTitle": "📸 Holders Snapshot",
+            "airdropTitle": "🎁 Airdrop Pro",
+            "proTipTitle": "💡 Pro Tip",
+            "proTipDesc": "Select multiple users in the table on the left to automatically add them to the Airdrop.",
             "lockedContent": "Token-Gated Content"
         }
     },
