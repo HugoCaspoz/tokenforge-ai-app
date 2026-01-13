@@ -2,7 +2,7 @@
 import { ethers } from 'ethers';
 
 const RPC_URL = "https://polygon.drpc.org";
-const CONTRACT_ADDRESS = "0x5b45988222Ac2e72b1dba6B316cb5e7B77b60680";
+const CONTRACT_ADDRESS = "0x2e52dC57f2DF70CAF4A662D3b57644AB8C2160da";
 const DEPLOYER_ADDRESS = "0xF787344514Ce9542C894405e181d0476129eE1E3";
 
 async function checkDeployment() {

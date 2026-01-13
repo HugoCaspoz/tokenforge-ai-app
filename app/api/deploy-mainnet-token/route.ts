@@ -121,9 +121,16 @@ export async function POST(req: NextRequest) {
         // Note: supply in WEI.
         const supplyWei = ethers.parseEther(initialSupply.toString());
 
-        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress);
+        // GAS BOOST: Force higher fees to ensure immediate inclusion (Polygon is fast but picky)
+        const feeData = await provider.getFeeData();
+        const gasOverrides = {
+            maxFeePerGas: (feeData.maxFeePerGas || ethers.parseUnits('50', 'gwei')) * BigInt(150) / BigInt(100), // +50%
+            maxPriorityFeePerGas: (feeData.maxPriorityFeePerGas || ethers.parseUnits('30', 'gwei')) * BigInt(150) / BigInt(100)
+        };
 
-        // console.log(`Deploy transaction sent: ${contract.deploymentTransaction()?.hash}`);
+        console.log(`Gas Boost: MaxFee ${ethers.formatUnits(gasOverrides.maxFeePerGas, 'gwei')} Gwei`);
+
+        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress, gasOverrides);
 
         // OPTIMIZATION: Do NOT wait for blocking deployment (avoid Vercel Timeout)
         // await contract.waitForDeployment(); 
@@ -142,6 +149,7 @@ export async function POST(req: NextRequest) {
             description: tokenData.description,
             chain_id: chainId,
             contract_address: deployedAddress,
+            tx_hash: txHash, // Save TX Hash for debugging
             logo_url: tokenData.logoUrl
         };
         // If we have a draft ID, use it to update the existing record

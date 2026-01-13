@@ -186,6 +186,13 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                 <div className="mt-6 p-4 bg-gray-800 rounded text-xs text-left font-mono text-gray-400 w-full max-w-xl overflow-hidden">
                     <p>Contract: {token.contract_address}</p>
                     <p>Chain ID: {token.chain_id}</p>
+                    {(token as any).tx_hash && (
+                        <p className="mt-2 text-blue-400">
+                            Transaction: <a href={`https://polygonscan.com/tx/${(token as any).tx_hash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
+                                {(token as any).tx_hash} ↗
+                            </a>
+                        </p>
+                    )}
                 </div>
             </div>
         );

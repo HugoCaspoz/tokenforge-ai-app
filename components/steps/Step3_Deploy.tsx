@@ -251,7 +251,7 @@ export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props)
         </div>
 
         {/* Server Wallet Debug Panel - ONLY FOR ADMIN/DEBUG */}
-        <div className="mb-4 p-4 text-xs font-mono bg-black/40 border border-gray-700 rounded text-gray-400">
+        {/* <div className="mb-4 p-4 text-xs font-mono bg-black/40 border border-gray-700 rounded text-gray-400">
           <p className="font-bold mb-1">📢 ESTADO DEL CLÚSTER DE DESPLIEGUE (SERVER):</p>
           {serverInfo ? (
             <>
@@ -266,7 +266,7 @@ export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props)
           ) : (
             <p className="animate-pulse">Verificando estado del servidor...</p>
           )}
-        </div>
+        </div> */}
 
         <button
           onClick={handleDeploy}
