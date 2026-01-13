@@ -215,7 +215,6 @@
             "notAvailable": "No disponible",
             "available": "Disponible",
             "requestDeploy": "🚀 Solicitar Despliegue en",
-            "freeGas": "(Gas Gratis)",
             "deploying": "Desplegando (Nosotros pagamos el gas)...",
             "success": "¡Contrato desplegado con éxito! 🎉",
             "successDesc": "Tu token ya vive en la blockchain.",

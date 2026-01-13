@@ -14,9 +14,10 @@ const networkKeys = Object.keys(NETWORK_NAMES) as Array<keyof typeof NETWORK_NAM
 
 interface Step3Props {
   tokenData: TokenData;
+  onDeploySuccess?: () => void;
 }
 
-export default function Step3_Deploy({ tokenData }: Step3Props) {
+export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props) {
   const { t } = useTranslation();
   const supabase = createClient();
   const [supply, setSupply] = useState(1000000);
@@ -147,6 +148,11 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
       setStatus(`¡Despliegue exitoso! Dirección: ${newContractAddress}`);
       setContractAddress(newContractAddress);
 
+      // Clear wizard state on success
+      if (onDeploySuccess) {
+        onDeploySuccess();
+      }
+
     } catch (err: any) {
       console.error(err);
       setError(err.message || t('wizard.step3.errorDeployUnknown'));
@@ -239,7 +245,7 @@ export default function Step3_Deploy({ tokenData }: Step3Props) {
           disabled={loadingDeploy || !isSubscribed || getTokensAvailable(selectedChainId) <= 0}
           className="w-full px-6 py-4 bg-green-600 text-white font-bold text-lg rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-500"
         >
-          {loadingDeploy ? t('wizard.step3.deploying') : `${t('wizard.step3.requestDeploy')} ${NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES]} ${t('wizard.step3.freeGas')}`}
+          {loadingDeploy ? t('wizard.step3.deploying') : `${t('wizard.step3.requestDeploy')} ${NETWORK_NAMES[selectedChainId as keyof typeof NETWORK_NAMES]}`}
         </button>
       </div>
 
