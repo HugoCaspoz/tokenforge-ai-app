@@ -1,60 +1,65 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
-import { cookies } from 'next/headers';
-import { notFound, redirect } from 'next/navigation';
-import dynamic from 'next/dynamic';
-const TokenDashboard = dynamic(() => import('@/components/TokenDashboard'), { ssr: false });
+'use client';
 
-export default async function ManageTokenPage({ params }: { params: { address: string } }) {
-    const cookieStore = await cookies();
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
+import TokenDashboard from '@/components/TokenDashboard';
 
-    const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        {
-            cookies: {
-                get(name: string) {
-                    return cookieStore.get(name)?.value;
-                },
-                set(name: string, value: string, options: CookieOptions) {
-                    try {
-                        cookieStore.set({ name, value, ...options });
-                    } catch (error) {
-                        // Ignored
-                    }
-                },
-                remove(name: string, options: CookieOptions) {
-                    try {
-                        cookieStore.set({ name, value: '', ...options });
-                    } catch (error) {
-                        // Ignored
-                    }
-                },
-            },
-        }
-    );
+export default function ManageTokenPage({ params }: { params: { address: string } }) {
+    const [token, setToken] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
-    const { data: { user } } = await supabase.auth.getUser();
+    useEffect(() => {
+        const fetchToken = async () => {
+            const supabase = createClient();
 
-    if (!user) {
-        redirect('/login');
+            // Check auth
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) {
+                router.push('/login');
+                return;
+            }
+
+            // Fetch token
+            const { data, error } = await supabase
+                .from('projects')
+                .select('*')
+                .eq('contract_address', params.address)
+                .eq('user_id', user.id)
+                .single();
+
+            if (error || !data) {
+                setError('Token not found or you do not have permission to manage it.');
+                setLoading(false);
+                return;
+            }
+
+            setToken(data);
+            setLoading(false);
+        };
+
+        fetchToken();
+    }, [params.address, router]);
+
+    if (loading) {
+        return (
+            <main className="min-h-screen bg-gray-900 text-white pt-24 pb-12 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500"></div>
+            </main>
+        );
     }
 
-    // Fetch project details
-    // Note: We search by contract_address AND user_id to ensure ownership security (viewing rights)
-    // Actually, admins might want to see tokens they don't user-own if they are transferred, 
-    // but for this platform "management" implies being the creator or being on the whitelist.
-    // For now, only the creator can see the dashboard.
-    const { data: token } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('contract_address', params.address)
-        .eq('user_id', user.id)
-        .single();
-
-    if (!token) {
-        // If not found, maybe it exists but belongs to another user? 
-        // Secure by default: 404
-        notFound();
+    if (error || !token) {
+        return (
+            <main className="min-h-screen bg-gray-900 text-white pt-24 pb-12 flex items-center justify-center">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-400 mb-4">Error</h1>
+                    <p className="text-gray-400">{error || 'Token not found'}</p>
+                </div>
+            </main>
+        );
     }
 
     return (
