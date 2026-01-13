@@ -424,6 +424,57 @@
         "enterprise": {
             "name": "Avanzado",
             "description": "5 tokens (máx 1 en Ethereum)"
+        },
+        "advanced": {
+            "name": "Avanzado",
+            "description": "5 tokens (máx 1 en Ethereum)"
+        }
+    },
+    "subscription": {
+        "title": "Gestiona Tu Suscripción",
+        "loading": "Cargando información de suscripción...",
+        "errorLoad": "No se pudo cargar la información de tu suscripción.",
+        "errorLogin": "Debes iniciar sesión para suscribirte.",
+        "errorStripe": "Stripe.js no se ha cargado.",
+        "errorProcess": "Error al iniciar el proceso de pago.",
+        "errorPortal": "Error al acceder al portal de clientes.",
+        "current": {
+            "title": "Tu Suscripción Actual:",
+            "status": "Estado:",
+            "ends": "Finaliza:",
+            "limitsTitle": "Límites de Despliegue:",
+            "unlimited": "Ilimitados"
+        },
+        "manageButton": "Gestionar Suscripción en Stripe",
+        "loadingPortal": "Cargando Portal...",
+        "noActive": {
+            "title": "No Tienes Suscripción Activa",
+            "subtitle": "Elige un plan a continuación para empezar a desplegar tokens en Mainnet."
+        },
+        "plansTitle": "Nuestros Planes de Suscripción",
+        "features": {
+            "basic": {
+                "1": "2 tokens en Polygon",
+                "2": "❌ Ethereum / BNB Chain"
+            },
+            "pro": {
+                "1": "3 tokens totales",
+                "2": "Máx 2 en Polygon",
+                "3": "Máx 1 en BNB Chain",
+                "4": "❌ Ethereum"
+            },
+            "advanced": {
+                "1": "5 tokens totales",
+                "2": "Máx 1 en Ethereum",
+                "3": "Polygon y BNB Chain incluidos",
+                "4": "Tokens extra: desde 4€"
+            }
+        },
+        "buttons": {
+            "dev": "En Desarrollo",
+            "current": "Plan Actual",
+            "redirecting": "Redirigiendo...",
+            "choose": "Elegir Plan"
         }
     }
 }

@@ -424,6 +424,57 @@
         "enterprise": {
             "name": "Advanced",
             "description": "5 tokens (max 1 on Ethereum)"
+        },
+        "advanced": {
+            "name": "Advanced",
+            "description": "5 tokens (max 1 on Ethereum)"
+        }
+    },
+    "subscription": {
+        "title": "Manage Your Subscription",
+        "loading": "Loading subscription information...",
+        "errorLoad": "Could not load your subscription information.",
+        "errorLogin": "You must sign in to subscribe.",
+        "errorStripe": "Stripe.js has not loaded.",
+        "errorProcess": "Error starting payment process.",
+        "errorPortal": "Error accessing customer portal.",
+        "current": {
+            "title": "Your Current Subscription:",
+            "status": "Status:",
+            "ends": "Ends:",
+            "limitsTitle": "Deployment Limits:",
+            "unlimited": "Unlimited"
+        },
+        "manageButton": "Manage Subscription on Stripe",
+        "loadingPortal": "Loading Portal...",
+        "noActive": {
+            "title": "No Active Subscription",
+            "subtitle": "Choose a plan below to start deploying tokens on Mainnet."
+        },
+        "plansTitle": "Our Subscription Plans",
+        "features": {
+            "basic": {
+                "1": "2 tokens on Polygon",
+                "2": "❌ Ethereum / BNB Chain"
+            },
+            "pro": {
+                "1": "3 total tokens",
+                "2": "Max 2 on Polygon",
+                "3": "Max 1 on BNB Chain",
+                "4": "❌ Ethereum"
+            },
+            "advanced": {
+                "1": "5 total tokens",
+                "2": "Max 1 on Ethereum",
+                "3": "Polygon and BNB Chain included",
+                "4": "Extra tokens: from €4"
+            }
+        },
+        "buttons": {
+            "dev": "In Development",
+            "current": "Current Plan",
+            "redirecting": "Redirecting...",
+            "choose": "Choose Plan"
         }
     }
 }
