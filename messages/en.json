@@ -286,7 +286,7 @@
             "proTipTitle": "💡 Pro Tip",
             "proTipDesc": "Select multiple users in the table on the left to automatically add them to the Airdrop.",
             "lockedContent": "Token-Gated Content",
-            "snapshot": {
+            "snapshotTable": {
                 "loading": "Loading Blockchain Snapshot... 📸",
                 "noHolders": "No holders (yet).",
                 "title": "Top Holders ({count})",
