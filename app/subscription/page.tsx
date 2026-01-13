@@ -5,27 +5,25 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client'; // Importa el cliente de Supabase para el lado del cliente
 import { useRouter } from 'next/navigation'; // Para redirigir
+import { useTranslation } from '@/lib/i18n';
 
 // Define los planes con los Price IDs que configurarás en Stripe
 const subscriptionPlans = [
   {
     id: 'basic',
-    name: 'Basic',
-    description: '2 tokens en Polygon',
+    name: 'Basic', // Key for translation lookup if needed, or keep as identifier
     price: '4,99 €/mes',
     priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n',
   },
   {
     id: 'pro',
     name: 'Pro',
-    description: '3 tokens (máx 2 en Polygon, 1 en BNB)',
     price: 'Próximamente',
     priceId: '', // Disabled
   },
   {
     id: 'advanced',
     name: 'Advanced',
-    description: '5 tokens (máx 1 en Ethereum), extras desde 4€',
     price: 'Próximamente',
     priceId: '', // Disabled
   },
@@ -36,6 +34,7 @@ import { loadStripe } from '@stripe/stripe-js';
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 export default function SubscriptionPage() {
+  const { t } = useTranslation();
   const supabase = createClient();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -61,7 +60,7 @@ export default function SubscriptionPage() {
 
       if (profileError) {
         console.error('Error fetching user subscription profile:', profileError);
-        setError('No se pudo cargar la información de tu suscripción.');
+        setError(t('subscription.errorLoad'));
       } else {
         setUserSubscription(profile);
       }
@@ -69,7 +68,7 @@ export default function SubscriptionPage() {
     };
 
     fetchSubscriptionStatus();
-  }, [router, supabase]); // Dependencias para el useEffect
+  }, [router, supabase, t]); // Dependencias para el useEffect
 
   const handleSubscribe = async (priceId: string) => {
     setLoadingCheckout(true);
@@ -77,7 +76,7 @@ export default function SubscriptionPage() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setError('Debes iniciar sesión para suscribirte.');
+      setError(t('subscription.errorLogin'));
       setLoadingCheckout(false);
       return;
     }
@@ -102,41 +101,41 @@ export default function SubscriptionPage() {
 
       const stripe = await stripePromise; // Usa la promesa de Stripe cargada
       if (!stripe) {
-        throw new Error("Stripe.js no se ha cargado.");
+        throw new Error(t('subscription.errorStripe'));
       }
 
       await stripe.redirectToCheckout({ sessionId });
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar el proceso de pago.');
+      setError(err.message || t('subscription.errorProcess'));
     } finally {
       setLoadingCheckout(false);
     }
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-white">Cargando información de suscripción...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-white">{t('subscription.loading')}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gray-900 text-white p-8 pt-32">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center text-purple-400">Gestiona Tu Suscripción</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center text-purple-400">{t('subscription.title')}</h1>
 
         {error && <p className="bg-red-900/20 text-red-400 p-3 rounded-md mb-6">{error}</p>}
 
         {userSubscription && userSubscription.is_subscribed ? (
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-purple-700 mb-8">
-            <h2 className="text-2xl font-bold mb-4">Tu Suscripción Actual: <span className="text-purple-400">{userSubscription.active_subscription_plan || 'N/A'}</span></h2>
-            <p className="text-lg text-gray-300 mb-2">Estado: <span className="capitalize">{userSubscription.subscription_status || 'desconocido'}</span></p>
+            <h2 className="text-2xl font-bold mb-4">{t('subscription.current.title')} <span className="text-purple-400">{userSubscription.active_subscription_plan || 'N/A'}</span></h2>
+            <p className="text-lg text-gray-300 mb-2">{t('subscription.current.status')} <span className="capitalize">{userSubscription.subscription_status || 'desconocido'}</span></p>
             {userSubscription.subscription_ends_at && (
-              <p className="text-lg text-gray-300 mb-4">Finaliza: {new Date(userSubscription.subscription_ends_at).toLocaleDateString()}</p>
+              <p className="text-lg text-gray-300 mb-4">{t('subscription.current.ends')} {new Date(userSubscription.subscription_ends_at).toLocaleDateString()}</p>
             )}
 
-            <h3 className="text-xl font-semibold mb-3">Límites de Despliegue:</h3>
+            <h3 className="text-xl font-semibold mb-3">{t('subscription.current.limitsTitle')}</h3>
             <ul className="list-disc pl-6 text-gray-300 mb-6">
-              <li>Polygon: {userSubscription.unlimited_deployments ? 'Ilimitados' : `${userSubscription.polygon_tokens_used} / ${userSubscription.polygon_tokens_allowed}`} tokens</li>
-              <li>BNB Chain: {userSubscription.unlimited_deployments ? 'Ilimitados' : `${userSubscription.bnb_tokens_used} / ${userSubscription.bnb_tokens_allowed}`} tokens</li>
-              <li>Ethereum: {userSubscription.unlimited_deployments ? 'Ilimitados' : `${userSubscription.ethereum_tokens_used} / ${userSubscription.ethereum_tokens_allowed}`} tokens</li>
+              <li>Polygon: {userSubscription.unlimited_deployments ? t('subscription.current.unlimited') : `${userSubscription.polygon_tokens_used} / ${userSubscription.polygon_tokens_allowed}`} tokens</li>
+              <li>BNB Chain: {userSubscription.unlimited_deployments ? t('subscription.current.unlimited') : `${userSubscription.bnb_tokens_used} / ${userSubscription.bnb_tokens_allowed}`} tokens</li>
+              <li>Ethereum: {userSubscription.unlimited_deployments ? t('subscription.current.unlimited') : `${userSubscription.ethereum_tokens_used} / ${userSubscription.ethereum_tokens_allowed}`} tokens</li>
             </ul>
 
             {/* ✅ CORRECCIÓN AQUÍ: Usar <button> en lugar de <Link> para la acción "Gestionar Suscripción" */}
@@ -157,7 +156,7 @@ export default function SubscriptionPage() {
                     if (portalError) throw new Error(portalError);
                     window.location.href = url; // Redirige al portal de clientes de Stripe
                   } catch (err: any) {
-                    setError(err.message || 'Error al acceder al portal de clientes.');
+                    setError(err.message || t('subscription.errorPortal'));
                   } finally {
                     setLoadingCheckout(false);
                   }
@@ -165,46 +164,46 @@ export default function SubscriptionPage() {
                 disabled={loadingCheckout} // La prop 'disabled' SÍ funciona en <button>
                 className={`bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-md transition-colors ${loadingCheckout ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                {loadingCheckout ? 'Cargando Portal...' : 'Gestionar Suscripción en Stripe'}
+                {loadingCheckout ? t('subscription.loadingPortal') : t('subscription.manageButton')}
               </button>
             </p>
           </div>
         ) : (
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg border border-purple-700 mb-8 text-center">
-            <h2 className="text-2xl font-bold mb-4">No Tienes Suscripción Activa</h2>
-            <p className="text-lg text-gray-300 mb-6">Elige un plan a continuación para empezar a desplegar tokens en Mainnet.</p>
+            <h2 className="text-2xl font-bold mb-4">{t('subscription.noActive.title')}</h2>
+            <p className="text-lg text-gray-300 mb-6">{t('subscription.noActive.subtitle')}</p>
           </div>
         )}
 
-        <h2 className="text-3xl font-bold mb-6 text-center">Nuestros Planes de Suscripción</h2>
+        <h2 className="text-3xl font-bold mb-6 text-center">{t('subscription.plansTitle')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {subscriptionPlans.map((plan) => (
             <div key={plan.id} className={`bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col justify-between ${userSubscription?.active_subscription_plan === plan.name ? 'border-4 border-purple-500' : 'border border-gray-700'}`}>
               <div>
-                <h3 className="text-2xl font-bold text-purple-400 mb-2">{plan.name}</h3>
-                <p className="text-4xl font-extrabold mb-4">{plan.price}</p>
-                <p className="text-gray-300 mb-4">{plan.description}</p>
+                <h3 className="text-2xl font-bold text-purple-400 mb-2">{t(`plans.${plan.id}.name`)}</h3>
+                <p className="text-4xl font-extrabold mb-4">{plan.id === 'basic' ? plan.price : t('common.comingSoon')}</p>
+                <p className="text-gray-300 mb-4">{t(`plans.${plan.id}.description`)}</p>
                 <ul className="text-gray-400 text-sm list-disc pl-5 mb-6">
                   {plan.id === 'basic' && (
                     <>
-                      <li>2 tokens en Polygon</li>
-                      <li>❌ Ethereum / BNB Chain</li>
+                      <li>{t('subscription.features.basic.1')}</li>
+                      <li>{t('subscription.features.basic.2')}</li>
                     </>
                   )}
                   {plan.id === 'pro' && (
                     <>
-                      <li>3 tokens totales</li>
-                      <li>Máx 2 en Polygon</li>
-                      <li>Máx 1 en BNB Chain</li>
-                      <li>❌ Ethereum</li>
+                      <li>{t('subscription.features.pro.1')}</li>
+                      <li>{t('subscription.features.pro.2')}</li>
+                      <li>{t('subscription.features.pro.3')}</li>
+                      <li>{t('subscription.features.pro.4')}</li>
                     </>
                   )}
                   {plan.id === 'advanced' && (
                     <>
-                      <li>5 tokens totales</li>
-                      <li>Máx 1 en Ethereum</li>
-                      <li>Polygon y BNB Chain incluidos</li>
-                      <li>Tokens extra: desde 4€ (esto requerirá lógica adicional en tu backend)</li>
+                      <li>{t('subscription.features.advanced.1')}</li>
+                      <li>{t('subscription.features.advanced.2')}</li>
+                      <li>{t('subscription.features.advanced.3')}</li>
+                      <li>{t('subscription.features.advanced.4')}</li>
                     </>
                   )}
                 </ul>
@@ -219,7 +218,7 @@ export default function SubscriptionPage() {
                     : 'bg-green-600 hover:bg-green-700 text-white'
                   }`}
               >
-                {!plan.priceId ? 'En Desarrollo' : userSubscription?.active_subscription_plan === plan.name ? 'Plan Actual' : (loadingCheckout ? 'Redirigiendo...' : 'Elegir Plan')}
+                {!plan.priceId ? t('subscription.buttons.dev') : userSubscription?.active_subscription_plan === plan.name ? t('subscription.buttons.current') : (loadingCheckout ? t('subscription.buttons.redirecting') : t('subscription.buttons.choose'))}
               </button>
             </div>
           ))}
