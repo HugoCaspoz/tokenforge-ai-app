@@ -151,9 +151,24 @@ export async function POST(req: NextRequest) {
         const supplyWei = ethers.parseEther(initialSupply.toString());
 
         console.log(`Deploying with args: ${tokenData.name}, ${tokenData.ticker}, ${supplyWei.toString()}, ${ownerAddress}`);
-        console.log(`🔥 VERCEL CODE VERSION: 2026-01-13-v2 🔥`); // FORCE REBUILD
+        console.log(`🔥 VERCEL CODE VERSION: 2026-01-13-v3 (GAS BOOSTED) 🔥`); // FORCE REBUILD
 
-        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress);
+        // GAS BOOST: Force higher fees to ensure immediate inclusion
+        const feeData = await provider.getFeeData();
+
+        // Fallback to 50 Gwei if provider fails (Polygon is aggressive)
+        const baseMaxFee = feeData.maxFeePerGas || ethers.parseUnits('50', 'gwei');
+        const basePriority = feeData.maxPriorityFeePerGas || ethers.parseUnits('30', 'gwei');
+
+        // +50% Boost
+        const gasOverrides = {
+            maxFeePerGas: (baseMaxFee * BigInt(150)) / BigInt(100),
+            maxPriorityFeePerGas: (basePriority * BigInt(150)) / BigInt(100)
+        };
+
+        console.log(`Gas Boost: MaxFee ${ethers.formatUnits(gasOverrides.maxFeePerGas, 'gwei')} Gwei`);
+
+        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress, gasOverrides);
 
         // Get deployment transaction
         const deployTx = contract.deploymentTransaction();
