@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { PLAN_DETAILS, NETWORK_NAMES, NETWORK_RPCS } from '@/lib/plans';
 import { ethers } from 'ethers';
 
@@ -16,7 +17,35 @@ import { ethers } from 'ethers';
 import { TOKEN_ABI, TOKEN_BYTECODE } from '@/lib/tokenArtifacts';
 
 export async function POST(req: NextRequest) {
-    const supabase = createClient();
+    console.log("🚀 API /deploy-mainnet-token CALLED");
+
+    const cookieStore = await cookies();
+
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) {
+                    return cookieStore.get(name)?.value;
+                },
+                set(name: string, value: string, options: CookieOptions) {
+                    try {
+                        cookieStore.set({ name, value, ...options });
+                    } catch (error) {
+                        // Ignored
+                    }
+                },
+                remove(name: string, options: CookieOptions) {
+                    try {
+                        cookieStore.set({ name, value: '', ...options });
+                    } catch (error) {
+                        // Ignored
+                    }
+                },
+            },
+        }
+    );
 
     // 1. Validar Sesión
     const { data: { user } } = await supabase.auth.getUser();
