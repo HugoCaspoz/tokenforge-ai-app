@@ -158,10 +158,10 @@ export default function Step3_Deploy({ tokenData, onDeploySuccess }: Step3Props)
       setStatus(`¡Despliegue exitoso! Dirección: ${newContractAddress}`);
       setContractAddress(newContractAddress);
 
-      // Clear wizard state on success
-      if (onDeploySuccess) {
-        onDeploySuccess();
-      }
+      // Don't reset wizard - let user see success message
+      // if (onDeploySuccess) {
+      //   onDeploySuccess();
+      // }
 
     } catch (err: any) {
       console.error(err);

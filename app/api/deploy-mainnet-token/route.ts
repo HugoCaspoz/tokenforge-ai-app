@@ -121,23 +121,21 @@ export async function POST(req: NextRequest) {
         // Note: supply in WEI.
         const supplyWei = ethers.parseEther(initialSupply.toString());
 
-        // GAS BOOST: Force higher fees to ensure immediate inclusion (Polygon is fast but picky)
-        const feeData = await provider.getFeeData();
-        const gasOverrides = {
-            maxFeePerGas: (feeData.maxFeePerGas || ethers.parseUnits('50', 'gwei')) * BigInt(150) / BigInt(100), // +50%
-            maxPriorityFeePerGas: (feeData.maxPriorityFeePerGas || ethers.parseUnits('30', 'gwei')) * BigInt(150) / BigInt(100)
-        };
+        console.log(`Deploying with args: ${tokenData.name}, ${tokenData.ticker}, ${supplyWei.toString()}, ${ownerAddress}`);
 
-        console.log(`Gas Boost: MaxFee ${ethers.formatUnits(gasOverrides.maxFeePerGas, 'gwei')} Gwei`);
+        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress);
 
-        const contract = await factory.deploy(tokenData.name, tokenData.ticker, supplyWei, ownerAddress, gasOverrides);
+        // Get deployment transaction
+        const deployTx = contract.deploymentTransaction();
+        if (!deployTx) {
+            throw new Error('No deployment transaction returned');
+        }
 
-        // OPTIMIZATION: Do NOT wait for blocking deployment (avoid Vercel Timeout)
-        // await contract.waitForDeployment(); 
+        console.log(`Deployment TX sent: ${deployTx.hash}`);
 
-        // In Ethers v6, getAddress() is async but should be computable immediately from the tx (creates address deterministically)
+        // In Ethers v6, getAddress() returns the deterministic address immediately
         const deployedAddress = await contract.getAddress();
-        const txHash = contract.deploymentTransaction()?.hash;
+        const txHash = deployTx.hash;
 
         console.log(`Deployment queued. TX: ${txHash}, Predicted Address: ${deployedAddress}`);
 
