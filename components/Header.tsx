@@ -16,11 +16,16 @@ export const Header = () => {
   // const supabase = createClient(); // REMOVED to prevent SSR crash
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
   // La lógica para mostrar el botón de la billetera no cambia
   const showWalletButton = pathname === '/' || pathname.startsWith('/profile') || pathname.startsWith('/dashboard') || pathname.startsWith('/deploy') || pathname.startsWith('/token') || pathname.startsWith('/manage');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     let subscription: any = null;
@@ -51,6 +56,22 @@ export const Header = () => {
     await supabase.auth.signOut();
     router.push('/');
   };
+
+  if (!mounted) {
+    return (
+      <header className="absolute inset-x-0 top-0 z-50">
+        <nav className="flex items-center justify-between p-6 lg:px-8" aria-label="Global">
+          <div className="flex lg:flex-1">
+            <Link href="/" className="-m-1.5 p-1.5">
+              <span className="text-xl font-bold text-white">
+                Token<span className="text-purple-400">Crafter</span>
+              </span>
+            </Link>
+          </div>
+        </nav>
+      </header>
+    );
+  }
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
