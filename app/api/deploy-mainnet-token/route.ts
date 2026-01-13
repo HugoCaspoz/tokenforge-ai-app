@@ -126,8 +126,9 @@ export async function POST(req: NextRequest) {
         // console.log(`Deploy transaction sent: ${contract.deploymentTransaction()?.hash}`);
 
         // OPTIMIZATION: Do NOT wait for blocking deployment (avoid Vercel Timeout)
-        await contract.waitForDeployment();
+        // await contract.waitForDeployment(); 
 
+        // In Ethers v6, getAddress() is async but should be computable immediately from the tx (creates address deterministically)
         const deployedAddress = await contract.getAddress();
         const txHash = contract.deploymentTransaction()?.hash;
 
