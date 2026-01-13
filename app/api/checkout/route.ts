@@ -57,8 +57,8 @@ export async function POST(request: Request) {
       line_items: [{ price: priceId, quantity: 1 }],
       mode: 'subscription',
       customer: customerId,
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard?payment=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/dashboard`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create?payment=success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/create`,
       metadata: {
         projectId: projectId,
         userId: user.id,
