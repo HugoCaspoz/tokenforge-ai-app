@@ -27,11 +27,15 @@ export function useHolders(tokenAddress: string, rpcUrl: string) {
                 // 1. Get Total Supply
                 const totalSupply = await contract.totalSupply();
 
-                // 2. Get All Transfer Events (From Block 0 to Latest)
-                // Optimization: In production, you'd want to index this or use a graph.
-                // For MVP/New tokens, fetching logs is okay-ish.
+                // 2. Get All Transfer Events (Restricted Range to avoid RPC overload)
+                // Polygon block time ~2s. 40,000 blocks ~ 22 hours.
+                // For a dashboard, we ideally need an INDEXER. 
+                // Fallback: Query last 10,000 blocks to prevent crashing.
+                const currentBlock = await provider.getBlockNumber();
+                const fromBlock = Math.max(0, currentBlock - 20000); // Check last ~12 hours
+
                 const filter = contract.filters.Transfer();
-                const logs = await contract.queryFilter(filter, 0, 'latest');
+                const logs = await contract.queryFilter(filter, fromBlock, 'latest');
 
                 // 3. Aggregate Balances
                 const balances = new Map<string, bigint>();

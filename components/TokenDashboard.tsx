@@ -35,7 +35,7 @@ interface TokenDashboardProps {
 
 export default function TokenDashboard({ token }: TokenDashboardProps) {
     const { t } = useTranslation();
-    const supabase = createClient();
+    // const supabase = createClient(); // MOVED INSIDE FUNCTION TO AVOID SERVER CRASH
     const { address: userAddress, isConnected } = useAccount();
     const [activeTab, setActiveTab] = useState<'overview' | 'admin' | 'growth' | 'community'>('overview');
     const [showVerifyModal, setShowVerifyModal] = useState(false);
@@ -58,6 +58,9 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
     const handleSaveSocials = async () => {
         setSavingSocials(true);
+        const { createClient } = await import('@/utils/supabase/client');
+        const supabase = createClient();
+
         const { error } = await supabase.from('projects').update({
             twitter_url: socials.twitter,
             telegram_url: socials.telegram,
@@ -204,21 +207,34 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
     useEffect(() => {
         const checkSubscription = async () => {
+            const { createClient } = await import('@/utils/supabase/client');
+            const supabase = createClient();
+
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
                 const { data: profile } = await supabase
-                    .from('profiles')
-                    .select('plan_activo')
-                    .eq('id', user.id)
-                    .single();
-
+                    .from('projects') // Typo in original? No, profiles.
+                    .select('plan_activo') // Check original code... it was from 'profiles'
+                // Wait, original code said .from('profiles'). Let's double check.
+                // Yes, line 213 is from('profiles').
+                // Let's rewrite safely.
+                // }
+            }
+        };
+        // Re-writing the whole useEffect block safely
+        const runCheck = async () => {
+            const { createClient } = await import('@/utils/supabase/client');
+            const supabase = createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('plan_activo').eq('id', user.id).single();
                 const plan = profile?.plan_activo || 'free';
                 setIsSubscribed(plan !== 'free');
             }
             setLoadingSubscription(false);
-        };
-        checkSubscription();
-    }, [supabase]);
+        }
+        runCheck();
+    }, []);
 
     // Derived State
     const isOwner = userAddress && ownerAddress && userAddress.toLowerCase() === ownerAddress.toLowerCase();
@@ -242,6 +258,8 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                 functionName: 'renounceOwnership',
             }, {
                 onSuccess: async () => {
+                    const { createClient } = await import('@/utils/supabase/client');
+                    const supabase = createClient();
                     await supabase.from('projects').update({ is_renounced: true }).eq('contract_address', token.contract_address);
                     alert("¡Propiedad Renunciada con Éxito!");
                     window.location.reload();
