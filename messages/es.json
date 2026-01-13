@@ -234,5 +234,50 @@
             "snapshot": "Gestiona tu comunidad, visualiza holders y recompénsales.",
             "lockedContent": "Contenido Bloqueado por Token"
         }
+    },
+    "profile": {
+        "title": "Mi Perfil",
+        "subscription": {
+            "title": "Mi Suscripción",
+            "currentPlan": "Plan Actual:",
+            "noSubscription": "Sin Suscripción",
+            "renewsOn": "Tu plan se renueva el: ",
+            "manage": "Gestionar Suscripción",
+            "choosePlan": "Elegir un Plan",
+            "loading": "Cargando...",
+            "error": "No se pudo cargar tu perfil. Inténtalo de nuevo más tarde."
+        },
+        "usage": {
+            "title": "Uso de Despliegues",
+            "deployed": "desplegados",
+            "limit": "límite",
+            "noPlan": "Tu plan actual no incluye despliegues en redes principales.",
+            "upgrade": "¡Mejora tu plan!"
+        },
+        "deployments": {
+            "title": "Mis Tokens Desplegados",
+            "createToken": "Crear Nuevo Token",
+            "noTokens": "Aún no has desplegado ningún token.",
+            "viewExplorer": "Ver en Explorer ↗",
+            "manage": "Gestionar ⚙️"
+        }
+    },
+    "plans": {
+        "free": {
+            "name": "Plan Gratuito",
+            "description": "Un plan gratuito para uso básico."
+        },
+        "basic": {
+            "name": "Plan Básico",
+            "description": "2 tokens en Polygon"
+        },
+        "pro": {
+            "name": "Plan Pro",
+            "description": "3 tokens (máx 2 en Polygon, 1 en BNB)"
+        },
+        "enterprise": {
+            "name": "Avanzado",
+            "description": "5 tokens (máx 1 en Ethereum)"
+        }
     }
 }

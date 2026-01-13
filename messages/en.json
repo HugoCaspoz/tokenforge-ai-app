@@ -234,5 +234,50 @@
             "snapshot": "Manage your community, view holders and reward them.",
             "lockedContent": "Token-Gated Content"
         }
+    },
+    "profile": {
+        "title": "My Profile",
+        "subscription": {
+            "title": "My Subscription",
+            "currentPlan": "Current Plan:",
+            "noSubscription": "No Subscription",
+            "renewsOn": "Your plan renews on: ",
+            "manage": "Manage Subscription",
+            "choosePlan": "Choose a Plan",
+            "loading": "Loading...",
+            "error": "Could not load your profile. Please try again later."
+        },
+        "usage": {
+            "title": "Deployment Usage",
+            "deployed": "deployed",
+            "limit": "limit",
+            "noPlan": "Your current plan does not include mainnet deployments.",
+            "upgrade": "Upgrade your plan!"
+        },
+        "deployments": {
+            "title": "My Deployed Tokens",
+            "createToken": "Create New Token",
+            "noTokens": "You haven't deployed any tokens yet.",
+            "viewExplorer": "View on Explorer ↗",
+            "manage": "Manage ⚙️"
+        }
+    },
+    "plans": {
+        "free": {
+            "name": "Free Plan",
+            "description": "A free plan for basic usage."
+        },
+        "basic": {
+            "name": "Basic Plan",
+            "description": "2 tokens on Polygon"
+        },
+        "pro": {
+            "name": "Pro Plan",
+            "description": "3 tokens (max 2 on Polygon, 1 on BNB)"
+        },
+        "enterprise": {
+            "name": "Advanced",
+            "description": "5 tokens (max 1 on Ethereum)"
+        }
     }
 }
