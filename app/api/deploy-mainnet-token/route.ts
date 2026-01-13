@@ -81,22 +81,37 @@ export async function POST(req: NextRequest) {
 
         // Setup Provider & Wallet
         // @ts-ignore
-        const rpcUrl = NETWORK_RPCS[chainId as any];
-        if (!rpcUrl) throw new Error(`RP C not configured for chain ${chainId}`);
+        let rpcUrl = NETWORK_RPCS[chainId as any];
+
+        // FALLBACK RPC for Polygon to avoid "balance 0" sync errors
+        if (chainId === '0x89') {
+            rpcUrl = "https://rpc.ankr.com/polygon";
+        }
+
+        if (!rpcUrl) throw new Error(`RPC not configured for chain ${chainId}`);
 
         const provider = new ethers.JsonRpcProvider(rpcUrl);
         const wallet = new ethers.Wallet(privateKey, provider);
 
-        console.log(`Deploying token [${tokenData.ticker}] to ${chainId} via ${wallet.address}...`);
+        console.log(`Deploying token [${tokenData.ticker}] to ${chainId}`);
+        console.log(`Server Wallet Address: ${wallet.address}`);
+        console.log(`User/Owner Address: ${ownerAddress}`);
+
+        if (wallet.address.toLowerCase() !== ownerAddress.toLowerCase()) {
+            console.warn("WARNING: Server Deployer Wallet is different from Token Owner Address.");
+            // This is valid, but good to note for debugging if user expects them to be same.
+        }
 
         // Check Admin Balance for Gas
         const balance = await provider.getBalance(wallet.address);
         const balanceEth = ethers.formatEther(balance);
-        console.log(`Wallet: ${wallet.address} | Balance: ${balanceEth} | Chain: ${chainId}`);
+        console.log(`Wallet Balance: ${balanceEth} POL`);
 
         // Simple check: > 0.01 ETH equivalent (adjust as needed)
-        if (balance < ethers.parseEther("0.005")) {
-            throw new Error(`Service wallet (${wallet.address}) has insufficient funds for gas. Balance: ${balanceEth}. Please fund this address.`);
+        if (balance < ethers.parseEther("0.5")) {
+            const msg = `CRITICAL: Server Wallet (${wallet.address}) has insufficient funds (${balanceEth} POL). Required ~1.0 POL.`;
+            console.error(msg);
+            throw new Error(msg);
         }
 
         // Deploy
@@ -151,11 +166,18 @@ export async function POST(req: NextRequest) {
 
     } catch (error: any) {
         console.error('Deployment error full object:', JSON.stringify(error, null, 2));
+
+        // Extract wallet address from error message if we put it there, or just give generic advice
         let errorMessage = error.message || 'Server error';
-        if (error.code === 'INSUFFICIENT_FUNDS' || error.message?.includes('insufficient funds') || (error.info?.error?.message?.includes('insufficient funds'))) {
-            // Try to recover wallet address from error or scope if possible, otherwise generic message
-            errorMessage = `Error Crítico: La Billetera del Servidor no tiene fondos suficientes. ${errorMessage}`;
+
+        if (error.code === 'INSUFFICIENT_FUNDS' || errorMessage.includes('insufficient funds')) {
+            // If we threw the error above, it already has the address. 
+            // If ethers threw it, it might not.
+            if (!errorMessage.includes("Server Wallet")) {
+                errorMessage = `Fondos Insuficientes en la Billetera del Servidor. Verifica '/api/debug-wallet'. Error original: ${errorMessage}`;
+            }
         }
+
         return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
