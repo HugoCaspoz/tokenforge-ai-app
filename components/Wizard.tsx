@@ -100,21 +100,27 @@ export default function Wizard() {
     }
   }, [tokenData, step, isLoaded, userId]);
 
-  const clearWizardState = () => {
+  // 3. Reset state on Logout (prevent data leakage to guest)
+  useEffect(() => {
+    if (isLoaded && !userId) {
+      // User logged out, clear internal state to avoid saving it to guest slot
+      setStep(1);
+      setTokenData({
+        purpose: '',
+        name: '',
+        ticker: '',
+        description: '',
+      });
+    }
+  }, [userId, isLoaded]);
+
+  const handleDeploySuccess = () => {
     const storageKeyData = userId ? `wizard_tokenData_${userId}` : 'wizard_tokenData_guest';
     const storageKeyStep = userId ? `wizard_step_${userId}` : 'wizard_step_guest';
 
+    // Only clear storage, keep UI state so user sees success message
     localStorage.removeItem(storageKeyData);
     localStorage.removeItem(storageKeyStep);
-
-    // Reset state to defaults
-    setStep(1);
-    setTokenData({
-      purpose: '',
-      name: '',
-      ticker: '',
-      description: '',
-    });
   };
 
   const handleDataChange = async (newData: Partial<TokenData>) => {
@@ -131,7 +137,7 @@ export default function Wizard() {
     <div className="w-full max-w-2xl bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-700 transition-all duration-500">
       {step === 1 && <Step1_Define onDataChange={handleDataChange} onComplete={nextStep} />}
       {step === 2 && <Step2_Design tokenData={tokenData} onDataChange={handleDataChange} onComplete={nextStep} />}
-      {step === 3 && <Step3_Deploy tokenData={tokenData} onDeploySuccess={clearWizardState} />}
+      {step === 3 && <Step3_Deploy tokenData={tokenData} onDeploySuccess={handleDeploySuccess} />}
     </div>
   );
 }
