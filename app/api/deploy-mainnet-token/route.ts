@@ -149,7 +149,6 @@ export async function POST(req: NextRequest) {
             description: tokenData.description,
             chain_id: chainId,
             contract_address: deployedAddress,
-            tx_hash: txHash, // Save TX Hash for debugging
             logo_url: tokenData.logoUrl
         };
         // If we have a draft ID, use it to update the existing record
