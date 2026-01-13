@@ -6,8 +6,8 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   const { imageUrl, projectId } = await request.json();
 
-  if (!imageUrl || !projectId) {
-    return NextResponse.json({ error: 'Faltan la URL de la imagen o el ID del proyecto' }, { status: 400 });
+  if (!imageUrl) {
+    return NextResponse.json({ error: 'Falta la URL de la imagen' }, { status: 400 });
   }
 
   const supabase = createClient();
@@ -21,7 +21,10 @@ export async function POST(request: Request) {
     const imageBlob = await response.blob();
 
     // 2. Subir la imagen a Supabase Storage
-    const filePath = `public/${projectId}-${Date.now()}.png`;
+    // Si no hay projectId, usamos 'temp' como prefijo
+    const filenameId = projectId || 'temp';
+    const filePath = `public/${filenameId}-${Date.now()}.png`;
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('logos')
       .upload(filePath, imageBlob, {
@@ -40,14 +43,16 @@ export async function POST(request: Request) {
 
     const permanentUrl = publicUrlData.publicUrl;
 
-    // 4. Actualizar la tabla 'projects' con la nueva URL permanente
-    const { error: dbError } = await supabase
-      .from('projects')
-      .update({ logo_url: permanentUrl })
-      .eq('id', projectId);
+    // 4. Actualizar la tabla 'projects' con la nueva URL permanente (SOLO SI HAY PROJECT ID)
+    if (projectId) {
+      const { error: dbError } = await supabase
+        .from('projects')
+        .update({ logo_url: permanentUrl })
+        .eq('id', projectId);
 
-    if (dbError) {
-      throw dbError;
+      if (dbError) {
+        throw dbError;
+      }
     }
 
     // 5. Devolver la URL permanente al cliente
