@@ -91,9 +91,12 @@ export async function POST(req: NextRequest) {
 
         // Check Admin Balance for Gas
         const balance = await provider.getBalance(wallet.address);
+        const balanceEth = ethers.formatEther(balance);
+        console.log(`Wallet: ${wallet.address} | Balance: ${balanceEth} | Chain: ${chainId}`);
+
         // Simple check: > 0.01 ETH equivalent (adjust as needed)
         if (balance < ethers.parseEther("0.005")) {
-            throw new Error("Service wallet has insufficient funds for gas. Please contact support.");
+            throw new Error(`Service wallet (${wallet.address}) has insufficient funds for gas. Balance: ${balanceEth}. Please fund this address.`);
         }
 
         // Deploy
@@ -147,7 +150,12 @@ export async function POST(req: NextRequest) {
         });
 
     } catch (error: any) {
-        console.error('Deployment error:', error);
-        return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 });
+        console.error('Deployment error full object:', JSON.stringify(error, null, 2));
+        let errorMessage = error.message || 'Server error';
+        if (error.code === 'INSUFFICIENT_FUNDS' || error.message?.includes('insufficient funds') || (error.info?.error?.message?.includes('insufficient funds'))) {
+            // Try to recover wallet address from error or scope if possible, otherwise generic message
+            errorMessage = `Error Crítico: La Billetera del Servidor no tiene fondos suficientes. ${errorMessage}`;
+        }
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
     }
 }
