@@ -43,6 +43,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
     const [apiKey, setApiKey] = useState("");
     const [lpAddress, setLpAddress] = useState<string>("");
     const [selectedForAirdrop, setSelectedForAirdrop] = useState<string[]>([]);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Holders Data
     const rpcUrl = NETWORK_RPCS[token.chain_id as keyof typeof NETWORK_RPCS];
@@ -297,7 +302,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
             {/* Header */}
             <div className="flex flex-col md:flex-row items-center gap-6 mb-8 bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg relative text-center md:text-left">
                 <div className="absolute top-4 right-4">
-                    <FavoriteButton projectId={token.id} />
+                    {mounted && <FavoriteButton projectId={token.id} />}
                 </div>
                 <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center overflow-hidden border-4 border-gray-600 shrink-0">
                     {token.logo_url ? <img src={token.logo_url} alt="Logo" className="w-full h-full object-cover" /> : <span className="text-4xl text-gray-400">{token.ticker[0]}</span>}
@@ -309,9 +314,9 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                     <p className="text-blue-400 font-mono mt-1">{token.contract_address}</p>
                     <div className="flex gap-2 mt-3 flex-wrap">
                         <span className="bg-gray-700 px-3 py-1 rounded text-sm text-gray-300">Network: {networkName}</span>
-                        {isOwner ? (
+                        {mounted && isOwner ? (
                             <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded text-sm border border-green-500/30">{t('tokenDetail.youAreOwner')}</span>
-                        ) : (
+                        ) : mounted && (
                             <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded text-sm border border-yellow-500/30">{t('tokenDetail.viewOnly')}</span>
                         )}
 
