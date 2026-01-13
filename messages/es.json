@@ -97,7 +97,49 @@
     },
     "guide": {
         "title": "Guía de Uso",
-        "subtitle": "Aprende a lanzar y gestionar tu token en minutos con nuestra plataforma"
+        "subtitle": "Aprende a lanzar y gestionar tu token en minutos con nuestra plataforma",
+        "prerequisites": {
+            "title": "🎒 Antes de empezar",
+            "wallet": {
+                "title": "Billetera Web3",
+                "description_1": "Necesitas una billetera como ",
+                "description_2": " o ",
+                "description_3": " instalada en tu navegador para interactuar con la blockchain."
+            },
+            "gas": {
+                "title": "Tokens para Gas",
+                "description": "Debes tener saldo en la moneda nativa de la red para pagar las comisiones (Gas):"
+            }
+        },
+        "steps": {
+            "1": {
+                "title": "1. Configuración",
+                "description": "Define la identidad de tu token. Elige un nombre memorable, un símbolo (ticker) único y establece el suministro total. También puedes configurar una imagen personalizada."
+            },
+            "2": {
+                "title": "2. Despliegue",
+                "description": "Una vez configurado, conecta tu wallet y despliega el contrato inteligente en la blockchain de tu elección (Polygon, BNB Chain, Ethereum). El proceso es automático y seguro."
+            },
+            "3": {
+                "title": "3. Gestión",
+                "description": "Accede a tu panel de control para gestionar tu token. Aquí podrás bloquear liquidez para dar confianza a los inversores, renunciar a la propiedad del contrato y ver estadísticas en tiempo real."
+            },
+            "4": {
+                "title": "4. Crecimiento",
+                "description": "Utiliza las herramientas de marketing integradas. Descarga el logo de tu token, comparte tu proyecto en redes sociales y aparece en nuestra página de \"Explorar\" para ganar visibilidad."
+            }
+        },
+        "faq": {
+            "title": "¿Preguntas Frecuentes?",
+            "safe": {
+                "question": "¿Es seguro?",
+                "answer": "Sí, nuestros contratos están auditados y verificados automáticamente en la blockchain."
+            },
+            "cost": {
+                "question": "¿Cuánto cuesta?",
+                "answer": "El despliegue tiene un coste mínimo de gas de la red, más una pequeña tarifa de servicio de la plataforma."
+            }
+        }
     },
     "dashboard": {
         "title": "Mis Tokens",

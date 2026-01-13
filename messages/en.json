@@ -97,7 +97,49 @@
     },
     "guide": {
         "title": "User Guide",
-        "subtitle": "Learn to launch and manage your token in minutes with our platform"
+        "subtitle": "Learn to launch and manage your token in minutes with our platform",
+        "prerequisites": {
+            "title": "🎒 Before you start",
+            "wallet": {
+                "title": "Web3 Wallet",
+                "description_1": "You need a wallet like ",
+                "description_2": " or ",
+                "description_3": " installed in your browser to interact with the blockchain."
+            },
+            "gas": {
+                "title": "Gas Tokens",
+                "description": "You must have balance in the network's native currency to pay for transaction fees (Gas):"
+            }
+        },
+        "steps": {
+            "1": {
+                "title": "1. Configuration",
+                "description": "Define your token's identity. Choose a memorable name, a unique ticker (symbol), and set the total supply. You can also configure a custom image."
+            },
+            "2": {
+                "title": "2. Deployment",
+                "description": "Once configured, connect your wallet and deploy the smart contract to your chosen blockchain (Polygon, BNB Chain, Ethereum). The process is automatic and secure."
+            },
+            "3": {
+                "title": "3. Management",
+                "description": "Access your dashboard to manage your token. Here you can lock liquidity to build investor trust, renounce contract ownership, and view real-time statistics."
+            },
+            "4": {
+                "title": "4. Growth",
+                "description": "Use integrated marketing tools. Download your token's logo, share your project on social media, and appear on our \"Explore\" page to gain visibility."
+            }
+        },
+        "faq": {
+            "title": "Frequently Asked Questions",
+            "safe": {
+                "question": "Is it safe?",
+                "answer": "Yes, our contracts are audited and automatically verified on the blockchain."
+            },
+            "cost": {
+                "question": "How much does it cost?",
+                "answer": "Deployment has a minimal network gas cost, plus a small platform service fee."
+            }
+        }
     },
     "dashboard": {
         "title": "My Tokens",
