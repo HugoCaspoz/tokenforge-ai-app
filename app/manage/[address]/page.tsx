@@ -1,7 +1,8 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { notFound, redirect } from 'next/navigation';
-import TokenDashboard from '@/components/TokenDashboard';
+import dynamic from 'next/dynamic';
+const TokenDashboard = dynamic(() => import('@/components/TokenDashboard'), { ssr: false });
 
 export default async function ManageTokenPage({ params }: { params: { address: string } }) {
     const cookieStore = await cookies();

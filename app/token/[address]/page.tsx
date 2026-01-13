@@ -1,6 +1,8 @@
 import { createClient } from '@/utils/supabase/server';
 import { notFound } from 'next/navigation';
-import TokenDashboard from '@/components/TokenDashboard';
+import dynamic from 'next/dynamic';
+
+const TokenDashboard = dynamic(() => import('@/components/TokenDashboard'), { ssr: false });
 
 interface Props {
     params: {

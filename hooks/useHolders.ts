@@ -31,7 +31,7 @@ export function useHolders(tokenAddress: string, rpcUrl: string) {
                 // Polygon block time ~2s. 
                 // Reduced to 3,000 blocks (~1.5 hours) to satisfy strict RPC limits on free tier.
                 const currentBlock = await provider.getBlockNumber();
-                const fromBlock = Math.max(0, currentBlock - 500);
+                const fromBlock = Math.max(0, currentBlock - 100);
 
                 const filter = contract.filters.Transfer();
                 const logs = await contract.queryFilter(filter, fromBlock, 'latest');
