@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useWatchContractEvent } from 'wagmi';
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
-import { toast } from 'sonner'; // Assuming you might use sonner or just custom UI. Let's use custom UI for now if no toast lib present.
+import { toast } from 'sonner';
+import { useTranslation } from '@/lib/i18n';
 
 interface WhaleWatcherProps {
     tokenAddress: `0x${string}`;
@@ -12,6 +13,7 @@ interface WhaleWatcherProps {
 }
 
 export default function WhaleWatcher({ tokenAddress, decimals = 18, threshold = 1000 }: WhaleWatcherProps) {
+    const { t } = useTranslation();
     const [lastWhaleTx, setLastWhaleTx] = useState<{
         from: string;
         to: string;
@@ -38,10 +40,10 @@ export default function WhaleWatcher({ tokenAddress, decimals = 18, threshold = 
                     };
                     setLastWhaleTx(info);
 
-                    toast.info("🚨 Alerta de Ballena!", {
-                        description: `${formattedValue.toLocaleString()} tokens movidos.`,
+                    toast.info(t('tokenDetail.growth.whaleWatcher.toastTitle'), {
+                        description: t('tokenDetail.growth.whaleWatcher.toastDesc').replace('{amount}', formattedValue.toLocaleString()),
                         action: {
-                            label: 'Ver TX',
+                            label: t('tokenDetail.growth.whaleWatcher.toastAction'),
                             onClick: () => window.open(`https://polygonscan.com/tx/${log.transactionHash}`, '_blank')
                         }
                     });
@@ -58,32 +60,32 @@ export default function WhaleWatcher({ tokenAddress, decimals = 18, threshold = 
 
     if (!lastWhaleTx) return (
         <div className="bg-gray-900/50 p-4 rounded border border-gray-700 text-sm text-gray-500 italic">
-            📡 Escuchando transacciones grandes ({'>'} {threshold.toLocaleString()})...
+            {t('tokenDetail.growth.whaleWatcher.listening').replace('{amount}', threshold.toLocaleString())}
         </div>
     );
 
     return (
         <div className="bg-blue-900/30 border border-blue-500 p-4 rounded animate-pulse">
             <h4 className="text-blue-300 font-bold flex items-center gap-2 mb-2">
-                🐳 ¡Ballena Detectada!
+                {t('tokenDetail.growth.whaleWatcher.detected')}
             </h4>
             <div className="text-sm font-mono space-y-1">
-                <p><span className="text-gray-400">Cantidad:</span> <span className="text-white font-bold">{lastWhaleTx.amount}</span></p>
-                <p><span className="text-gray-400">De:</span> {lastWhaleTx.from?.slice(0, 6)}...{lastWhaleTx.from?.slice(-4)}</p>
-                <p><span className="text-gray-400">Para:</span> {lastWhaleTx.to?.slice(0, 6)}...{lastWhaleTx.to?.slice(-4)}</p>
+                <p><span className="text-gray-400">{t('tokenDetail.growth.whaleWatcher.amount')}</span> <span className="text-white font-bold">{lastWhaleTx.amount}</span></p>
+                <p><span className="text-gray-400">{t('tokenDetail.growth.whaleWatcher.from')}</span> {lastWhaleTx.from?.slice(0, 6)}...{lastWhaleTx.from?.slice(-4)}</p>
+                <p><span className="text-gray-400">{t('tokenDetail.growth.whaleWatcher.to')}</span> {lastWhaleTx.to?.slice(0, 6)}...{lastWhaleTx.to?.slice(-4)}</p>
                 <a
                     href={`https://polygonscan.com/tx/${lastWhaleTx.hash}`}
                     target="_blank"
                     className="text-xs text-blue-400 underline mt-2 block"
                 >
-                    Ver Transacción ↗
+                    {t('tokenDetail.growth.whaleWatcher.viewTx')}
                 </a>
             </div>
             <button
                 onClick={() => setLastWhaleTx(null)}
                 className="mt-3 text-xs bg-blue-800 hover:bg-blue-700 px-2 py-1 rounded text-white"
             >
-                Limpiar Alerta
+                {t('tokenDetail.growth.whaleWatcher.clear')}
             </button>
         </div>
     );

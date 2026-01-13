@@ -242,7 +242,41 @@
             "monitoring": "📊 Monitorización Avanzada",
             "topHolders": "Top Holders",
             "viewOnExplorer": "Ver lista oficial en Explorador",
-            "whaleAlerts": "🐋 Alertas de Ballenas"
+            "whaleAlerts": "🐋 Alertas de Ballenas",
+            "liquidityWizard": {
+                "title": "🧙‍♂️ Mago de Liquidez (Algebra V3 🛡️)",
+                "subtitle": "Integración oficial QuickSwap V3 (Algebra).",
+                "wrongNetwork": "⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet.",
+                "tokensLabel": "Tokens ({symbol})",
+                "polLabel": "POL (Matic)",
+                "approve": "1. Aprobar {symbol}",
+                "approving": "Aprobando...",
+                "marketExists": "2. Mercado Ya Existe (Saltar)",
+                "initialize": "2. Inicializar (Algebra)",
+                "initializing": "Inicializando Mercado...",
+                "addLiquidity": "3. Añadir Liquidez",
+                "adding": "Añadiendo Liquidez...",
+                "manualLink": "¿Problemas? Hazlo manualmente en QuickSwap (Click Aquí)",
+                "successApprove": "✅ Aprobado Confirmado.",
+                "successInit": "✅ Mercado Inicializado Correctamente.",
+                "successAdd": "🎉 ¡ÉXITO TOTAL! Liquidez Añadida.",
+                "errorApprove": "❌ Error al aprobar: ",
+                "errorInit": "⚠️ Error: ",
+                "errorAdd": "❌ Error al añadir liquidez: ",
+                "marketExistsAlert": "ℹ️ El mercado YA existe. Salta al Paso 3."
+            },
+            "whaleWatcher": {
+                "listening": "📡 Escuchando transacciones grandes (> {amount})...",
+                "detected": "🐳 ¡Ballena Detectada!",
+                "amount": "Cantidad:",
+                "from": "De:",
+                "to": "Para:",
+                "viewTx": "Ver Transacción ↗",
+                "clear": "Limpiar Alerta",
+                "toastTitle": "🚨 Alerta de Ballena!",
+                "toastDesc": "{amount} tokens movidos.",
+                "toastAction": "Ver TX"
+            }
         },
         "community": {
             "title": "Comunidad & Airdrops",
@@ -251,7 +285,58 @@
             "airdropTitle": "🎁 Airdrop Pro",
             "proTipTitle": "💡 Pro Tip",
             "proTipDesc": "Selecciona múltiples usuarios en la tabla de la izquierda para añadirlos automáticamente al Airdrop.",
-            "lockedContent": "Contenido Bloqueado por Token"
+            "lockedContent": "Contenido Bloqueado por Token",
+            "snapshot": {
+                "loading": "Cargando Snapshot de la Blockchain... 📸",
+                "noHolders": "No hay holders (aún).",
+                "title": "Top Holders ({count})",
+                "export": "Exportar CSV",
+                "rank": "Rank",
+                "address": "Address",
+                "balance": "Balance",
+                "percentage": "% Supply"
+            },
+            "airdrop": {
+                "title": "🪂 Airdrop Pro",
+                "selectedUsers": "Destinatarios Seleccionados",
+                "usersCount": "{count} usuarios",
+                "amountPerUser": "Cantidad por Usuario",
+                "tokens": "TOKENS",
+                "sendButton": "Enviar Airdrop a {count} usuarios",
+                "sending": "Enviando Airdrop...",
+                "disclaimer": "* Se enviarán {amount} tokens a cada dirección seleccionada. Asegúrate de tener saldo suficiente.",
+                "success": "¡Airdrop enviado con éxito!",
+                "error": "Error preparando airdrop"
+            },
+            "lockedContentManager": {
+                "title": "🔐 Contenido Exclusivo",
+                "addContent": "+ Añadir Contenido",
+                "cancel": "Cancelar",
+                "form": {
+                    "title": "Título",
+                    "titlePlaceholder": "Ej: Telegram VIP Premium",
+                    "description": "Descripción (opcional)",
+                    "descPlaceholder": "Grupo privado para holders con 5000+ tokens",
+                    "type": "Tipo de Contenido",
+                    "types": {
+                        "link": "Enlace / URL",
+                        "telegram": "Telegram",
+                        "pdf": "PDF / Documento"
+                    },
+                    "url": "URL del Contenido",
+                    "urlPlaceholder": "https://t.me/+codigo_privado",
+                    "minTokens": "Tokens Mínimos Requeridos",
+                    "minTokensPlaceholder": "5000",
+                    "create": "Crear Contenido Exclusivo"
+                },
+                "noContent": "No hay contenido exclusivo aún. Crea uno para fidelizar a tus mejores holders.",
+                "delete": "Eliminar",
+                "deleteConfirm": "¿Eliminar este contenido exclusivo?",
+                "typeLabel": "Tipo: {type}",
+                "minLabel": "Mínimo: {amount} tokens",
+                "copyLink": "📋 Copiar Enlace de Acceso",
+                "linkCopied": "¡Enlace copiado! Compártelo con tu comunidad."
+            }
         }
     },
     "profile": {

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/lib/i18n';
 import { useAccount, useWriteContract, usePublicClient, useReadContract } from 'wagmi';
 import { parseUnits, maxUint256, formatEther } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
@@ -85,6 +86,7 @@ function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, onPoolFound }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean, onPoolFound?: (addr: string) => void }) {
     const { address, chainId } = useAccount();
     const publicClient = usePublicClient();
+    const { t } = useTranslation();
 
     const [amountToken, setAmountToken] = useState('');
     const [amountPOL, setAmountPOL] = useState('');
@@ -136,11 +138,11 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                 functionName: 'approve',
                 args: [NPM_ADDRESS, maxUint256],
             });
-            await waitTx(hash, "Aprobando...");
-            alert("✅ Aprobado Confirmado.");
+            await waitTx(hash, t('tokenDetail.growth.liquidityWizard.approving'));
+            alert(t('tokenDetail.growth.liquidityWizard.successApprove'));
         } catch (e) {
             console.error(e);
-            alert("❌ Error al aprobar: " + ((e as any).shortMessage || (e as any).message));
+            alert(t('tokenDetail.growth.liquidityWizard.errorApprove') + ((e as any).shortMessage || (e as any).message));
         } finally {
             setIsProcessing(false);
         }
@@ -150,7 +152,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
     const handleCreatePool = async () => {
         if (!amountToken || !amountPOL) return;
         if (poolExists) {
-            alert("ℹ️ El mercado YA existe. Salta al Paso 3.");
+            alert(t('tokenDetail.growth.liquidityWizard.marketExistsAlert'));
             return;
         }
 
@@ -167,12 +169,12 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                 args: [token0, token1, sqrtPriceX96], // NO FEE
             });
 
-            await waitTx(hash, "Inicializando Mercado...");
+            await waitTx(hash, t('tokenDetail.growth.liquidityWizard.initializing'));
             await refetchPool();
-            alert("✅ Mercado Inicializado Correctamente.");
+            alert(t('tokenDetail.growth.liquidityWizard.successInit'));
         } catch (e) {
             console.error(e);
-            alert("⚠️ Error: " + ((e as any).shortMessage || (e as any).message));
+            alert(t('tokenDetail.growth.liquidityWizard.errorInit') + ((e as any).shortMessage || (e as any).message));
         } finally {
             setIsProcessing(false);
         }
@@ -209,11 +211,11 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                 value: parseUnits(amountPOL, 18),
             });
 
-            await waitTx(hash, "Añadiendo Liquidez...");
-            alert("🎉 ¡ÉXITO TOTAL! Liquidez Añadida.");
+            await waitTx(hash, t('tokenDetail.growth.liquidityWizard.adding'));
+            alert(t('tokenDetail.growth.liquidityWizard.successAdd'));
         } catch (e) {
             console.error(e);
-            alert("❌ Error al añadir liquidez: " + ((e as any).shortMessage || (e as any).message));
+            alert(t('tokenDetail.growth.liquidityWizard.errorAdd') + ((e as any).shortMessage || (e as any).message));
         } finally {
             setIsProcessing(false);
         }
@@ -223,20 +225,20 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
 
     return (
         <div className="bg-gradient-to-br from-blue-900 to-purple-900 p-6 rounded-xl border border-blue-500/30">
-            <h3 className="text-xl font-bold text-white mb-2">🧙‍♂️ Mago de Liquidez (Algebra V3 🛡️)</h3>
-            <p className="text-sm text-gray-300 mb-4">Integración oficial QuickSwap V3 (Algebra).</p>
+            <h3 className="text-xl font-bold text-white mb-2">{t('tokenDetail.growth.liquidityWizard.title')}</h3>
+            <p className="text-sm text-gray-300 mb-4">{t('tokenDetail.growth.liquidityWizard.subtitle')}</p>
 
             <div className="space-y-4">
                 {/* Safety Check UI */}
                 {chainId && chainId !== 137 && (
                     <div className="bg-red-500/20 border border-red-500 p-2 rounded text-center text-xs text-red-200 font-bold animate-pulse">
-                        ⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet.
+                        {t('tokenDetail.growth.liquidityWizard.wrongNetwork')}
                     </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                     <div>
-                        <label className="text-xs text-gray-400">Tokens ({tokenSymbol})</label>
+                        <label className="text-xs text-gray-400">{t('tokenDetail.growth.liquidityWizard.tokensLabel').replace('{symbol}', tokenSymbol)}</label>
                         <input
                             type="number"
                             value={amountToken}
@@ -246,7 +248,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                         />
                     </div>
                     <div>
-                        <label className="text-xs text-gray-400">POL (Matic)</label>
+                        <label className="text-xs text-gray-400">{t('tokenDetail.growth.liquidityWizard.polLabel')}</label>
                         <input
                             type="number"
                             value={amountPOL}
@@ -263,7 +265,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                         disabled={isProcessing}
                         className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 rounded flex justify-between px-4"
                     >
-                        <span>1. Aprobar {tokenSymbol}</span>
+                        <span>{t('tokenDetail.growth.liquidityWizard.approve').replace('{symbol}', tokenSymbol)}</span>
                         <span>🔓</span>
                     </button>
 
@@ -272,7 +274,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                         disabled={isProcessing || !!poolExists}
                         className={`w-full font-bold py-2 rounded flex justify-between px-4 ${poolExists ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
                     >
-                        <span>{poolExists ? "2. Mercado Ya Existe (Saltar)" : "2. Inicializar (Algebra)"}</span>
+                        <span>{poolExists ? t('tokenDetail.growth.liquidityWizard.marketExists') : t('tokenDetail.growth.liquidityWizard.initialize')}</span>
                         <span>{poolExists ? "✅" : "🏗️"}</span>
                     </button>
 
@@ -281,14 +283,14 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                         disabled={isProcessing}
                         className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded flex justify-between px-4"
                     >
-                        <span>3. Añadir Liquidez</span>
+                        <span>{t('tokenDetail.growth.liquidityWizard.addLiquidity')}</span>
                         <span>🦄</span>
                     </button>
                 </div>
 
                 <div className="text-center pt-4">
                     <a href={qsLink} target="_blank" className="text-xs text-blue-300 underline hover:text-blue-100">
-                        ¿Problemas? Hazlo manualmente en QuickSwap (Click Aquí)
+                        {t('tokenDetail.growth.liquidityWizard.manualLink')}
                     </a>
                 </div>
             </div>

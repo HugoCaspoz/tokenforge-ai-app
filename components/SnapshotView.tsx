@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Holder } from '@/hooks/useHolders';
+import { useTranslation } from '@/lib/i18n';
 
 interface SnapshotViewProps {
     holders: Holder[];
@@ -8,6 +9,7 @@ interface SnapshotViewProps {
 }
 
 export default function SnapshotView({ holders, loading, onSelectForAirdrop }: SnapshotViewProps) {
+    const { t } = useTranslation();
     const [selected, setSelected] = useState<Set<string>>(new Set());
 
     const toggleSelect = (address: string) => {
@@ -33,17 +35,17 @@ export default function SnapshotView({ holders, loading, onSelectForAirdrop }: S
     };
 
     if (loading) {
-        return <div className="text-center py-10 text-gray-400">Cargando Snapshot de la Blockchain... 📸</div>;
+        return <div className="text-center py-10 text-gray-400">{t('tokenDetail.community.snapshot.loading')}</div>;
     }
 
     if (holders.length === 0) {
-        return <div className="text-center py-10 text-gray-400">No hay holders (aún).</div>;
+        return <div className="text-center py-10 text-gray-400">{t('tokenDetail.community.snapshot.noHolders')}</div>;
     }
 
     return (
         <div className="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
             <div className="p-4 border-b border-gray-700 flex justify-between items-center">
-                <h3 className="font-bold text-white">Top Holders ({holders.length})</h3>
+                <h3 className="font-bold text-white">{t('tokenDetail.community.snapshot.title').replace('{count}', String(holders.length))}</h3>
                 <button
                     onClick={() => {
                         const csv = "Address,Balance,Percentage\n" + holders.map(h => `${h.address},${h.balance},${h.percentage.toFixed(2)}%`).join("\n");
@@ -56,7 +58,7 @@ export default function SnapshotView({ holders, loading, onSelectForAirdrop }: S
                     }}
                     className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
                 >
-                    Exportar CSV
+                    {t('tokenDetail.community.snapshot.export')}
                 </button>
             </div>
             <div className="overflow-x-auto">
@@ -71,10 +73,10 @@ export default function SnapshotView({ holders, loading, onSelectForAirdrop }: S
                                     className="rounded border-gray-600 bg-gray-700 text-purple-600 focus:ring-purple-500"
                                 />
                             </th>
-                            <th className="p-4">Rank</th>
-                            <th className="p-4">Address</th>
-                            <th className="p-4 text-right">Balance</th>
-                            <th className="p-4 text-right">% Supply</th>
+                            <th className="p-4">{t('tokenDetail.community.snapshot.rank')}</th>
+                            <th className="p-4">{t('tokenDetail.community.snapshot.address')}</th>
+                            <th className="p-4 text-right">{t('tokenDetail.community.snapshot.balance')}</th>
+                            <th className="p-4 text-right">{t('tokenDetail.community.snapshot.percentage')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-700">

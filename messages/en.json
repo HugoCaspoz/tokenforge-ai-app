@@ -242,7 +242,41 @@
             "monitoring": "📊 Advanced Monitoring",
             "topHolders": "Top Holders",
             "viewOnExplorer": "View official list on Explorer",
-            "whaleAlerts": "🐋 Whale Alerts"
+            "whaleAlerts": "🐋 Whale Alerts",
+            "liquidityWizard": {
+                "title": "🧙‍♂️ Liquidity Wizard (Algebra V3 🛡️)",
+                "subtitle": "Official QuickSwap V3 (Algebra) Integration.",
+                "wrongNetwork": "⚠️ You are on the wrong network. Switch to Polygon Mainnet.",
+                "tokensLabel": "Tokens ({symbol})",
+                "polLabel": "POL (Matic)",
+                "approve": "1. Approve {symbol}",
+                "approving": "Approving...",
+                "marketExists": "2. Market Already Exists (Skip)",
+                "initialize": "2. Initialize (Algebra)",
+                "initializing": "Initializing Market...",
+                "addLiquidity": "3. Add Liquidity",
+                "adding": "Adding Liquidity...",
+                "manualLink": "Issues? Do it manually on QuickSwap (Click Here)",
+                "successApprove": "✅ Approved Confirmed.",
+                "successInit": "✅ Market Initialized Successfully.",
+                "successAdd": "🎉 TOTAL SUCCESS! Liquidity Added.",
+                "errorApprove": "❌ Error approving: ",
+                "errorInit": "⚠️ Error: ",
+                "errorAdd": "❌ Error adding liquidity: ",
+                "marketExistsAlert": "ℹ️ The market ALREADY exists. Skip to Step 3."
+            },
+            "whaleWatcher": {
+                "listening": "📡 Listening for large transactions (> {amount})...",
+                "detected": "🐳 Whale Detected!",
+                "amount": "Amount:",
+                "from": "From:",
+                "to": "To:",
+                "viewTx": "View Transaction ↗",
+                "clear": "Clear Alert",
+                "toastTitle": "🚨 Whale Alert!",
+                "toastDesc": "{amount} tokens moved.",
+                "toastAction": "View TX"
+            }
         },
         "community": {
             "title": "Community & Airdrops",
@@ -251,7 +285,58 @@
             "airdropTitle": "🎁 Airdrop Pro",
             "proTipTitle": "💡 Pro Tip",
             "proTipDesc": "Select multiple users in the table on the left to automatically add them to the Airdrop.",
-            "lockedContent": "Token-Gated Content"
+            "lockedContent": "Token-Gated Content",
+            "snapshot": {
+                "loading": "Loading Blockchain Snapshot... 📸",
+                "noHolders": "No holders (yet).",
+                "title": "Top Holders ({count})",
+                "export": "Export CSV",
+                "rank": "Rank",
+                "address": "Address",
+                "balance": "Balance",
+                "percentage": "% Supply"
+            },
+            "airdrop": {
+                "title": "🪂 Airdrop Pro",
+                "selectedUsers": "Selected Recipients",
+                "usersCount": "{count} users",
+                "amountPerUser": "Amount per User",
+                "tokens": "TOKENS",
+                "sendButton": "Send Airdrop to {count} users",
+                "sending": "Sending Airdrop...",
+                "disclaimer": "* {amount} tokens will be sent to each selected address. Make sure you have enough balance.",
+                "success": "Airdrop sent successfully!",
+                "error": "Error preparing airdrop"
+            },
+            "lockedContentManager": {
+                "title": "🔐 Exclusive Content",
+                "addContent": "+ Add Content",
+                "cancel": "Cancel",
+                "form": {
+                    "title": "Title",
+                    "titlePlaceholder": "Ex: Telegram VIP Premium",
+                    "description": "Description (optional)",
+                    "descPlaceholder": "Private group for holders with 5000+ tokens",
+                    "type": "Content Type",
+                    "types": {
+                        "link": "Link / URL",
+                        "telegram": "Telegram",
+                        "pdf": "PDF / Document"
+                    },
+                    "url": "Content URL",
+                    "urlPlaceholder": "https://t.me/+private_code",
+                    "minTokens": "Minimum Tokens Required",
+                    "minTokensPlaceholder": "5000",
+                    "create": "Create Exclusive Content"
+                },
+                "noContent": "No exclusive content yet. Create one to reward your best holders.",
+                "delete": "Delete",
+                "deleteConfirm": "Delete this exclusive content?",
+                "typeLabel": "Type: {type}",
+                "minLabel": "Minimum: {amount} tokens",
+                "copyLink": "📋 Copy Access Link",
+                "linkCopied": "Link copied! Share it with your community."
+            }
         }
     },
     "profile": {
