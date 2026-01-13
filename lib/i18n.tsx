@@ -19,8 +19,10 @@ const messages: Record<Locale, Messages> = { en, es };
 
 export function I18nProvider({ children }: { children: ReactNode }) {
     const [locale, setLocaleState] = useState<Locale>('es'); // Spanish by default
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
+        setMounted(true);
         // Load saved locale from localStorage
         const saved = localStorage.getItem('locale') as Locale;
         if (saved && (saved === 'en' || saved === 'es')) {
@@ -30,7 +32,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
     const setLocale = (newLocale: Locale) => {
         setLocaleState(newLocale);
-        localStorage.setItem('locale', newLocale);
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('locale', newLocale);
+        }
     };
 
     const t = (key: string): string => {
@@ -43,6 +47,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
         return value || key;
     };
+
+    // Don't render children until mounted to prevent hydration mismatch
+    if (!mounted) {
+        return null;
+    }
 
     return (
         <I18nContext.Provider value={{ locale, setLocale, t }}>
