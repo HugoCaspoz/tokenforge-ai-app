@@ -34,7 +34,7 @@ export function useHolders(tokenAddress: string, rpcUrl: string) {
                 const fromBlock = Math.max(0, currentBlock - 100);
 
                 const filter = contract.filters.Transfer();
-                const logs = await contract.queryFilter(filter, fromBlock, 'latest');
+                const logs = await contract.queryFilter(filter, fromBlock, currentBlock);
 
                 // 3. Aggregate Balances
                 const balances = new Map<string, bigint>();
