@@ -426,20 +426,18 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <button disabled={!isOwner} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">{t('tokenDetail.admin.transfer')}</button>
                                 </div>
 
-                                <div className="border border-red-600/50 p-6 rounded-lg bg-red-900/10">
-                                    <h3 className="font-bold text-lg mb-2 text-red-400">{t('tokenDetail.admin.renounceOwnership')}</h3>
-                                    <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.renounceDesc')}</p>
-                                    <button disabled={!isOwner} className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">{t('tokenDetail.admin.renounce')}</button>
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg mb-2">{t('dashboard.tabs.community')}</h3>
-                                    <p className="text-sm text-gray-400 mb-4">{t('tokenDetail.admin.communityNote')}</p>
+                                <div className="border border-green-600/50 p-6 rounded-lg bg-green-900/10">
+                                    <h3 className="font-bold text-lg mb-2 text-green-400">{t('dashboard.tabs.community')}</h3>
+                                    <p className="text-sm text-gray-400 mb-4">
+                                        Nadie podrá controlar el contrato nunca más. Es necesario para 'tokens comunitarios'.
+                                        Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).
+                                    </p>
                                     <button
                                         onClick={handleRenounceOwnership}
                                         disabled={!isOwner || isRenouncing}
                                         className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full"
                                     >
-                                        {isRenouncing ? t('tokenDetail.admin.renouncing') : t('tokenDetail.admin.renounceIrreversible')}
+                                        {isRenouncing ? t('tokenDetail.admin.renouncing') : "Renunciar Propiedad"}
                                     </button>
                                 </div>
                             </div>

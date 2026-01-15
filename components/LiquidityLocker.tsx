@@ -174,37 +174,39 @@ export default function LiquidityLocker({ defaultTokenAddress }: { defaultTokenA
                     <h3 className="text-lg font-semibold text-white mb-4">Your Locks</h3>
                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                         {userLocks && userLocks.length > 0 ? (
-                            userLocks.map((lock: any) => (
-                                <div key={lock.id.toString()} className="bg-gray-900 p-4 rounded border border-gray-700">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <span className="text-xs text-gray-500">ID: {lock.id.toString()}</span>
-                                        <span className={`text-xs px-2 py-0.5 rounded ${lock.withdrawn ? 'bg-gray-700 text-gray-400' : 'bg-green-900 text-green-400'}`}>
-                                            {lock.withdrawn ? 'Withdrawn' : 'Active'}
-                                        </span>
-                                    </div>
-                                    <div className="text-sm text-gray-300 mb-1">
-                                        Token: <span className="font-mono text-xs">{lock.token.slice(0, 6)}...{lock.token.slice(-4)}</span>
-                                    </div>
-                                    <div className="text-sm text-gray-300 mb-1">
-                                        Amount: <span className="font-mono text-white">{formatUnits(lock.amount, 18)}</span>
-                                    </div>
-                                    <div className="text-sm text-gray-300 mb-3">
-                                        Unlock: {new Date(Number(lock.unlockTime) * 1000).toLocaleString()}
-                                    </div>
+                            userLocks
+                                .filter((lock: any) => !defaultTokenAddress || lock.token.toLowerCase() === defaultTokenAddress.toLowerCase())
+                                .map((lock: any) => (
+                                    <div key={lock.id.toString()} className="bg-gray-900 p-4 rounded border border-gray-700">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <span className="text-xs text-gray-500">ID: {lock.id.toString()}</span>
+                                            <span className={`text-xs px-2 py-0.5 rounded ${lock.withdrawn ? 'bg-gray-700 text-gray-400' : 'bg-green-900 text-green-400'}`}>
+                                                {lock.withdrawn ? 'Withdrawn' : 'Active'}
+                                            </span>
+                                        </div>
+                                        <div className="text-sm text-gray-300 mb-1">
+                                            Token: <span className="font-mono text-xs">{lock.token.slice(0, 6)}...{lock.token.slice(-4)}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-300 mb-1">
+                                            Amount: <span className="font-mono text-white">{formatUnits(lock.amount, 18)}</span>
+                                        </div>
+                                        <div className="text-sm text-gray-300 mb-3">
+                                            Unlock: {new Date(Number(lock.unlockTime) * 1000).toLocaleString()}
+                                        </div>
 
-                                    {!lock.withdrawn && (
-                                        <button
-                                            onClick={() => handleWithdraw(lock.id)}
-                                            disabled={Date.now() < Number(lock.unlockTime) * 1000 || isPending}
-                                            className="w-full py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-bold transition-colors"
-                                        >
-                                            {Date.now() < Number(lock.unlockTime) * 1000
-                                                ? `Locked (${Math.ceil((Number(lock.unlockTime) * 1000 - Date.now()) / (1000 * 60 * 60 * 24))} days left)`
-                                                : 'Withdraw Funds'}
-                                        </button>
-                                    )}
-                                </div>
-                            ))
+                                        {!lock.withdrawn && (
+                                            <button
+                                                onClick={() => handleWithdraw(lock.id)}
+                                                disabled={Date.now() < Number(lock.unlockTime) * 1000 || isPending}
+                                                className="w-full py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 rounded text-sm font-bold transition-colors"
+                                            >
+                                                {Date.now() < Number(lock.unlockTime) * 1000
+                                                    ? `Locked (${Math.ceil((Number(lock.unlockTime) * 1000 - Date.now()) / (1000 * 60 * 60 * 24))} days left)`
+                                                    : 'Withdraw Funds'}
+                                            </button>
+                                        )}
+                                    </div>
+                                ))
                         ) : (
                             <p className="text-gray-500 text-sm text-center py-8">No locks found.</p>
                         )}
