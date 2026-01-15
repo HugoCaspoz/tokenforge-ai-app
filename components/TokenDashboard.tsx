@@ -87,124 +87,58 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
 
     // ... (inside handleAirdrop)
 
-    // Contract Existence Check (Polling for Propagation)
+    // Contract Existence Check (Polling for Propagation) - DISABLED
     const contractAddress = token.contract_address;
-    const publicClient = usePublicClient({ chainId: Number(token.chain_id) });
+    // const publicClient = usePublicClient({ chainId: Number(token.chain_id) }); // Removed to avoid potential unnecessary calls
 
-    const [isContractReady, setIsContractReady] = useState(false);
-    const [propagationChecks, setPropagationChecks] = useState(0);
-
-    useEffect(() => {
-        if (!contractAddress || !publicClient) return;
-
-        let intervalId: any;
-
-        const checkCode = async () => {
-            try {
-                const code = await publicClient.getBytecode({ address: contractAddress as `0x${string}` });
-                if (code && code.length > 2) {
-                    setIsContractReady(true);
-                    clearInterval(intervalId);
-                } else {
-                    setPropagationChecks(prev => prev + 1);
-                    console.log("Waiting for contract code propagation...");
-                }
-            } catch (err) {
-                console.error("Error checking bytecode:", err);
-            }
-        };
-
-        // Check immediately then poll
-        checkCode();
-        intervalId = setInterval(checkCode, 3000);
-
-        return () => clearInterval(intervalId);
-    }, [contractAddress, publicClient]);
+    // We assume contract is ready since we are in management page.
+    // If it's not ready, the READ hooks will just return undefined/error which is fine.
+    const isContractReady = true;
 
     // Read Token Info (Only if ready)
     const { data: tokenName, refetch: refetchName } = useReadContract({
-        address: isContractReady ? (contractAddress as `0x${string}`) : undefined,
+        address: contractAddress as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'name',
         chainId: Number(token.chain_id),
-        query: { enabled: isContractReady }
     });
 
     const { data: tokenSymbol, refetch: refetchSymbol } = useReadContract({
-        address: isContractReady ? (contractAddress as `0x${string}`) : undefined,
+        address: contractAddress as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'symbol',
         chainId: Number(token.chain_id),
-        query: { enabled: isContractReady }
     });
 
     const { data: totalSupply, refetch: refetchSupply, error: supplyError } = useReadContract({
-        address: isContractReady ? (contractAddress as `0x${string}`) : undefined,
+        address: contractAddress as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'totalSupply',
         chainId: Number(token.chain_id),
-        query: { enabled: isContractReady }
     });
 
     const { data: balanceOf, refetch: refetchBalance } = useReadContract({
-        address: isContractReady ? (contractAddress as `0x${string}`) : undefined,
+        address: contractAddress as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'balanceOf',
         args: [userAddress as `0x${string}`],
         chainId: Number(token.chain_id),
-        query: { enabled: isContractReady && !!userAddress }
+        query: { enabled: !!userAddress }
     });
 
     const { data: ownerAddress, refetch: refetchOwner, error: ownerError } = useReadContract({
-        address: isContractReady ? (contractAddress as `0x${string}`) : undefined,
+        address: contractAddress as `0x${string}`,
         abi: TOKEN_ABI,
         functionName: 'owner',
         chainId: Number(token.chain_id),
-        query: { enabled: isContractReady }
     });
 
-    // Effect to refetch once ready
-    useEffect(() => {
-        if (isContractReady) {
-            refetchName();
-            refetchSymbol();
-            refetchSupply();
-            refetchBalance();
-            refetchOwner();
-        }
-    }, [isContractReady, refetchName, refetchSymbol, refetchSupply, refetchBalance, refetchOwner]);
+    // Effect to refetch once ready - Removed as we fetch immediately
 
     if (ownerError) console.error("Owner Fetch Error:", ownerError);
     if (supplyError) console.error("Supply Fetch Error:", supplyError);
 
     const isLoading = false; // We can use derived state if needed
-
-    if (!isContractReady) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh] text-center p-8">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mb-4"></div>
-                <h2 className="text-2xl font-bold text-white mb-2">🚀 Confirmando en Blockchain...</h2>
-                <p className="text-gray-400 max-w-md">
-                    El contrato ha sido enviado a la red pero los nodos aún lo están indexando.
-                    Por favor espera, esta pantalla se actualizará automáticamente cuando esté listo.
-                </p>
-                <p className="text-xs text-gray-600 mt-4 font-mono animate-pulse">
-                    Intento #{propagationChecks}: Verificando Bytecode...
-                </p>
-                <div className="mt-6 p-4 bg-gray-800 rounded text-xs text-left font-mono text-gray-400 w-full max-w-xl overflow-hidden">
-                    <p>Contract: {token.contract_address}</p>
-                    <p>Chain ID: {token.chain_id}</p>
-                    {(token as any).tx_hash && (
-                        <p className="mt-2 text-blue-400">
-                            Transaction: <a href={`https://polygonscan.com/tx/${(token as any).tx_hash}`} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-300">
-                                {(token as any).tx_hash} ↗
-                            </a>
-                        </p>
-                    )}
-                </div>
-            </div>
-        );
-    }
 
     // Subscription State
     const [isSubscribed, setIsSubscribed] = useState(false);
