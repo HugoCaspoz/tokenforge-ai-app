@@ -687,6 +687,11 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <h2 className="text-2xl font-bold mb-4 text-pink-400">{t('tokenDetail.community.title')}</h2>
                                 <p className="text-gray-400 mb-6">{t('tokenDetail.community.snapshot')}</p>
 
+                                {/* Locked Content Section (Moved to Top) */}
+                                <div className="mb-8 border-b border-gray-800 pb-8">
+                                    <LockedContentManager projectId={token.id} />
+                                </div>
+
                                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                                     {/* Left Column: Snapshot */}
                                     <div className="lg:col-span-2">
@@ -713,11 +718,6 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                             </p>
                                         </div>
                                     </div>
-                                </div>
-
-                                {/* Locked Content Section */}
-                                <div className="mt-8">
-                                    <LockedContentManager projectId={token.id} />
                                 </div>
                             </div>
                         </div>
