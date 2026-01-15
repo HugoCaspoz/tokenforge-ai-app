@@ -287,7 +287,7 @@
             "viewOnExplorer": "Ver lista oficial en Explorador",
             "whaleAlerts": "🐋 Alertas de Ballenas",
             "liquidityWizard": {
-                "title": "🧙‍♂️ Mago de Liquidez (Algebra V3 🛡️)",
+                "title": "Gestor de Liquidez (Algebra V3)",
                 "subtitle": "Integración oficial QuickSwap V3 (Algebra).",
                 "wrongNetwork": "⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet.",
                 "tokensLabel": "Tokens ({symbol})",

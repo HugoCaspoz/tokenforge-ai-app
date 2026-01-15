@@ -578,86 +578,99 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <h2 className="text-2xl font-bold mb-4 text-green-400">{t('tokenDetail.growth.title')}</h2>
                                 <p className="text-gray-400 mb-6">{t('tokenDetail.growth.subtitle')}</p>
 
-                                {/* Socials Editor */}
-                                {isOwner && (
-                                    <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 mb-8">
-                                        <h3 className="text-lg font-bold text-white mb-4">{t('tokenDetail.growth.socials')}</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Twitter URL"
-                                                value={socials.twitter}
-                                                onChange={(e) => setSocials({ ...socials, twitter: e.target.value })}
-                                                className="bg-gray-800 border border-gray-600 rounded p-2 text-white"
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Telegram URL"
-                                                value={socials.telegram}
-                                                onChange={(e) => setSocials({ ...socials, telegram: e.target.value })}
-                                                className="bg-gray-800 border border-gray-600 rounded p-2 text-white"
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Website URL"
-                                                value={socials.website}
-                                                onChange={(e) => setSocials({ ...socials, website: e.target.value })}
-                                                className="bg-gray-800 border border-gray-600 rounded p-2 text-white"
+                                {/* 2-Column Desktop Layout */}
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                                    {/* LEFT COLUMN (MetaData & Monitoring) - 40% */}
+                                    <div className="lg:col-span-5 space-y-8">
+                                        {/* Socials Editor */}
+                                        {isOwner && (
+                                            <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
+                                                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                                    <span>📢</span> {t('tokenDetail.growth.socials')}
+                                                </h3>
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <label className="text-xs text-gray-400 block mb-1">Twitter (X)</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="https://x.com/..."
+                                                            value={socials.twitter}
+                                                            onChange={(e) => setSocials({ ...socials, twitter: e.target.value })}
+                                                            className="w-full bg-black/40 border border-gray-700 rounded p-2 text-white text-sm"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs text-gray-400 block mb-1">Telegram</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="https://t.me/..."
+                                                            value={socials.telegram}
+                                                            onChange={(e) => setSocials({ ...socials, telegram: e.target.value })}
+                                                            className="w-full bg-black/40 border border-gray-700 rounded p-2 text-white text-sm"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-xs text-gray-400 block mb-1">Website</label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="https://project.com"
+                                                            value={socials.website}
+                                                            onChange={(e) => setSocials({ ...socials, website: e.target.value })}
+                                                            className="w-full bg-black/40 border border-gray-700 rounded p-2 text-white text-sm"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={handleSaveSocials}
+                                                        disabled={savingSocials}
+                                                        className="w-full py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-semibold text-sm transition-colors"
+                                                    >
+                                                        {savingSocials ? t('tokenDetail.growth.saving') : t('tokenDetail.growth.saveNetworks')}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Monitoring */}
+                                        <div>
+                                            <h3 className="text-xl font-bold mb-4 text-blue-400">{t('tokenDetail.growth.monitoring')}</h3>
+                                            <div className="space-y-4">
+                                                <a
+                                                    href={`https://polygonscan.com/token/${token.contract_address}#balances`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="bg-gray-800 p-4 rounded-lg flex items-center gap-4 hover:bg-gray-700 transition-colors border border-gray-700 hover:border-purple-500 group"
+                                                >
+                                                    <div className="text-2xl group-hover:scale-110 transition-transform">👥</div>
+                                                    <div>
+                                                        <h4 className="font-bold text-white">{t('tokenDetail.growth.topHolders')}</h4>
+                                                        <p className="text-xs text-gray-400">{t('tokenDetail.growth.viewOnExplorer')}</p>
+                                                    </div>
+                                                </a>
+                                                <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
+                                                    <h4 className="font-bold text-white mb-2 flex items-center gap-2">
+                                                        <span>🐋</span> {t('tokenDetail.growth.whaleAlerts')}
+                                                    </h4>
+                                                    <WhaleWatcher tokenAddress={token.contract_address as `0x${string}`} />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* RIGHT COLUMN (Liquidity Tools) - 60% */}
+                                    <div className="lg:col-span-7 space-y-8">
+                                        <div className="relative">
+                                            {/* Glow Effect */}
+                                            <div className="absolute -inset-1 bg-purple-500/20 rounded-xl blur-lg opacity-50 pointer-events-none"></div>
+                                            <LiquidityWizard
+                                                tokenAddress={token.contract_address as `0x${string}`}
+                                                tokenSymbol={token.ticker}
+                                                onPoolFound={setLpAddress}
                                             />
                                         </div>
-                                        <button
-                                            onClick={handleSaveSocials}
-                                            disabled={savingSocials}
-                                            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded text-white font-semibold"
-                                        >
-                                            {savingSocials ? t('tokenDetail.growth.saving') : t('tokenDetail.growth.saveNetworks')}
-                                        </button>
-                                    </div>
-                                )}
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                    <LiquidityWizard
-                                        tokenAddress={token.contract_address as `0x${string}`}
-                                        tokenSymbol={token.ticker}
-                                        onPoolFound={setLpAddress}
-                                    />
-
-
-
-                                    {/* CHART LINK */}
-                                    {/* CHART LINK - REMOVED, now embedded below */}
-                                </div>
-
-                                {/* LIQUIDITY LOCKER */}
-                                <div className="mb-8">
-                                    <LiquidityLocker defaultTokenAddress={lpAddress} />
-                                </div>
-
-                                {/* DEXSCREENER EMBED - REMOVED FROM HERE */}
-
-
-
-
-                                {/* WHALE WATCHER & HOLDERS */}
-                                <div className="mb-6 space-y-4">
-                                    <h3 className="text-xl font-bold mb-4 text-blue-400">{t('tokenDetail.growth.monitoring')}</h3>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <a
-                                            href={`https://polygonscan.com/token/${token.contract_address}#balances`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="bg-gray-800 p-4 rounded-lg flex items-center gap-4 hover:bg-gray-700 transition-colors border border-gray-700 hover:border-purple-500"
-                                        >
-                                            <div className="text-2xl">👥</div>
-                                            <div>
-                                                <h4 className="font-bold text-white">{t('tokenDetail.growth.topHolders')}</h4>
-                                                <p className="text-xs text-gray-400">{t('tokenDetail.growth.viewOnExplorer')}</p>
-                                            </div>
-                                        </a>
-                                        <div className="bg-gray-800 p-4 rounded-lg border border-gray-700">
-                                            <h4 className="font-bold text-white mb-2 flex items-center gap-2">{t('tokenDetail.growth.whaleAlerts')}</h4>
-                                            <WhaleWatcher tokenAddress={token.contract_address as `0x${string}`} />
+                                        <div className="pt-4 border-t border-gray-800">
+                                            <LiquidityLocker defaultTokenAddress={lpAddress} />
                                         </div>
                                     </div>
                                 </div>

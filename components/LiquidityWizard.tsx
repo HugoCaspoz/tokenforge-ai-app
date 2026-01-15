@@ -224,67 +224,69 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
     const qsLink = `https://quickswap.exchange/#/add-liquidity?currency0=${tokenAddress}&currency1=ETH`;
 
     return (
-        <div className="bg-gradient-to-br from-blue-900 to-purple-900 p-6 rounded-xl border border-blue-500/30">
-            <h3 className="text-xl font-bold text-white mb-2">{t('tokenDetail.growth.liquidityWizard.title')}</h3>
-            <p className="text-sm text-gray-300 mb-4">{t('tokenDetail.growth.liquidityWizard.subtitle')}</p>
+        <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
+            <h3 className="text-xl font-bold text-purple-400 mb-2">{t('tokenDetail.growth.liquidityWizard.title')}</h3>
+            <p className="text-sm text-gray-400 mb-6 border-b border-gray-800 pb-4">{t('tokenDetail.growth.liquidityWizard.subtitle')}</p>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
                 {/* Safety Check UI */}
                 {chainId && chainId !== 137 && (
-                    <div className="bg-red-500/20 border border-red-500 p-2 rounded text-center text-xs text-red-200 font-bold animate-pulse">
+                    <div className="bg-red-900/20 border border-red-800 p-3 rounded text-center text-xs text-red-300 font-bold">
                         {t('tokenDetail.growth.liquidityWizard.wrongNetwork')}
                     </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-6">
                     <div>
-                        <label className="text-xs text-gray-400">{t('tokenDetail.growth.liquidityWizard.tokensLabel').replace('{symbol}', tokenSymbol)}</label>
+                        <label className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">{t('tokenDetail.growth.liquidityWizard.tokensLabel').replace('{symbol}', tokenSymbol)}</label>
                         <input
                             type="number"
                             value={amountToken}
                             onChange={e => setAmountToken(e.target.value)}
-                            className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
-                            placeholder="Ej. 900000"
+                            className="w-full bg-black/40 border border-gray-700 rounded p-3 text-white focus:border-purple-500 outline-none transition-colors"
+                            placeholder="0.0"
                         />
                     </div>
                     <div>
-                        <label className="text-xs text-gray-400">{t('tokenDetail.growth.liquidityWizard.polLabel')}</label>
+                        <label className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">{t('tokenDetail.growth.liquidityWizard.polLabel')}</label>
                         <input
                             type="number"
                             value={amountPOL}
                             onChange={e => setAmountPOL(e.target.value)}
-                            className="w-full bg-black/50 border border-gray-600 rounded p-2 text-white"
-                            placeholder="Ej. 1"
+                            className="w-full bg-black/40 border border-gray-700 rounded p-3 text-white focus:border-purple-500 outline-none transition-colors"
+                            placeholder="0.0"
                         />
                     </div>
                 </div>
 
-                <div className="space-y-2 pt-2">
+                <div className="space-y-3 pt-2">
                     <button
                         onClick={handleApprove}
                         disabled={isProcessing}
-                        className="w-full bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 rounded flex justify-between px-4"
+                        className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded border border-gray-600 flex justify-between px-4 transition-all"
                     >
                         <span>{t('tokenDetail.growth.liquidityWizard.approve').replace('{symbol}', tokenSymbol)}</span>
-                        <span>🔓</span>
+                        <span className="text-gray-500">Step 1</span>
                     </button>
 
                     <button
                         onClick={handleCreatePool}
                         disabled={isProcessing || !!poolExists}
-                        className={`w-full font-bold py-2 rounded flex justify-between px-4 ${poolExists ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500 text-white'}`}
+                        className={`w-full font-medium py-3 rounded flex justify-between px-4 border transition-all ${poolExists
+                            ? 'bg-green-900/20 border-green-900/50 text-green-400 cursor-default'
+                            : 'bg-gray-800 hover:bg-gray-700 border-gray-600 text-white'}`}
                     >
                         <span>{poolExists ? t('tokenDetail.growth.liquidityWizard.marketExists') : t('tokenDetail.growth.liquidityWizard.initialize')}</span>
-                        <span>{poolExists ? "✅" : "🏗️"}</span>
+                        <span className={poolExists ? "text-green-500" : "text-gray-500"}>{poolExists ? "✓" : "Step 2"}</span>
                     </button>
 
                     <button
                         onClick={handleMint}
                         disabled={isProcessing}
-                        className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded flex justify-between px-4"
+                        className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded shadow-lg shadow-purple-900/20 flex justify-between px-4 transition-all"
                     >
                         <span>{t('tokenDetail.growth.liquidityWizard.addLiquidity')}</span>
-                        <span>🦄</span>
+                        <span className="text-purple-200">Step 3</span>
                     </button>
                 </div>
 

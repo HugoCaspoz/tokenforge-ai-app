@@ -287,7 +287,7 @@
             "viewOnExplorer": "View official list on Explorer",
             "whaleAlerts": "🐋 Whale Alerts",
             "liquidityWizard": {
-                "title": "🧙‍♂️ Liquidity Wizard (Algebra V3 🛡️)",
+                "title": "Liquidity Manager (Algebra V3)",
                 "subtitle": "Official QuickSwap V3 (Algebra) Integration.",
                 "wrongNetwork": "⚠️ You are on the wrong network. Switch to Polygon Mainnet.",
                 "tokensLabel": "Tokens ({symbol})",
