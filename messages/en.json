@@ -77,7 +77,8 @@
             "newest": "Most Recent",
             "volume": "Highest Volume (24h)",
             "marketcap": "Market Cap",
-            "gainers": "Top Gainers (%)"
+            "gainers": "Top Gainers (%)",
+            "trust_score": "Highest Trust Score"
         },
         "trustScore": "Score",
         "deployer": "Deployer",

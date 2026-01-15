@@ -36,8 +36,16 @@ export default function ExplorePage() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState({
         security: [] as string[], // Changed to array for multi-select
-        sort: 'newest' as 'newest' | 'volume' | 'marketcap' | 'gainers'
+        sort: 'newest' as 'newest' | 'volume' | 'marketcap' | 'gainers' | 'trust_score'
     });
+
+    const getTrustScore = (p: Project) => {
+        let score = 0;
+        if (p.is_renounced) score += 40;
+        if (p.locked_until && new Date(p.locked_until) > new Date()) score += 40;
+        if (p.twitter_url || p.telegram_url || p.website_url) score += 20;
+        return score;
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -106,6 +114,7 @@ export default function ExplorePage() {
             case 'volume': return (b.volume_24h || 0) - (a.volume_24h || 0);
             case 'marketcap': return (b.market_cap || 0) - (a.market_cap || 0);
             case 'gainers': return (b.price_change_24h || 0) - (a.price_change_24h || 0);
+            case 'trust_score': return getTrustScore(b) - getTrustScore(a);
             default: return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime(); // Newest
         }
     });
@@ -123,13 +132,7 @@ export default function ExplorePage() {
         setFilter({ ...filter, security: newSecurity });
     };
 
-    const getTrustScore = (p: Project) => {
-        let score = 0;
-        if (p.is_renounced) score += 40;
-        if (p.locked_until && new Date(p.locked_until) > new Date()) score += 40;
-        if (p.twitter_url || p.telegram_url || p.website_url) score += 20;
-        return score;
-    };
+    // getTrustScore moved up
 
     return (
         <div className="min-h-screen bg-gray-900 text-white pt-24 px-6">
@@ -187,6 +190,7 @@ export default function ExplorePage() {
                             <option value="volume">{t('explore.sortOptions.volume')}</option>
                             <option value="marketcap">{t('explore.sortOptions.marketcap')}</option>
                             <option value="gainers">{t('explore.sortOptions.gainers')}</option>
+                            <option value="trust_score">{t('explore.sortOptions.trust_score')}</option>
                         </select>
                     </div>
                 </div>
