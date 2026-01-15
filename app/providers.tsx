@@ -19,9 +19,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     ];
 
     // Only add WalletConnect on client side to avoid indexedDB/SSR errors
-    if (typeof window !== 'undefined') {
-      connectors.push(walletConnect({ projectId }));
-    }
+    // if (typeof window !== 'undefined') {
+    //   connectors.push(walletConnect({ projectId }));
+    // }
 
     return createConfig({
       chains: [polygon],
