@@ -48,10 +48,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         return value || key;
     };
 
-    // Don't render children until mounted to prevent hydration mismatch
-    if (!mounted) {
-        return null;
-    }
+    // We render children immediately to allow SSR (Server Side Rendering).
+    // The language will default to 'es' on the server and initial client render,
+    // then switch to the user's preference in useEffect to avoid hydration mismatch failures
+    // caused by rendering nothing on the server.
 
     return (
         <I18nContext.Provider value={{ locale, setLocale, t }}>
