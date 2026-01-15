@@ -29,7 +29,7 @@ export const Footer = () => {
                         <Link href="/guide" className="text-sm leading-6 text-gray-400 hover:text-white">{t('footer.guide')}</Link>
                     </div>
                     <p className="text-center text-xs leading-5 text-gray-500 md:text-left">
-                        &copy; {new Date().getFullYear()} TokenCrafter. {t('footer.allRightsReserved')}.
+                        &copy; <span suppressHydrationWarning>{new Date().getFullYear()}</span> TokenCrafter. {t('footer.allRightsReserved')}.
                     </p>
                 </div>
             </div>
