@@ -258,12 +258,12 @@ export default function ExplorePage() {
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {project.is_renounced && (
                                             <span className="bg-green-900/30 text-green-400 border border-green-500/30 px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
-                                                ✅ {t('explore.badges.renounced')}
+                                                {t('explore.badges.renounced')}
                                             </span>
                                         )}
                                         {project.locked_until && new Date(project.locked_until) > new Date() && (
                                             <span className="bg-blue-900/30 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
-                                                🔒 Lock: {new Date(project.locked_until).toLocaleDateString()}
+                                                Lock: {new Date(project.locked_until).toLocaleDateString()}
                                             </span>
                                         )}
                                     </div>

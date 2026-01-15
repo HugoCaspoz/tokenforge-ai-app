@@ -67,10 +67,10 @@
         "subtitle": "Descubre las gemas ocultas en TokenCrafter",
         "filters": {
             "all": "Todos",
-            "safe": "🛡️ 100% Seguros",
+            "safe": "100% Seguros",
             "renounced": "Propiedad Renunciada",
             "locked": "Liquidez Bloqueada",
-            "favorites": "❤️ Favoritos"
+            "favorites": "Favoritos"
         },
         "sortBy": "Ordenar por",
         "sortOptions": {

@@ -67,10 +67,10 @@
         "subtitle": "Discover hidden gems in TokenCrafter",
         "filters": {
             "all": "All",
-            "safe": "🛡️ 100% Safe",
+            "safe": "100% Safe",
             "renounced": "Ownership Renounced",
             "locked": "Liquidity Locked",
-            "favorites": "❤️ Favorites"
+            "favorites": "Favorites"
         },
         "sortBy": "Sort by",
         "sortOptions": {
