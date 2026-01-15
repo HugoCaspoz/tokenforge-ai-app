@@ -426,8 +426,8 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                     <button disabled={!isOwner} className="px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-gray-600 rounded text-white font-semibold w-full">{t('tokenDetail.admin.transfer')}</button>
                                 </div>
 
-                                <div className="border border-green-600/50 p-6 rounded-lg bg-green-900/10">
-                                    <h3 className="font-bold text-lg mb-2 text-green-400">{t('dashboard.tabs.community')}</h3>
+                                <div className="border border-red-600/50 p-6 rounded-lg bg-red-900/10">
+                                    <h3 className="font-bold text-lg mb-2 text-red-400">{t('tokenDetail.admin.ownershipTitle')}</h3>
                                     <p className="text-sm text-gray-400 mb-4">
                                         {t('tokenDetail.admin.renounceCommunityDesc')}
                                     </p>
@@ -507,7 +507,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                         </button>
                                     </div>
                                     <div className="mt-2 text-right">
-                                        <a href="https://docs.etherscan.io/getting-an-api-key" target="_blank" className="text-xs text-blue-400 underline hover:text-white">Conseguir API Key (Gratis)</a>
+                                        <a href="https://docs.etherscan.io/getting-an-api-key" target="_blank" className="text-xs text-blue-400 underline hover:text-white">{t('tokenDetail.admin.getApiKey')}</a>
                                     </div>
                                 </div>
 

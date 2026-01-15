@@ -259,6 +259,7 @@
             "autoVerification": "🤖 Verificación Automática",
             "autoVerificationDesc": "Conecta con PolygonScan para verificar en 1 click. Necesitas una API Key gratuita.",
             "getApiKey": "Conseguir API Key (Gratis)",
+            "ownershipTitle": "Propiedad del Contrato",
             "verifyNow": "Verificar Ahora",
             "orManual": "O método manual:",
             "manualNoApiKey": "Si no tienes API Key, descarga el código y súbelo a mano.",
