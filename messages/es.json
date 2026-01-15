@@ -254,6 +254,7 @@
             "renouncing": "Renunciando...",
             "renounceIrreversible": "Renunciar (IRREVERSIBLE)",
             "communityNote": "Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).",
+            "renounceCommunityDesc": "Nadie podrá controlar el contrato nunca más. Es necesario para 'tokens comunitarios'. Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).",
             "verification": "✅ Verificación de Contrato",
             "autoVerification": "🤖 Verificación Automática",
             "autoVerificationDesc": "Conecta con PolygonScan para verificar en 1 click. Necesitas una API Key gratuita.",

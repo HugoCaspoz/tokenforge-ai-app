@@ -429,15 +429,14 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                 <div className="border border-green-600/50 p-6 rounded-lg bg-green-900/10">
                                     <h3 className="font-bold text-lg mb-2 text-green-400">{t('dashboard.tabs.community')}</h3>
                                     <p className="text-sm text-gray-400 mb-4">
-                                        Nadie podrá controlar el contrato nunca más. Es necesario para 'tokens comunitarios'.
-                                        Si abandonas la propiedad, el token será gobernado por la comunidad (o nadie).
+                                        {t('tokenDetail.admin.renounceCommunityDesc')}
                                     </p>
                                     <button
                                         onClick={handleRenounceOwnership}
                                         disabled={!isOwner || isRenouncing}
                                         className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:bg-gray-600 rounded text-white font-semibold w-full"
                                     >
-                                        {isRenouncing ? t('tokenDetail.admin.renouncing') : "Renunciar Propiedad"}
+                                        {isRenouncing ? t('tokenDetail.admin.renouncing') : t('tokenDetail.admin.renounceOwnership')}
                                     </button>
                                 </div>
                             </div>
