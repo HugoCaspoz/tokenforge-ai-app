@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning={true}>
-      <body className={inter.className}>
+      <body className={inter.className} suppressHydrationWarning={true}>
         <Providers> {/* <-- 2. ENVUELVE TODO CON PROVIDERS */}
           <Header />
           {children}

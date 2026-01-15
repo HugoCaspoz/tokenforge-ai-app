@@ -29,7 +29,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       transports: {
         [polygon.id]: http('https://polygon-rpc.com'),
       },
-      ssr: false,
+      ssr: true,
     });
   });
 
