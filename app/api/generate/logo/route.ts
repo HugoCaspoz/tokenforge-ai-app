@@ -31,8 +31,8 @@ export async function POST(request: Request) {
 
     // Añadimos una comprobación robusta. Si logoUrl es nulo, undefined o una cadena vacía, lanzamos un error.
     if (!logoUrl) {
-        console.error("Respuesta inválida de la API de DALL-E:", response); // Log para nuestra depuración
-        throw new Error("La IA no pudo generar una URL válida para el logo.");
+      console.error("Respuesta inválida de la API de DALL-E:", response); // Log para nuestra depuración
+      throw new Error("La IA no pudo generar una URL válida para el logo.");
     }
 
     return NextResponse.json({ logoUrl });
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Error en la generación de logo:", error);
     if (error instanceof Error) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     }
     return NextResponse.json({ error: 'Error al generar el logo con DALL·E' }, { status: 500 });
   }

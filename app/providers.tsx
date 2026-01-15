@@ -1,7 +1,7 @@
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { WagmiProvider, createConfig, http } from 'wagmi';
+import { WagmiProvider, createConfig, http, CreateConnectorFn } from 'wagmi';
 import { polygon } from 'wagmi/chains';
 import { injected, walletConnect } from 'wagmi/connectors';
 import { useState } from 'react';
@@ -12,21 +12,26 @@ const projectId = '3a53e506a8d7e75fbd56f527f81870a9';
 
 // Componente Proveedor
 export function Providers({ children }: { children: React.ReactNode }) {
-  // Mueve la creación de la config y el cliente DENTRO del componente
-  // y envuélvelo en useState para que solo se ejecute una vez en el cliente.
   const [queryClient] = useState(() => new QueryClient());
-  const [config] = useState(() =>
-    createConfig({
+  const [config] = useState(() => {
+    const connectors: CreateConnectorFn[] = [
+      injected({ shimDisconnect: true })
+    ];
+
+    // Only add WalletConnect on client side to avoid indexedDB/SSR errors
+    if (typeof window !== 'undefined') {
+      connectors.push(walletConnect({ projectId }));
+    }
+
+    return createConfig({
       chains: [polygon],
-      connectors: [
-        injected({ shimDisconnect: true }),
-        walletConnect({ projectId }),
-      ],
+      connectors,
       transports: {
         [polygon.id]: http('https://polygon-rpc.com'),
       },
-    })
-  );
+      ssr: true,
+    });
+  });
 
   return (
     <I18nProvider>
