@@ -175,7 +175,7 @@ export default function LiquidityLocker({ defaultTokenAddress }: { defaultTokenA
                     <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                         {userLocks && userLocks.length > 0 ? (
                             userLocks
-                                .filter((lock: any) => !defaultTokenAddress || lock.token.toLowerCase() === defaultTokenAddress.toLowerCase())
+                                .filter((lock: any) => tokenAddress && lock.token.toLowerCase() === tokenAddress.toLowerCase())
                                 .map((lock: any) => (
                                     <div key={lock.id.toString()} className="bg-gray-900 p-4 rounded border border-gray-700">
                                         <div className="flex justify-between items-start mb-2">
