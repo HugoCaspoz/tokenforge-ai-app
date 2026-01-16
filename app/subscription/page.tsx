@@ -12,7 +12,7 @@ const subscriptionPlans = [
   {
     id: 'basic',
     name: 'Basic', // Key for translation lookup if needed, or keep as identifier
-    price: '4,99 €/mes',
+    price: '1,00€ / mes',
     priceId: 'price_1Rh3vdIs18b5tpWUCAWSrz6n',
   },
   {
