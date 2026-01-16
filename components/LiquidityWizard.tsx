@@ -113,8 +113,8 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
             // Slippage 5% for simplicity in V2
             // We use 0 for min amounts to avoid reverts on first add, but in production should be calculated.
             // For simple token launch, 0 is often acceptable risk if user is first provider.
-            const amountTokenMin = 0n;
-            const amountETHMin = 0n;
+            const amountTokenMin = BigInt(0);
+            const amountETHMin = BigInt(0);
 
             const hash = await writeContractAsync({
                 address: ROUTER_ADDRESS,
