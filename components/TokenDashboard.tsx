@@ -483,6 +483,7 @@ export default function TokenDashboard({ token }: TokenDashboardProps) {
                                                             name: token.name,
                                                             symbol: token.ticker,
                                                             initialSupply: totalSupply ? (Number(totalSupply) / 10 ** 18).toString() : "1000000",
+                                                            initialSupplyRaw: totalSupply ? totalSupply.toString() : "1000000000000000000000000",
                                                             initialOwner: ownerAddress || userAddress,
                                                             apiKey
                                                         })

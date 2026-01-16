@@ -11,20 +11,37 @@ const CONSTRUCTOR_ABI = [
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { contractAddress, name, symbol, initialSupply, initialOwner, apiKey } = body;
+        const { contractAddress, name, symbol, initialSupply, initialSupplyRaw, initialOwner, apiKey } = body;
 
-        if (!contractAddress || !name || !symbol || !initialSupply || !initialOwner || !apiKey) {
+        if (!contractAddress || !name || !symbol || !apiKey) {
             return NextResponse.json({ error: 'Missing parameters' }, { status: 400 });
         }
 
-        // 1. Flatten Source Code
-        const contractPath = path.resolve(process.cwd(), 'scripts/SimpleToken.sol');
-        const sourceCode = flattenContract(contractPath);
+        // 1. Read Flattened Source Code directly from public (matches what user sees manually)
+        // This ensures the API uses exactly what we offer for manual verification.
+        const contractPath = path.resolve(process.cwd(), 'public/SimpleToken_flat.sol');
+        let sourceCode = "";
+
+        try {
+            const fs = require('fs');
+            sourceCode = fs.readFileSync(contractPath, 'utf8');
+        } catch (e) {
+            console.log("Flat file not found in public, flattening scripts/SimpleToken.sol...");
+            const scriptPath = path.resolve(process.cwd(), 'scripts/SimpleToken.sol');
+            sourceCode = flattenContract(scriptPath);
+        }
 
         // 2. Encode Constructor Arguments
         const abiCoder = new ethers.AbiCoder();
-        // Supply in WEI (18 decimals)
-        const supplyWei = ethers.parseEther(initialSupply.toString());
+
+        // Use Raw Supply if available (BigInt string) to avoid precision loss
+        let supplyWei;
+        if (initialSupplyRaw) {
+            supplyWei = BigInt(initialSupplyRaw);
+        } else {
+            // Fallback to old method (risk of precision loss)
+            supplyWei = ethers.parseEther(initialSupply.toString());
+        }
 
         const encodedArgs = abiCoder.encode(
             ['string', 'string', 'uint256', 'address'],
