@@ -4,54 +4,27 @@ import { useAccount, useWriteContract, usePublicClient, useReadContract } from '
 import { parseUnits, maxUint256, formatEther } from 'viem';
 import { TOKEN_ABI } from '../lib/tokenArtifacts';
 
-// QuickSwap V3 (Algebra) Addresses on Polygon
-const NPM_ADDRESS = '0x8eF88E4c7CfbbaC1C163f7eddd4B578792201de6';
-const FACTORY_ADDRESS = '0x411b0fAcC3489691f28ad58c47006AF5E3Ab3A28';
+// QuickSwap V2 Addresses on Polygon
+const ROUTER_ADDRESS = '0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff';
+const FACTORY_ADDRESS = '0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32';
 const WMATIC = '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270';
 
-// ALGEBRA (QuickSwap V3) ABIs - NO FEE PARAM IN STRUCTS/FUNCTIONS
-const CREATE_ABI = [
+// QuickSwap V2 ABIs
+const ROUTER_ABI = [
     {
         "inputs": [
-            { "internalType": "address", "name": "token0", "type": "address" },
-            { "internalType": "address", "name": "token1", "type": "address" },
-            { "internalType": "uint160", "name": "sqrtPriceX96", "type": "uint160" }
+            { "internalType": "address", "name": "token", "type": "address" },
+            { "internalType": "uint256", "name": "amountTokenDesired", "type": "uint256" },
+            { "internalType": "uint256", "name": "amountTokenMin", "type": "uint256" },
+            { "internalType": "uint256", "name": "amountETHMin", "type": "uint256" },
+            { "internalType": "address", "name": "to", "type": "address" },
+            { "internalType": "uint256", "name": "deadline", "type": "uint256" }
         ],
-        "name": "createAndInitializePoolIfNecessary",
-        "outputs": [{ "internalType": "address", "name": "pool", "type": "address" }],
-        "stateMutability": "payable",
-        "type": "function"
-    }
-] as const;
-
-const MINT_ABI = [
-    {
-        "inputs": [
-            {
-                "components": [
-                    { "internalType": "address", "name": "token0", "type": "address" },
-                    { "internalType": "address", "name": "token1", "type": "address" },
-                    // NO FEE HERE for Algebra
-                    { "internalType": "int24", "name": "tickLower", "type": "int24" },
-                    { "internalType": "int24", "name": "tickUpper", "type": "int24" },
-                    { "internalType": "uint256", "name": "amount0Desired", "type": "uint256" },
-                    { "internalType": "uint256", "name": "amount1Desired", "type": "uint256" },
-                    { "internalType": "uint256", "name": "amount0Min", "type": "uint256" },
-                    { "internalType": "uint256", "name": "amount1Min", "type": "uint256" },
-                    { "internalType": "address", "name": "recipient", "type": "address" },
-                    { "internalType": "uint256", "name": "deadline", "type": "uint256" }
-                ],
-                "internalType": "struct INonfungiblePositionManager.MintParams",
-                "name": "params",
-                "type": "tuple"
-            }
-        ],
-        "name": "mint",
+        "name": "addLiquidityETH",
         "outputs": [
-            { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
-            { "internalType": "uint128", "name": "liquidity", "type": "uint128" },
-            { "internalType": "uint256", "name": "amount0", "type": "uint256" },
-            { "internalType": "uint256", "name": "amount1", "type": "uint256" }
+            { "internalType": "uint256", "name": "amountToken", "type": "uint256" },
+            { "internalType": "uint256", "name": "amountETH", "type": "uint256" },
+            { "internalType": "uint256", "name": "liquidity", "type": "uint256" }
         ],
         "stateMutability": "payable",
         "type": "function"
@@ -60,28 +33,14 @@ const MINT_ABI = [
 
 const FACTORY_ABI = [{
     "inputs": [
-        { "internalType": "address", "name": "", "type": "address" },
-        { "internalType": "address", "name": "", "type": "address" }
+        { "internalType": "address", "name": "tokenA", "type": "address" },
+        { "internalType": "address", "name": "tokenB", "type": "address" }
     ],
-    "name": "poolByPair", // Algebra uses poolByPair, not getPool
-    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "name": "getPair",
+    "outputs": [{ "internalType": "address", "name": "pair", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
 }] as const;
-
-function getSqrtPriceX96(amount0: bigint, amount1: bigint): bigint {
-    if (amount0 === BigInt(0)) return BigInt(0);
-    const numerator = amount1 * (BigInt(1) << BigInt(192));
-    const ratio = numerator / amount0;
-
-    let z = (ratio + BigInt(1)) / BigInt(2);
-    let y = ratio;
-    while (z < y) {
-        y = z;
-        z = (ratio / z + z) / BigInt(2);
-    }
-    return y;
-}
 
 export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, onPoolFound }: { tokenAddress: `0x${string}`, tokenSymbol: string, decoupled?: boolean, onPoolFound?: (addr: string) => void }) {
     const { address, chainId } = useAccount();
@@ -92,25 +51,21 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
     const [amountPOL, setAmountPOL] = useState('');
     const [isProcessing, setIsProcessing] = useState(false);
 
-    const isToken0 = tokenAddress.toLowerCase() < WMATIC.toLowerCase();
-    const token0 = isToken0 ? tokenAddress : WMATIC;
-    const token1 = isToken0 ? WMATIC : tokenAddress;
-
-    // Check if Pool Exists (Algebra)
-    const { data: poolAddress, refetch: refetchPool } = useReadContract({
+    // Check if Pool (Pair) Exists - V2
+    const { data: pairAddress, refetch: refetchPair } = useReadContract({
         address: FACTORY_ADDRESS,
         abi: FACTORY_ABI,
-        functionName: 'poolByPair',
-        args: [token0, token1],
+        functionName: 'getPair',
+        args: [tokenAddress, WMATIC],
     });
 
-    const poolExists = poolAddress && poolAddress !== '0x0000000000000000000000000000000000000000';
+    const poolExists = pairAddress && pairAddress !== '0x0000000000000000000000000000000000000000';
 
     useEffect(() => {
         if (poolExists && onPoolFound) {
-            onPoolFound(poolAddress);
+            onPoolFound(pairAddress as string);
         }
-    }, [poolExists, poolAddress, onPoolFound]);
+    }, [poolExists, pairAddress, onPoolFound]);
 
     const { writeContractAsync } = useWriteContract();
 
@@ -127,7 +82,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
         }
     };
 
-    // STEP 1: APPROVE
+    // STEP 1: APPROVE ROUTER
     const handleApprove = async () => {
         if (!amountToken) return;
         setIsProcessing(true);
@@ -136,7 +91,7 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
                 address: tokenAddress,
                 abi: TOKEN_ABI,
                 functionName: 'approve',
-                args: [NPM_ADDRESS, maxUint256],
+                args: [ROUTER_ADDRESS, maxUint256],
             });
             await waitTx(hash, t('tokenDetail.growth.liquidityWizard.approving'));
             alert(t('tokenDetail.growth.liquidityWizard.successApprove'));
@@ -148,70 +103,36 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
         }
     };
 
-    // STEP 2: CREATE POOL (Algebra)
-    const handleCreatePool = async () => {
-        if (!amountToken || !amountPOL) return;
-        if (poolExists) {
-            alert(t('tokenDetail.growth.liquidityWizard.marketExistsAlert'));
-            return;
-        }
-
-        setIsProcessing(true);
-        try {
-            const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
-            const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
-            const sqrtPriceX96 = getSqrtPriceX96(amount0, amount1);
-
-            const hash = await writeContractAsync({
-                address: NPM_ADDRESS,
-                abi: CREATE_ABI,
-                functionName: 'createAndInitializePoolIfNecessary',
-                args: [token0, token1, sqrtPriceX96], // NO FEE
-            });
-
-            await waitTx(hash, t('tokenDetail.growth.liquidityWizard.initializing'));
-            await refetchPool();
-            alert(t('tokenDetail.growth.liquidityWizard.successInit'));
-        } catch (e) {
-            console.error(e);
-            alert(t('tokenDetail.growth.liquidityWizard.errorInit') + ((e as any).shortMessage || (e as any).message));
-        } finally {
-            setIsProcessing(false);
-        }
-    };
-
-    // STEP 3: MINT (Algebra)
-    const handleMint = async () => {
+    // STEP 2: ADD LIQUIDITY V2
+    const handleAddLiquidity = async () => {
         if (!amountToken || !amountPOL || !address) return;
         setIsProcessing(true);
         try {
-            const amount0 = isToken0 ? parseUnits(amountToken, 18) : parseUnits(amountPOL, 18);
-            const amount1 = isToken0 ? parseUnits(amountPOL, 18) : parseUnits(amountToken, 18);
+            const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 mins
 
-            const tickLower = -887220; // Max Range
-            const tickUpper = 887220;
+            // Slippage 5% for simplicity in V2
+            // We use 0 for min amounts to avoid reverts on first add, but in production should be calculated.
+            // For simple token launch, 0 is often acceptable risk if user is first provider.
+            const amountTokenMin = 0n;
+            const amountETHMin = 0n;
 
             const hash = await writeContractAsync({
-                address: NPM_ADDRESS,
-                abi: MINT_ABI,
-                functionName: 'mint',
-                args: [{
-                    token0,
-                    token1,
-                    // fee: 3000, // REMOVED
-                    tickLower,
-                    tickUpper,
-                    amount0Desired: amount0,
-                    amount1Desired: amount1,
-                    amount0Min: BigInt(0),
-                    amount1Min: BigInt(0),
-                    recipient: address,
-                    deadline: BigInt(Math.floor(Date.now() / 1000) + 1200)
-                }],
-                value: parseUnits(amountPOL, 18),
+                address: ROUTER_ADDRESS,
+                abi: ROUTER_ABI,
+                functionName: 'addLiquidityETH',
+                args: [
+                    tokenAddress,
+                    parseUnits(amountToken, 18), // desired token
+                    amountTokenMin,              // min token
+                    amountETHMin,                // min eth
+                    address,                     // to
+                    BigInt(deadline)
+                ],
+                value: parseUnits(amountPOL, 18), // native token amount
             });
 
             await waitTx(hash, t('tokenDetail.growth.liquidityWizard.adding'));
+            await refetchPair();
             alert(t('tokenDetail.growth.liquidityWizard.successAdd'));
         } catch (e) {
             console.error(e);
@@ -221,77 +142,82 @@ export default function LiquidityWizard({ tokenAddress, tokenSymbol, decoupled, 
         }
     };
 
-    const qsLink = `https://quickswap.exchange/#/add-liquidity?currency0=${tokenAddress}&currency1=ETH`;
-
     return (
-        <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 shadow-xl">
-            <h3 className="text-xl font-bold text-purple-400 mb-2">{t('tokenDetail.growth.liquidityWizard.title')}</h3>
-            <p className="text-sm text-gray-400 mb-6 border-b border-gray-800 pb-4">{t('tokenDetail.growth.liquidityWizard.subtitle')}</p>
+        <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 w-full">
+            <h2 className="text-2xl font-bold mb-6 text-purple-400">
+                {t('tokenDetail.growth.liquidityWizard.title')} (QuickSwap V2)
+            </h2>
+
+            {chainId !== 137 && (
+                <div className="bg-yellow-900/50 text-yellow-200 p-3 rounded mb-4 text-sm">
+                    {t('tokenDetail.growth.liquidityWizard.wrongNetwork')}
+                </div>
+            )}
 
             <div className="space-y-6">
-                {/* Safety Check UI */}
-                {chainId && chainId !== 137 && (
-                    <div className="bg-red-900/20 border border-red-800 p-3 rounded text-center text-xs text-red-300 font-bold">
-                        {t('tokenDetail.growth.liquidityWizard.wrongNetwork')}
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                        {t('tokenDetail.growth.liquidityWizard.tokensLabel').replace('{symbol}', tokenSymbol)}
+                    </label>
+                    <input
+                        type="number"
+                        value={amountToken}
+                        onChange={(e) => setAmountToken(e.target.value)}
+                        placeholder="0.0"
+                        className="w-full bg-gray-900 border border-gray-600 rounded p-3 text-white focus:border-purple-500 outline-none"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm text-gray-400 mb-1">
+                        {t('tokenDetail.growth.liquidityWizard.polLabel')}
+                    </label>
+                    <input
+                        type="number"
+                        value={amountPOL}
+                        onChange={(e) => setAmountPOL(e.target.value)}
+                        placeholder="0.0"
+                        className="w-full bg-gray-900 border border-gray-600 rounded p-3 text-white focus:border-purple-500 outline-none"
+                    />
+                </div>
+
+                {poolExists ? (
+                    <div className="bg-blue-900/30 text-blue-200 p-4 rounded text-center">
+                        <h3 className="font-bold text-lg mb-2">✅ {t('tokenDetail.growth.liquidityWizard.marketExists') || "Pool Activa"}</h3>
+                        <p className="text-sm break-all font-mono">{pairAddress}</p>
+                        <p className="text-xs text-blue-300 mt-2">
+                            La piscina de liquidez ya existe. Usa el "Liquidity Locker" abajo para bloquear tus LPs.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                        <button
+                            onClick={handleApprove}
+                            disabled={isProcessing || !amountToken}
+                            className={`py-3 px-4 rounded font-bold transition-all ${isProcessing || !amountToken ? 'bg-gray-700 text-gray-500' : 'bg-gray-700 hover:bg-gray-600 text-white'
+                                }`}
+                        >
+                            {isProcessing ? t('tokenDetail.growth.liquidityWizard.approving') : t('tokenDetail.growth.liquidityWizard.approve').replace('{symbol}', tokenSymbol)}
+                        </button>
+
+                        <button
+                            onClick={handleAddLiquidity}
+                            disabled={isProcessing || !amountToken || !amountPOL}
+                            className={`py-3 px-4 rounded font-bold transition-all ${isProcessing || !amountToken || !amountPOL ? 'bg-gray-700 text-gray-500' : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white'
+                                }`}
+                        >
+                            {isProcessing ? t('tokenDetail.growth.liquidityWizard.adding') : t('tokenDetail.growth.liquidityWizard.addLiquidity')}
+                        </button>
                     </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-6">
-                    <div>
-                        <label className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">{t('tokenDetail.growth.liquidityWizard.tokensLabel').replace('{symbol}', tokenSymbol)}</label>
-                        <input
-                            type="number"
-                            value={amountToken}
-                            onChange={e => setAmountToken(e.target.value)}
-                            className="w-full bg-black/40 border border-gray-700 rounded p-3 text-white focus:border-purple-500 outline-none transition-colors"
-                            placeholder="0.0"
-                        />
-                    </div>
-                    <div>
-                        <label className="text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2 block">{t('tokenDetail.growth.liquidityWizard.polLabel')}</label>
-                        <input
-                            type="number"
-                            value={amountPOL}
-                            onChange={e => setAmountPOL(e.target.value)}
-                            className="w-full bg-black/40 border border-gray-700 rounded p-3 text-white focus:border-purple-500 outline-none transition-colors"
-                            placeholder="0.0"
-                        />
-                    </div>
-                </div>
-
-                <div className="space-y-3 pt-2">
-                    <button
-                        onClick={handleApprove}
-                        disabled={isProcessing}
-                        className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 rounded border border-gray-600 flex justify-between px-4 transition-all"
+                <div className="text-center pt-2">
+                    <a
+                        href={`https://quickswap.exchange/#/add/${tokenAddress}/ETH`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gray-500 hover:text-purple-400 underline"
                     >
-                        <span>{t('tokenDetail.growth.liquidityWizard.approve').replace('{symbol}', tokenSymbol)}</span>
-                        <span className="text-gray-500">Step 1</span>
-                    </button>
-
-                    <button
-                        onClick={handleCreatePool}
-                        disabled={isProcessing || !!poolExists}
-                        className={`w-full font-medium py-3 rounded flex justify-between px-4 border transition-all ${poolExists
-                            ? 'bg-green-900/20 border-green-900/50 text-green-400 cursor-default'
-                            : 'bg-gray-800 hover:bg-gray-700 border-gray-600 text-white'}`}
-                    >
-                        <span>{poolExists ? t('tokenDetail.growth.liquidityWizard.marketExists') : t('tokenDetail.growth.liquidityWizard.initialize')}</span>
-                        <span className={poolExists ? "text-green-500" : "text-gray-500"}>{poolExists ? "✓" : "Step 2"}</span>
-                    </button>
-
-                    <button
-                        onClick={handleMint}
-                        disabled={isProcessing}
-                        className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded shadow-lg shadow-purple-900/20 flex justify-between px-4 transition-all"
-                    >
-                        <span>{t('tokenDetail.growth.liquidityWizard.addLiquidity')}</span>
-                        <span className="text-purple-200">Step 3</span>
-                    </button>
-                </div>
-
-                <div className="text-center pt-4">
-                    <a href={qsLink} target="_blank" className="text-xs text-blue-300 underline hover:text-blue-100">
                         {t('tokenDetail.growth.liquidityWizard.manualLink')}
                     </a>
                 </div>

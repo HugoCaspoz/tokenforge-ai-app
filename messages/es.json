@@ -293,8 +293,8 @@
             "viewOnExplorer": "Ver lista oficial en Explorador",
             "whaleAlerts": "🐋 Alertas de Ballenas",
             "liquidityWizard": {
-                "title": "Gestor de Liquidez (Algebra V3)",
-                "subtitle": "Integración oficial QuickSwap V3 (Algebra).",
+                "title": "Gestor de Liquidez (QuickSwap V2)",
+                "subtitle": "Integración oficial QuickSwap V2 (Standard AMM).",
                 "wrongNetwork": "⚠️ Estás en la red incorrecta. Cambia a Polygon Mainnet.",
                 "tokensLabel": "Tokens ({symbol})",
                 "polLabel": "POL (Matic)",
@@ -312,7 +312,7 @@
                 "errorApprove": "❌ Error al aprobar: ",
                 "errorInit": "⚠️ Error: ",
                 "errorAdd": "❌ Error al añadir liquidez: ",
-                "marketExistsAlert": "ℹ️ El mercado YA existe. Salta al Paso 3."
+                "marketExistsAlert": "ℹ️ La piscina de liquidez YA existe."
             },
             "whaleWatcher": {
                 "listening": "📡 Escuchando transacciones grandes (> {amount})...",
