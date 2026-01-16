@@ -103,16 +103,17 @@ export default function AccessContent({ content }: AccessContentProps) {
                     {!isConnected ? (
                         <div className="text-center">
                             <p className="text-gray-400 mb-4">{t('accessContent.connectToVerify')}</p>
-                            <button
-                                onClick={() => {
-                                    const injected = connectors.find(c => c.id === 'injected');
-                                    if (injected) connect({ connector: injected });
-                                    else alert("No se detectó billetera instalada");
-                                }}
-                                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg"
-                            >
-                                {t('accessContent.connectWallet')}
-                            </button>
+                            <div className="flex flex-col gap-3 justify-center items-center">
+                                {connectors.map((connector) => (
+                                    <button
+                                        key={connector.uid}
+                                        onClick={() => connect({ connector })}
+                                        className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg w-full max-w-xs transition-colors"
+                                    >
+                                        {t('accessContent.connectWallet')} ({connector.name})
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     ) : hasAccess ? (
                         <div className="text-center">

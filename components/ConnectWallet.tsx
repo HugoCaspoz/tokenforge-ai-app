@@ -38,19 +38,17 @@ export function ConnectWallet() {
     );
   }
 
-  const injectedConnector = connectors.find(c => c.id === 'injected');
-
   return (
-    <div>
-      {injectedConnector && (
+    <div className="flex items-center gap-2">
+      {connectors.map((connector) => (
         <button
-          key={injectedConnector.id}
-          onClick={() => connect({ connector: injectedConnector })}
-          className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors"
+          key={connector.uid}
+          onClick={() => connect({ connector })}
+          className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors text-sm whitespace-nowrap"
         >
-          {t('wallet.connect')}
+          {connector.name === 'Injected' ? t('wallet.connect') : connector.name}
         </button>
-      )}
+      ))}
     </div>
   );
 }
