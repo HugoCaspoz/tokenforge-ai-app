@@ -5,6 +5,7 @@ import { useAccount, useReadContract, useConnect } from 'wagmi';
 import { ethers } from 'ethers';
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
 import { NETWORK_NAMES } from '@/lib/plans';
+import { useTranslation } from '@/lib/i18n';
 
 interface AccessContentProps {
     content: {
@@ -25,6 +26,7 @@ interface AccessContentProps {
 }
 
 export default function AccessContent({ content }: AccessContentProps) {
+    const { t } = useTranslation();
     const { connectors, connect } = useConnect();
     const { address: userAddress, isConnected } = useAccount();
     const [revealed, setRevealed] = useState(false);
@@ -66,7 +68,7 @@ export default function AccessContent({ content }: AccessContentProps) {
                     )}
                     <h1 className="text-3xl font-bold text-white mb-2">{content.title}</h1>
                     <p className="text-purple-100 text-sm">
-                        Contenido Exclusivo de {content.projects.name} (${content.projects.ticker})
+                        {t('accessContent.exclusiveContentOf')} {content.projects.name} (${content.projects.ticker})
                     </p>
                 </div>
 
@@ -79,17 +81,17 @@ export default function AccessContent({ content }: AccessContentProps) {
                     {/* Requirements */}
                     <div className="bg-gray-900 rounded-xl p-6 mb-6 border border-gray-700">
                         <h3 className="text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">
-                            Requisitos de Acceso
+                            {t('accessContent.accessRequirements')}
                         </h3>
                         <div className="flex items-center justify-between">
-                            <span className="text-white">Tokens Requeridos:</span>
+                            <span className="text-white">{t('accessContent.requiredTokens')}</span>
                             <span className="font-mono font-bold text-purple-400">
                                 {content.min_tokens.toLocaleString()} ${content.projects.ticker}
                             </span>
                         </div>
                         {isConnected && (
                             <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-700">
-                                <span className="text-white">Tu Balance:</span>
+                                <span className="text-white">{t('accessContent.yourBalance')}</span>
                                 <span className={`font-mono font-bold ${hasAccess ? 'text-green-400' : 'text-red-400'}`}>
                                     {balanceFormatted.toLocaleString(undefined, { maximumFractionDigits: 2 })} ${content.projects.ticker}
                                 </span>
@@ -100,7 +102,7 @@ export default function AccessContent({ content }: AccessContentProps) {
                     {/* Access Status */}
                     {!isConnected ? (
                         <div className="text-center">
-                            <p className="text-gray-400 mb-4">Conecta tu wallet para verificar el acceso</p>
+                            <p className="text-gray-400 mb-4">{t('accessContent.connectToVerify')}</p>
                             <button
                                 onClick={() => {
                                     const injected = connectors.find(c => c.id === 'injected');
@@ -109,16 +111,16 @@ export default function AccessContent({ content }: AccessContentProps) {
                                 }}
                                 className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg"
                             >
-                                Conectar Wallet
+                                {t('accessContent.connectWallet')}
                             </button>
                         </div>
                     ) : hasAccess ? (
                         <div className="text-center">
                             <div className="bg-green-900/30 border border-green-500/50 rounded-xl p-6 mb-6">
                                 <div className="text-5xl mb-3">✅</div>
-                                <h2 className="text-2xl font-bold text-green-400 mb-2">¡Acceso Concedido!</h2>
+                                <h2 className="text-2xl font-bold text-green-400 mb-2">{t('accessContent.accessGranted')}</h2>
                                 <p className="text-gray-300 text-sm">
-                                    Tienes suficientes tokens para acceder a este contenido exclusivo
+                                    {t('accessContent.accessGrantedDesc')}
                                 </p>
                             </div>
 
@@ -127,13 +129,13 @@ export default function AccessContent({ content }: AccessContentProps) {
                                     onClick={() => setRevealed(true)}
                                     className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105 text-lg"
                                 >
-                                    {getContentIcon()} Revelar Contenido
+                                    {getContentIcon()} {t('accessContent.revealContent')}
                                 </button>
                             ) : (
                                 <div className="bg-gray-900 rounded-xl p-6 border border-purple-500">
                                     <p className="text-gray-400 text-xs uppercase tracking-wider mb-3">
-                                        {content.content_type === 'telegram' ? 'Enlace de Telegram' :
-                                            content.content_type === 'pdf' ? 'Enlace del PDF' : 'Enlace'}
+                                        {content.content_type === 'telegram' ? t('accessContent.telegramLink') :
+                                            content.content_type === 'pdf' ? t('accessContent.pdfLink') : t('accessContent.link')}
                                     </p>
                                     <a
                                         href={content.content_url}
@@ -144,7 +146,7 @@ export default function AccessContent({ content }: AccessContentProps) {
                                         {content.content_url}
                                     </a>
                                     <p className="text-gray-500 text-xs mt-3 text-center">
-                                        Haz clic en el enlace para acceder
+                                        {t('accessContent.clickToAccess')}
                                     </p>
                                 </div>
                             )}
@@ -153,9 +155,9 @@ export default function AccessContent({ content }: AccessContentProps) {
                         <div className="text-center">
                             <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-6 mb-6">
                                 <div className="text-5xl mb-3">🔒</div>
-                                <h2 className="text-2xl font-bold text-red-400 mb-2">Acceso Denegado</h2>
+                                <h2 className="text-2xl font-bold text-red-400 mb-2">{t('accessContent.accessDenied')}</h2>
                                 <p className="text-gray-300 text-sm">
-                                    Necesitas {(content.min_tokens - balanceFormatted).toLocaleString(undefined, { maximumFractionDigits: 2 })} tokens más
+                                    {t('accessContent.needMoreTokens').replace('{amount}', (content.min_tokens - balanceFormatted).toLocaleString(undefined, { maximumFractionDigits: 2 }))}
                                 </p>
                             </div>
 
@@ -165,14 +167,14 @@ export default function AccessContent({ content }: AccessContentProps) {
                                 rel="noopener noreferrer"
                                 className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all transform hover:scale-105"
                             >
-                                🦄 Comprar ${content.projects.ticker}
+                                🦄 {t('accessContent.buy')} ${content.projects.ticker}
                             </a>
                         </div>
                     )}
 
                     {/* Footer */}
                     <div className="mt-8 pt-6 border-t border-gray-700 text-center text-sm text-gray-500">
-                        <p>Powered by TokenForge • Network: {networkName}</p>
+                        <p>{t('accessContent.poweredBy').replace('{network}', networkName)}</p>
                     </div>
                 </div>
             </div>

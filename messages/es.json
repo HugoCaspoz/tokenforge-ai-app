@@ -483,5 +483,24 @@
             "redirecting": "Redirigiendo...",
             "choose": "Elegir Plan"
         }
+    },
+    "accessContent": {
+        "exclusiveContentOf": "Contenido Exclusivo de",
+        "accessRequirements": "Requisitos de Acceso",
+        "requiredTokens": "Tokens Requeridos:",
+        "yourBalance": "Tu Balance:",
+        "connectToVerify": "Conecta tu wallet para verificar el acceso",
+        "connectWallet": "Conectar Wallet",
+        "accessGranted": "¡Acceso Concedido!",
+        "accessGrantedDesc": "Tienes suficientes tokens para acceder a este contenido exclusivo",
+        "revealContent": "Revelar Contenido",
+        "telegramLink": "Enlace de Telegram",
+        "pdfLink": "Enlace del PDF",
+        "link": "Enlace",
+        "clickToAccess": "Haz clic en el enlace para acceder",
+        "accessDenied": "Acceso Denegado",
+        "needMoreTokens": "Necesitas {amount} tokens más",
+        "buy": "Comprar",
+        "poweredBy": "Powered by TokenForge • Network: {network}"
     }
 }

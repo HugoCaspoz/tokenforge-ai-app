@@ -483,5 +483,24 @@
             "redirecting": "Redirecting...",
             "choose": "Choose Plan"
         }
+    },
+    "accessContent": {
+        "exclusiveContentOf": "Exclusive Content of",
+        "accessRequirements": "Access Requirements",
+        "requiredTokens": "Required Tokens:",
+        "yourBalance": "Your Balance:",
+        "connectToVerify": "Connect your wallet to verify access",
+        "connectWallet": "Connect Wallet",
+        "accessGranted": "Access Granted!",
+        "accessGrantedDesc": "You have enough tokens to access this exclusive content",
+        "revealContent": "Reveal Content",
+        "telegramLink": "Telegram Link",
+        "pdfLink": "PDF Link",
+        "link": "Link",
+        "clickToAccess": "Click the link to access",
+        "accessDenied": "Access Denied",
+        "needMoreTokens": "You need {amount} more tokens",
+        "buy": "Buy",
+        "poweredBy": "Powered by TokenForge • Network: {network}"
     }
 }
