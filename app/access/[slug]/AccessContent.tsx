@@ -104,15 +104,17 @@ export default function AccessContent({ content }: AccessContentProps) {
                         <div className="text-center">
                             <p className="text-gray-400 mb-4">{t('accessContent.connectToVerify')}</p>
                             <div className="flex flex-col gap-3 justify-center items-center">
-                                {connectors.map((connector) => (
-                                    <button
-                                        key={connector.uid}
-                                        onClick={() => connect({ connector })}
-                                        className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg w-full max-w-xs transition-colors"
-                                    >
-                                        {t('accessContent.connectWallet')} ({connector.name})
-                                    </button>
-                                ))}
+                                {connectors
+                                    .filter((c) => c.name !== 'Injected' || (typeof window !== 'undefined' && (window as any).ethereum))
+                                    .map((connector) => (
+                                        <button
+                                            key={connector.uid}
+                                            onClick={() => connect({ connector })}
+                                            className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg w-full max-w-xs transition-colors"
+                                        >
+                                            {t('accessContent.connectWallet')} ({connector.name})
+                                        </button>
+                                    ))}
                             </div>
                         </div>
                     ) : hasAccess ? (

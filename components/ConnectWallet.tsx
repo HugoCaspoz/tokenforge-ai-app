@@ -40,15 +40,17 @@ export function ConnectWallet() {
 
   return (
     <div className="flex items-center gap-2">
-      {connectors.map((connector) => (
-        <button
-          key={connector.uid}
-          onClick={() => connect({ connector })}
-          className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors text-sm whitespace-nowrap"
-        >
-          {connector.name === 'Injected' ? t('wallet.connect') : connector.name}
-        </button>
-      ))}
+      {connectors
+        .filter((c) => c.name !== 'Injected' || (typeof window !== 'undefined' && (window as any).ethereum))
+        .map((connector) => (
+          <button
+            key={connector.uid}
+            onClick={() => connect({ connector })}
+            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors text-sm whitespace-nowrap"
+          >
+            {connector.name === 'Injected' ? t('wallet.connect') : connector.name}
+          </button>
+        ))}
     </div>
   );
 }
