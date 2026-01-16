@@ -53,7 +53,7 @@ export default function AccessContent({ content }: AccessContentProps) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-6 pt-24">
             <div className="max-w-2xl w-full bg-gray-800 rounded-2xl border border-gray-700 shadow-2xl overflow-hidden">
                 {/* Header */}
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-8 text-center">

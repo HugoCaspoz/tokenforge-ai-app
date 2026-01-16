@@ -18,6 +18,11 @@
         "no": "No",
         "all": "All"
     },
+    "wallet": {
+        "connect": "Connect Wallet",
+        "disconnect": "Disconnect",
+        "connected": "Connected"
+    },
     "header": {
         "signIn": "Sign In",
         "signOut": "Sign Out",

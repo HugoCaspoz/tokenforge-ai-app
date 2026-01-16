@@ -1,9 +1,11 @@
 'use client';
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { useEffect, useState } from 'react'; // <-- 1. Importa useEffect y useState
+import { useEffect, useState } from 'react';
+import { useTranslation } from '@/lib/i18n'; // <-- 1. Importa useEffect y useState
 
 export function ConnectWallet() {
+  const { t } = useTranslation();
   const [isClient, setIsClient] = useState(false); // <-- 2. Añade un estado para saber si es cliente
   const { address, isConnected } = useAccount();
   const { connectors, connect } = useConnect();
@@ -30,7 +32,7 @@ export function ConnectWallet() {
           onClick={() => disconnect()}
           className="bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md transition-colors"
         >
-          Desconectar
+          {t('wallet.disconnect')}
         </button>
       </div>
     );
@@ -41,13 +43,13 @@ export function ConnectWallet() {
   return (
     <div>
       {injectedConnector && (
-          <button
-            key={injectedConnector.id}
-            onClick={() => connect({ connector: injectedConnector })}
-            className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors"
-          >
-            Conectar Billetera
-          </button>
+        <button
+          key={injectedConnector.id}
+          onClick={() => connect({ connector: injectedConnector })}
+          className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-md transition-colors"
+        >
+          {t('wallet.connect')}
+        </button>
       )}
     </div>
   );

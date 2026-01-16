@@ -18,6 +18,11 @@
         "no": "No",
         "all": "Todos"
     },
+    "wallet": {
+        "connect": "Conectar Billetera",
+        "disconnect": "Desconectar",
+        "connected": "Conectado"
+    },
     "header": {
         "signIn": "Iniciar Sesión",
         "signOut": "Cerrar Sesión",
