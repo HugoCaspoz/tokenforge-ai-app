@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
+import { useAccount, useReadContract, useConnect } from 'wagmi';
 import { ethers } from 'ethers';
 import { TOKEN_ABI } from '@/lib/tokenArtifacts';
 import { NETWORK_NAMES } from '@/lib/plans';
@@ -25,6 +25,7 @@ interface AccessContentProps {
 }
 
 export default function AccessContent({ content }: AccessContentProps) {
+    const { connectors, connect } = useConnect();
     const { address: userAddress, isConnected } = useAccount();
     const [revealed, setRevealed] = useState(false);
 
@@ -100,7 +101,14 @@ export default function AccessContent({ content }: AccessContentProps) {
                     {!isConnected ? (
                         <div className="text-center">
                             <p className="text-gray-400 mb-4">Conecta tu wallet para verificar el acceso</p>
-                            <button className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg">
+                            <button
+                                onClick={() => {
+                                    const injected = connectors.find(c => c.id === 'injected');
+                                    if (injected) connect({ connector: injected });
+                                    else alert("No se detectó billetera instalada");
+                                }}
+                                className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 px-6 rounded-lg"
+                            >
                                 Conectar Wallet
                             </button>
                         </div>
@@ -131,7 +139,7 @@ export default function AccessContent({ content }: AccessContentProps) {
                                         href={content.content_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="block bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold py-3 px-4 rounded text-center break-all transition-colors"
+                                        className="block bg-purple-600 hover:bg-purple-500 text-white font-mono font-bold py-3 px-4 rounded-center break-all transition-colors"
                                     >
                                         {content.content_url}
                                     </a>
